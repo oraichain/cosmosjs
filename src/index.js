@@ -3,124 +3,151 @@
     [WARNING] CosmosJS is under ACTIVE DEVELOPMENT and should be treated as alpha version. We will remove this warning when we have a release that is stable, secure, and propoerly tested.
 */
 import fetch from 'node-fetch';
-import request from "request";
-import * as bip32 from "bip32";
-import * as bip39 from "bip39";
-import * as bech32 from "bech32";
-import secp256k1 from "secp256k1";
-import crypto from "crypto";
-import bitcoinjs from "bitcoinjs-lib";
-import message from "./messages/proto";
+import request from 'request';
+import bip32 from 'bip32';
+import bip39 from 'bip39';
+import bech32 from 'bech32';
+import secp256k1 from 'secp256k1';
+import crypto from 'crypto';
+import bitcoinjs from 'bitcoinjs-lib';
+import message from './messages/proto';
 
 export class Cosmos {
-	constructor(url, chainId) {
-		this.url = url;
-		this.chainId = chainId;
-		this.path = "m/44'/118'/0'/0/0";
-		this.bech32MainPrefix = "cosmos";
-	}
+  constructor(url, chainId) {
+    this.url = url;
+    this.chainId = chainId;
+    this.path = "m/44'/118'/0'/0/0";
+    this.bech32MainPrefix = 'cosmos';
+  }
 
-	setBech32MainPrefix(value) {
-		this.bech32MainPrefix = value;
-		if (!this.bech32MainPrefix) throw new Error("bech32MainPrefix object was not set or invalid");
-	}
+  setBech32MainPrefix(value) {
+    this.bech32MainPrefix = value;
+    if (!this.bech32MainPrefix)
+      throw new Error('bech32MainPrefix object was not set or invalid');
+  }
 
-	setPath(value) {
-		this.path = value;
-		if (!this.path) throw new Error("path object was not set or invalid");
-	}
+  setPath(value) {
+    this.path = value;
+    if (!this.path) throw new Error('path object was not set or invalid');
+  }
 
-	getAddress(mnemonic, checkSum = true) {
-		if (typeof mnemonic !== "string") {
-		    throw new Error("mnemonic expects a string")
-		}
-		if (checkSum) {
-			if (!bip39.validateMnemonic(mnemonic)) throw new Error("mnemonic phrases have invalid checksums");
-		}
-		const seed = bip39.mnemonicToSeed(mnemonic);
-		const node = bip32.fromSeed(seed)
-		const child = node.derivePath(this.path)
-		const words = bech32.toWords(child.identifier);
-		return bech32.encode(this.bech32MainPrefix, words);
-	}
+  getAddress(mnemonic, checkSum = true) {
+    if (typeof mnemonic !== 'string') {
+      throw new Error('mnemonic expects a string');
+    }
 
-	getECPairPriv(mnemonic) {
-		if (typeof mnemonic !== "string") {
-		    throw new Error("mnemonic expects a string")
-		}
-		const seed = bip39.mnemonicToSeed(mnemonic);
-		const node = bip32.fromSeed(seed);
-		const child = node.derivePath(this.path);
-		return child.privateKey;
-	}
+    if (checkSum) {
+      if (!bip39.validateMnemonic(mnemonic))
+        throw new Error('mnemonic phrases have invalid checksums');
+    }
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const node = bip32.fromSeed(seed);
+    const child = node.derivePath(this.path);
+    const words = bech32.toWords(child.identifier);
+    return bech32.encode(this.bech32MainPrefix, words);
+  }
 
-	getPubKey(privKey) {
-		const pubKeyByte = secp256k1.publicKeyCreate(privKey);
-		return pubKeyByte;
-	}
+  getECPairPriv(mnemonic) {
+    if (typeof mnemonic !== 'string') {
+      throw new Error('mnemonic expects a string');
+    }
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const node = bip32.fromSeed(seed);
+    const child = node.derivePath(this.path);
+    return child.privateKey;
+  }
 
-	getPubKeyAny(privKey) {
-		const pubKeyByte = secp256k1.publicKeyCreate(privKey);
-		var buf1 = new Buffer.from([10]);
-		var buf2 = new Buffer.from([pubKeyByte.length]);
-		var buf3 = new Buffer.from(pubKeyByte);
-		const pubKey = Buffer.concat([buf1, buf2, buf3]);
-		const pubKeyAny = new message.google.protobuf.Any({
-			type_url: "/cosmos.crypto.secp256k1.PubKey",
-			value: pubKey
-		});
-		return pubKeyAny;
-	}
-	
-	getAccounts(address) {
-		let accountsApi = "/cosmos/auth/v1beta1/accounts/";
-		return fetch(this.url + accountsApi + address).then(response => response.json())
-	}
+  getPubKey(privKey) {
+    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
+    return pubKeyByte;
+  }
 
-	sign(txBody, authInfo, accountNumber, privKey) {
-		const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-		const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
-		const signDoc = new message.cosmos.tx.v1beta1.SignDoc({
-			body_bytes: bodyBytes,
-			auth_info_bytes: authInfoBytes,
-			chain_id: this.chainId,
-			account_number: Number(accountNumber)
-		});
-		let signMessage = message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish();
-		const hash = crypto.createHash("sha256").update(signMessage).digest();
-		const sig = secp256k1.sign(hash, Buffer.from(privKey));
-		const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
-		    body_bytes: bodyBytes,
-		    auth_info_bytes: authInfoBytes,
-		    signatures: [sig.signature],
-		});
-		const txBytes = message.cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
-		const txBytesBase64 = Buffer.from(txBytes, 'binary').toString('base64');
-		return txBytes;
-	}
+  getPubKeyAny(privKey) {
+    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
+    var buf1 = new Buffer.from([10]);
+    var buf2 = new Buffer.from([pubKeyByte.length]);
+    var buf3 = new Buffer.from(pubKeyByte);
+    const pubKey = Buffer.concat([buf1, buf2, buf3]);
+    const pubKeyAny = new message.google.protobuf.Any({
+      type_url: '/cosmos.crypto.secp256k1.PubKey',
+      value: pubKey
+    });
+    return pubKeyAny;
+  }
 
-	// "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
-	broadcast(signedTxBytes, broadCastMode = "BROADCAST_MODE_SYNC") {
-		const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString('base64');
+  getAccounts(address) {
+    let accountsApi = '/cosmos/auth/v1beta1/accounts/';
+    return fetch(this.url + accountsApi + address).then((response) =>
+      response.json()
+    );
+  }
 
-		var options = { 
-			method: 'POST',
-			url: this.url + '/cosmos/tx/v1beta1/txs',
-			headers: 
-			{ 'Content-Type': 'application/json' },
-			body: { tx_bytes: txBytesBase64, mode: broadCastMode },
-			json: true 
-		};
+  sign(txBody, authInfo, accountNumber, privKey) {
+    let bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+    // remove record seperator
+    bodyBytes = bodyBytes.slice(0, bodyBytes.length - 2);
+    const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(
+      authInfo
+    ).finish();
 
-		return new Promise(function(resolve, reject){
-	        request(options, function (error, response, body) {
-	            if (error) return reject(error);
-	            try {
-	                resolve(body);
-	            } catch(e) {
-	                reject(e);
-	            }
-	        });
-	    });
-	}
+    const signDoc = new message.cosmos.tx.v1beta1.SignDoc({
+      body_bytes: bodyBytes,
+      auth_info_bytes: authInfoBytes,
+      chain_id: this.chainId,
+      account_number: Number(accountNumber)
+    });
+    let signMessage = message.cosmos.tx.v1beta1.SignDoc.encode(
+      signDoc
+    ).finish();
+    // remove record seperator
+    signMessage = signMessage.slice(0, signMessage.length - 2);
+    const hash = crypto.createHash('sha256').update(signMessage).digest();
+    const sig = secp256k1.sign(hash, Buffer.from(privKey));
+
+    // console.log(
+    //   'bodyBytes',
+    //   bodyBytes.join(' '),
+    //   '\n',
+    //   'authInfoBytes',
+    //   authInfoBytes.join(' '),
+    //   '\n',
+    //   'signMessage',
+    //   signMessage.join(' ')
+    // );
+
+    const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
+      body_bytes: bodyBytes,
+      auth_info_bytes: authInfoBytes,
+      signatures: [sig.signature]
+    });
+    const txBytes = message.cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
+
+    return txBytes;
+  }
+
+  // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
+  broadcast(signedTxBytes, broadCastMode = 'BROADCAST_MODE_SYNC') {
+    const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString(
+      'base64'
+    );
+
+    var options = {
+      method: 'POST',
+      url: this.url + '/cosmos/tx/v1beta1/txs',
+      headers: { 'Content-Type': 'application/json' },
+      body: { tx_bytes: txBytesBase64, mode: broadCastMode },
+      json: true
+    };
+
+    return new Promise(function (resolve, reject) {
+      request(options, function (error, response, body) {
+        if (error) return reject(error);
+        try {
+          resolve(body);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
 }
