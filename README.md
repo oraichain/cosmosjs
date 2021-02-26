@@ -93,9 +93,10 @@ cosmos.broadcast(signedTxBytes).then((response) => console.log(response));
 
 We will continue to update the protobuf signing structure.
 
-## Documentation
+## Example & Test
 
-This library is simple and easy to use. We don't have any formal documentation yet other than examples. Ask for help if our examples aren't enough to guide you
+Run test: `yarn test`  
+Send token example: `yarn send --to 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n' --amount 10`
 
 ## Contribution
 

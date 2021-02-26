@@ -36,8 +36,8 @@
   ],
   "scripts": {
     "dev": "node --es-module-specifier-resolution=node example/stargate-final.js",
-    "send": "node --es-module-specifier-resolution=node send.js",
-    "test": "mocha --es-module-specifier-resolution=node"
+    "send": "node --es-module-specifier-resolution=node example/send.js",
+    "test": "mocha --es-module-specifier-resolution=node test"
   },
   "author": "Cosmostation",
   "license": "MIT",

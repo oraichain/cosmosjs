@@ -1,6 +1,6 @@
 import yargs from 'yargs/yargs';
-import { Cosmos } from './src/index.js';
-import message from './src/messages/proto';
+import { Cosmos } from '../src/index.js';
+import message from '../src/messages/proto';
 
 const argv = yargs(process.argv)
   .command('send', 'send orai token')
