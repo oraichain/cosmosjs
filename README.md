@@ -9,7 +9,7 @@ In order to fully use this library, you need to run a local or remote full node 
 ## Import
 
 ```js
-import { Cosmos } from './src/index.js';
+import { Cosmos } from '../src/index.js';
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ import { Cosmos } from './src/index.js';
 - You need to import Protobuf message file as js. It is created by using `make proto-js` from [orai](https://github.com/oraichain/orai).
 
 ```js
-import message from './src/messages/proto';
+import message from '../src/messages/proto';
 ```
 
 - Generate orai address from mnemonic
