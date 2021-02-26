@@ -9,8 +9,7 @@ import bip39 from 'bip39';
 import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
 import crypto from 'crypto';
-import bitcoinjs from 'bitcoinjs-lib';
-import message from './messages/proto';
+import * as message from './messages/proto';
 
 export class Cosmos {
   constructor(url, chainId) {

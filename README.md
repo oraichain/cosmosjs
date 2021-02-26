@@ -9,7 +9,7 @@
     CosmosJS - Cosmos JavaScript Library 
 </h1>
 
-*:star: Developed / Developing by [Cosmostation](https://www.cosmostation.io/)*
+_:star: Developed / Developing by [Cosmostation](https://www.cosmostation.io/)_
 
 A JavasSript Open Source Library for [Cosmos Network](https://cosmos.network/), [IRISnet](https://www.irisnet.org/), [Kava](https://www.kava.io/), [Band Protocol](https://bandprotocol.com/), [Starname](https://iov.one/), [Secret Network](https://scrt.network/), [Akash Network](https://akash.network/), and [CertiK](https://certik.foundation/).
 
@@ -18,6 +18,7 @@ This library supports cosmos address generation and verification. It enables you
 > :warning: @cosmostation/cosmosjs@0.9.0+ supports protobuf signing for cosmos-sdk 0.40.0+. If you need for amino signing, download a version under @cosmostation/cosmosjs@0.8.2
 
 [![License](https://img.shields.io/npm/l/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@cosmostation/cosmosjs)
+
 <!-- [![Latest Stable Version](https://img.shields.io/npm/v/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@cosmostation/cosmosjs)
 [![NPM Downloads](https://img.shields.io/npm/dm/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@cosmostation/cosmosjs) -->
 
@@ -26,19 +27,21 @@ This library supports cosmos address generation and verification. It enables you
 In order to fully use this library, you need to run a local or remote full node and set up its rest server, which acts as an intermediary between the front-end and the full-node
 
 ### Warning
+
 - This branch source is for protobuf signing.
 
-## Import 
+## Import
 
 ```js
-import { Cosmos } from "../src/index.js";
+import { Cosmos } from '../src/index.js';
 ```
 
 ## Usage
 
-- You need to import Cosmos-sdk Protobuf message file as js. It is created by [protocgen.sh](https://github.com/cosmos-client/cosmos-client-ts/blob/master/protocgen.sh).
+- You need to import Cosmos-sdk Protobuf message file as js. It is created by using `make proto-js` from [orai](https://github.com/oraichain/orai).
 - @cosmostation/cosmosjs@0.9.0+ is running above nodejs v14+
 - You can run with this option for ES6.
+
 ```sh
 $ node --es-module-specifier-resolution=node example/stargate-final.js
 ```
@@ -46,28 +49,31 @@ $ node --es-module-specifier-resolution=node example/stargate-final.js
 - Import the message file that is converted from Cosmos-sdk proto.
 
 ```js
-import message from "../src/messages/proto";
+import message from '../src/messages/proto';
 ```
 
-- Stargate-final: Generate Cosmos address from mnemonic 
+- Stargate-final: Generate Cosmos address from mnemonic
+
 ```js
-const mnemonic = "..."
-const chainId = "stargate-final";
+const mnemonic = '...';
+const chainId = 'stargate-final';
 const cosmos = new Cosmos(lcdUrl, chainId);
 
 cosmos.setPath("m/44'/118'/0'/0/0");
 const address = cosmos.getAddress(mnemonic);
-
 ```
 
-Generate both privKey and pubKeyAny that are needed for signing. 
+Generate both privKey and pubKeyAny that are needed for signing.
+
 ```js
 const privKey = cosmos.getECPairPriv(mnemonic);
 const pubKeyAny = cosmos.getPubKeyAny(privKey);
 ```
 
-Transfer MUON to designated address. 
-* Make sure to input proper type, account number, and sequence of the cosmos account to generate protobuf structure. You can get those account information on blockchain. Protobuf signing is different from Amino signing.
+Transfer MUON to designated address.
+
+- Make sure to input proper type, account number, and sequence of the cosmos account to generate protobuf structure. You can get those account information on blockchain. Protobuf signing is different from Amino signing.
+
 ```js
 cosmos.getAccounts(address).then(data => {
 	// signDoc = (1)txBody + (2)authInfo
@@ -104,12 +110,19 @@ cosmos.getAccounts(address).then(data => {
 ```
 
 Sign transaction by using stdSignMsg and broadcast by using [/txs](http://34.71.170.158:1317/cosmos/tx/v1beta1/txs) REST API
+
 ```js
-const signedTxBytes = cosmos.sign(txBody, authInfo, data.account.account_number, privKey);
-cosmos.broadcast(signedTxBytes).then(response => console.log(response));
+const signedTxBytes = cosmos.sign(
+  txBody,
+  authInfo,
+  data.account.account_number,
+  privKey
+);
+cosmos.broadcast(signedTxBytes).then((response) => console.log(response));
 ```
 
 Official LCD url([http://34.71.170.158:1317](http://34.71.170.158:1317/node_info)).
+
 - This rest server URL may be disabled at any time. In order to maintain stable blockchain service, it is recommended to prepare your rest server.
 - Setting up the rest server: (https://hub.cosmos.network/master/resources/service-providers.html#setting-up-the-rest-server)
 
@@ -137,7 +150,6 @@ When opening a PR with a minor fix, make sure to add #trivial to the title/descr
 - [Telegram - International](https://t.me/cosmostation)
 - [Kakao - Koreans](https://open.kakao.com/o/g6KKSe5)
 
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -162,6 +174,7 @@ Scott Burch</b></sub></a><br /><a href="https://github.com/cosmostation/cosmosjs
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
