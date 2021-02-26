@@ -35,7 +35,6 @@
     "protobuf"
   ],
   "scripts": {
-    "dev": "node --es-module-specifier-resolution=node example/stargate-final.js",
     "send": "node --es-module-specifier-resolution=node example/send.js",
     "test": "mocha --es-module-specifier-resolution=node test"
   },

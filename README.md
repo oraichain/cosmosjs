@@ -23,8 +23,9 @@ import message from './src/messages/proto';
 - Generate orai address from mnemonic
 
 ```js
+const lcdUrl = 'localhost:1317';
 const mnemonic = '...';
-const chainId = 'stargate-final';
+const chainId = 'Oraichain';
 const cosmos = new Cosmos(lcdUrl, chainId);
 
 cosmos.setPath("m/44'/118'/0'/0/0");
