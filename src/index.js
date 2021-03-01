@@ -35,7 +35,7 @@ export class Cosmos {
     if (!this.path) throw new Error('path object was not set or invalid');
   }
 
-  getAddress(mnemonic, checkSum = true) {
+  getChildKey(mnemonic, checkSum = true) {
     if (typeof mnemonic !== 'string') {
       throw new Error('mnemonic expects a string');
     }
@@ -46,18 +46,15 @@ export class Cosmos {
     }
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const node = bip32.fromSeed(seed);
-    const child = node.derivePath(this.path);
+    return node.derivePath(this.path);
+  }
+
+  getAddress(child) {
     const words = bech32.toWords(child.identifier);
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getECPairPriv(mnemonic) {
-    if (typeof mnemonic !== 'string') {
-      throw new Error('mnemonic expects a string');
-    }
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
-    const node = bip32.fromSeed(seed);
-    const child = node.derivePath(this.path);
+  getECPairPriv(child) {
     return child.privateKey;
   }
 
@@ -141,5 +138,42 @@ export class Cosmos {
         }
       });
     });
+  }
+
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC') {
+    const address = this.getAddress(child);
+    const privKey = this.getECPairPriv(child);
+    const pubKeyAny = this.getPubKeyAny(privKey);
+
+    const data = await this.getAccounts(address);
+
+    // --------------------------------- (2)authInfo ---------------------------------
+    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+      public_key: pubKeyAny,
+      mode_info: {
+        single: {
+          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
+        }
+      },
+      sequence: data.account.sequence
+    });
+
+    const feeValue = new message.cosmos.tx.v1beta1.Fee({
+      gas_limit: 200000
+    });
+
+    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+      signer_infos: [signerInfo],
+      fee: feeValue
+    });
+
+    const signedTxBytes = this.sign(
+      txBody,
+      authInfo,
+      data.account.account_number,
+      privKey
+    );
+
+    return this.broadcast(signedTxBytes, broadCastMode);
   }
 }

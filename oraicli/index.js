@@ -3,11 +3,16 @@ import { hideBin } from 'yargs/helpers';
 
 const argv = yargs(hideBin(process.argv))
   .command('send [address]', 'send orai token', (yargs) => {
-    yargs.positional('address', {
-      describe: 'the orai address',
-      type: 'string',
-      default: 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n'
-    });
+    yargs
+      .positional('address', {
+        describe: 'the orai address',
+        type: 'string',
+        default: 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n'
+      })
+      .option('amount', {
+        default: '10',
+        type: 'string'
+      });
   })
   .command('balance [address]', 'get orai token balance', (yargs) => {
     yargs.positional('address', {
@@ -16,14 +21,33 @@ const argv = yargs(hideBin(process.argv))
       default: 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n'
     });
   })
-  .command('create', 'create a new item', (yargs) => {
+  .command('provider', 'update provider data', (yargs) => {
     yargs
-      .usage('usage: $0 create <item> [options]')
-      .command('project', 'create a new project', () => {
-        console.log('creating project :)');
-      })
-      .command('module', 'create a new module', () => {
-        console.log('creating module :)');
+      .usage('usage: $0 provider <command> [options]')
+      .command(
+        'set-datasource',
+        'Set a new data source into the system',
+        (yargs) => {
+          yargs
+            .positional('name', {
+              describe: 'the datasource name',
+              type: 'string'
+            })
+            .positional('contract', {
+              describe: 'the datasource contract address',
+              type: 'string'
+            })
+            .positional('description', {
+              describe: 'the datasource description',
+              type: 'string'
+            });
+        }
+      )
+      .command('get-datasource', 'Get datsource infomation', (yargs) => {
+        yargs.positional('name', {
+          describe: 'the datasource name',
+          type: 'string'
+        });
       });
   })
   .option('chain-id', {
@@ -38,10 +62,6 @@ const argv = yargs(hideBin(process.argv))
   .option('url', {
     default: 'http://localhost:1317',
     type: 'string'
-  })
-  .option('amount', {
-    default: 10,
-    type: 'number'
   }).argv;
 
 const command = argv._.shift();
