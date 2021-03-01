@@ -4,13 +4,12 @@
   "version": "0.9.0",
   "description": "A JavasSript Open Source Library for Cosmos Network, IRISnet, Kava, Band Protocol, Starname, Secret Network, Akash, and Certik. It supports for protobuf signing",
   "main": "src/index.js",
-  "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cosmostation/cosmosjs.git"
+    "url": "git+https://github.com/oraichain/cosmosjs.git"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=12.0.0"
   },
   "keywords": [
     "cosmosjs",
@@ -35,8 +34,8 @@
     "protobuf"
   ],
   "scripts": {
-    "send": "node --es-module-specifier-resolution=node example/send.js",
-    "test": "mocha --es-module-specifier-resolution=node test"
+    "oraicli": "node -r @babel/register oraicli",
+    "test": "mocha -r @babel/register test"
   },
   "author": "Cosmostation",
   "license": "MIT",
@@ -48,9 +47,15 @@
     "node-fetch": "^2.6.1",
     "protobufjs": "^6.10.2",
     "request": "^2.88.2",
-    "secp256k1": "^3.6.2"
+    "secp256k1": "^3.6.2",
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.8",
+    "@babel/plugin-transform-runtime": "^7.13.8",
+    "@babel/preset-env": "^7.13.8",
+    "@babel/preset-flow": "^7.12.13",
+    "@babel/register": "^7.13.8",
     "mocha": "^7.1.1"
   }
 }
