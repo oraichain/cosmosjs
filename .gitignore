@@ -81,6 +81,9 @@ yarn.lock
 # dotenv environment variables file
 .env
 
+#
+*.txt
+
 # next.js build output
 .next
 

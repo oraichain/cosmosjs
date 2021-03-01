@@ -84,7 +84,7 @@ export class Cosmos {
   sign(txBody, authInfo, accountNumber, privKey) {
     let bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
     // remove record seperator
-    bodyBytes = bodyBytes.slice(0, bodyBytes.length - 2);
+    //bodyBytes = bodyBytes.slice(0, bodyBytes.length - 2);
     const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(
       authInfo
     ).finish();
@@ -99,7 +99,7 @@ export class Cosmos {
       signDoc
     ).finish();
     // remove record seperator
-    signMessage = signMessage.slice(0, signMessage.length - 2);
+    //signMessage = signMessage.slice(0, signMessage.length - 2);
     const hash = crypto.createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.sign(hash, Buffer.from(privKey));
 
