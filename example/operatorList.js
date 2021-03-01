@@ -2,11 +2,11 @@ import request from 'request';
 
 const ignroredList = ["oraivaloper14vcw5qk0tdvknpa38wz46js5g7vrvut8ku5kaa", "oraivaloper1rqq57xt5r5pnuguffcrltnvkul7n0jdxxdgey0", "oraivaloper1mxqeldsxg60t2y6gngpdm5jf3k96dnju5el96f"]
 
-const url = process.env.URL || "localhost";
+const ip = process.env.IP || "localhost";
 
 var options = {
     'method': 'GET',
-    'url': `http://${url}:1317/cosmos/staking/v1beta1/validators`,
+    'url': `http://${ip}:1317/cosmos/staking/v1beta1/validators`,
     'headers': {
     }
 };
