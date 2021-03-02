@@ -5,11 +5,7 @@ export default async (yargs: Argv) => {
     .command(
       'set-datasource',
       'Set a new data source into the system',
-      require('./commands/set-datasource').default
+      require('./cmd/set-datasource').default
     )
-    .command(
-      'get-datasource',
-      'Get datsource infomation',
-      require('./commands/get-datasource').default
-    );
+    .command('get-datasource', 'Get datsource infomation', require('./cmd/get-datasource').default);
 };
