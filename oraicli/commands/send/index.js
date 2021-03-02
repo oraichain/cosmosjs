@@ -1,4 +1,4 @@
-import { Cosmos } from '../../../src/index.js';
+import { Cosmos } from '../../../src';
 import message from '../../../src/messages/proto';
 
 export default async (argv) => {

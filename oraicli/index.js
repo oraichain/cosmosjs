@@ -56,8 +56,9 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('mnemonic', {
     type: 'string',
-    default: process.env.MNEMONIC
-    // equip swift twelve reveal execute ten news jeans junk talk bronze dignity wrong skirt cigar large situate dumb reduce wait gadget axis deputy update
+    default:
+      process.env.MNEMONIC ||
+      'equip swift twelve reveal execute ten news jeans junk talk bronze dignity wrong skirt cigar large situate dumb reduce wait gadget axis deputy update'
   })
   .option('url', {
     default: 'http://localhost:1317',
