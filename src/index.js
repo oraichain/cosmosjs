@@ -11,10 +11,17 @@ import secp256k1 from 'secp256k1';
 import crypto from 'crypto';
 import message from './messages/proto';
 
-Buffer.prototype.trim = function () {
-  const hex = this.toString('hex').replace(/2000$/, '');
-  return Buffer.from(hex, 'hex');
-};
+function trimBuffer(buf) {
+  // remove 32,0 (space + null)
+  if (
+    buf.length > 2 &&
+    buf[buf.length - 2] === 32 &&
+    buf[buf.length - 1] === 0
+  ) {
+    return buf.slice(0, buf.length - 2);
+  }
+  return buf;
+}
 
 export class Cosmos {
   constructor(url, chainId) {
@@ -49,13 +56,22 @@ export class Cosmos {
     return node.derivePath(this.path);
   }
 
-  getAddress(child) {
-    const words = bech32.toWords(child.identifier);
+  getAddress(childOrMnemonic) {
+    // compartible
+    if (typeof childOrMnemonic === 'string') {
+      return this.getAddress(this.getChildKey(childOrMnemonic));
+    }
+    const words = bech32.toWords(childOrMnemonic.identifier);
+
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getECPairPriv(child) {
-    return child.privateKey;
+  getECPairPriv(childOrMnemonic) {
+    // compartible
+    if (typeof childOrMnemonic === 'string') {
+      return this.getECPairPriv(this.getChildKey(childOrMnemonic));
+    }
+    return childOrMnemonic.privateKey;
   }
 
   getPubKey(privKey) {
@@ -84,9 +100,9 @@ export class Cosmos {
   }
 
   sign(txBody, authInfo, accountNumber, privKey) {
-    const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody)
-      .finish()
-      .trim();
+    const bodyBytes = trimBuffer(
+      message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish()
+    );
     const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(
       authInfo
     ).finish();
@@ -97,9 +113,9 @@ export class Cosmos {
       chain_id: this.chainId,
       account_number: Number(accountNumber)
     });
-    const signMessage = message.cosmos.tx.v1beta1.SignDoc.encode(signDoc)
-      .finish()
-      .trim();
+    const signMessage = trimBuffer(
+      message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish()
+    );
 
     const hash = crypto.createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.sign(hash, Buffer.from(privKey));

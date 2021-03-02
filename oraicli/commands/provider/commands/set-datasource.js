@@ -1,3 +1,4 @@
+import bech32 from 'bech32';
 import { Cosmos } from '../../../../src/index.js';
 import message from '../../../../src/messages/proto';
 
@@ -7,16 +8,17 @@ export default async (argv) => {
   const childKey = cosmos.getChildKey(argv.mnemonic);
 
   const [name, contractAddress, description] = argv._;
-
+  // get accAddress in binary
+  const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
   const msgSend = new message.oraichain.orai.provider.MsgCreateAIDataSource({
     name,
     description,
     contract: contractAddress,
-    owner: cosmos.getAddress(childKey)
+    owner: accAddress
   });
 
   const msgSendAny = new message.google.protobuf.Any({
-    type_url: '/oraichain.orai.provider.Msg/CreateAIDataSource',
+    type_url: '/oraichain.orai.provider.MsgCreateAIDataSource',
     value: message.oraichain.orai.provider.MsgCreateAIDataSource.encode(
       msgSend
     ).finish()
@@ -27,6 +29,10 @@ export default async (argv) => {
     memo: 'set-datasource'
   });
 
-  const response = await cosmos.submit(childKey, txBody);
-  console.log(response);
+  try {
+    const response = await cosmos.submit(childKey, txBody);
+    console.log(response);
+  } catch (ex) {
+    console.log(ex);
+  }
 };
