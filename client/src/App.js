@@ -34,6 +34,18 @@ const App = () => {
     console.log(response);
   };
 
+  const showBalance = async () => {
+    const address = document.querySelector('#address').value;
+    const data = await fetch(
+      `${cosmos.url}/cosmos/bank/v1beta1/balances/${address}`
+    ).then((res) => res.json());
+
+    const [balance] = data.balances;
+    document.querySelector(
+      '#balance'
+    ).innerHTML = `${balance.amount} ${balance.denom}`;
+  };
+
   return (
     <div className="App">
       <div>
@@ -45,6 +57,8 @@ const App = () => {
         <input id="amount" />
       </div>
       <button onClick={send}>Send</button>
+      <div id="balance"></div>
+      <button onClick={showBalance}>Show balance</button>
     </div>
   );
 };
