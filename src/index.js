@@ -61,6 +61,7 @@ export class Cosmos {
       return this.getAddress(this.getChildKey(childOrMnemonic));
     }
     const words = bech32.toWords(childOrMnemonic.identifier);
+
     return bech32.encode(this.bech32MainPrefix, words);
   }
 

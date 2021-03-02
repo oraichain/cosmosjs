@@ -56,8 +56,8 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('mnemonic', {
     type: 'string',
-    default:
-      'best voice endless similar spell destroy brown accident news round dream wrap vote guilt merry satoshi produce despair merit fence oval ball notice mesh'
+    default: process.env.MNEMONIC
+    // equip swift twelve reveal execute ten news jeans junk talk bronze dignity wrong skirt cigar large situate dumb reduce wait gadget axis deputy update
   })
   .option('url', {
     default: 'http://localhost:1317',
