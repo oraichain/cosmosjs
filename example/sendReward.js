@@ -2,6 +2,8 @@ import yargs from 'yargs/yargs';
 import { Cosmos } from '../src/index.js';
 import message from '../src/messages/proto';
 import dotenv from "dotenv";
+import rewards from './totalReward';
+
 dotenv.config({ silent: process.env.NODE_ENV === 'production' });
 
 const argv = yargs(process.argv)
@@ -14,7 +16,7 @@ const argv = yargs(process.argv)
     type: 'string'
   })
   .option('url', {
-    default: 'http://localhost:1317',
+    default: `http://${process.env.IP || "localhost"}:1317`,
     type: 'string'
   })
   .option('to', {
@@ -42,6 +44,7 @@ const listMonikers = process.env.LIST_MONIKERS.split(",") || ["test"];
 
 console.log(listSendMnemonic.length)
 console.log(listMonikers.length)
+const tempRewards = [3.456, 3.456, 1.728, 22.464, 15.552, 8.64, 10.368, 8.64, 5.184, 3.456, 3.456, 1.728, 1.728, 1.728]
 
 for (let index = 0; index < listReceiveAddresses.length; index++) {
   const receiveAddress = listReceiveAddresses[index];
@@ -55,10 +58,12 @@ for (let index = 0; index < listReceiveAddresses.length; index++) {
 
   cosmos.getAccounts(sendAddress).then((data) => {
     const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: address,
-      to_address: argv.to,
-      amount: [{ denom: prefix, amount: String(argv.amount || 10) }] // 10
+      from_address: sendAddress,
+      to_address: receiveAddress,
+      amount: [{ denom: prefix, amount: String(tempRewards[index] * 1000000 || 0.001) }] // 10
     });
+
+    console.log(msgSend)
 
     const msgSendAny = new message.google.protobuf.Any({
       type_url: '/cosmos.bank.v1beta1.MsgSend',
@@ -90,12 +95,12 @@ for (let index = 0; index < listReceiveAddresses.length; index++) {
       fee: feeValue
     });
 
-    // const signedTxBytes = cosmos.sign(
-    //   txBody,
-    //   authInfo,
-    //   data.account.account_number,
-    //   privKey
-    // );
-    // cosmos.broadcast(signedTxBytes).then((response) => console.log(response));
+    const signedTxBytes = cosmos.sign(
+      txBody,
+      authInfo,
+      data.account.account_number,
+      privKey
+    );
+    cosmos.broadcast(signedTxBytes).then((response) => console.log(response));
   });
 }
