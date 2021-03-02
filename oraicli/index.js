@@ -1,5 +1,7 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
+import dotenv from "dotenv";
+dotenv.config({ silent: process.env.NODE_ENV === 'development' });
 
 const argv = yargs(hideBin(process.argv))
   .command('send [address]', 'send orai token', (yargs) => {
@@ -13,6 +15,16 @@ const argv = yargs(hideBin(process.argv))
         default: '10',
         type: 'string'
       });
+  })
+  .command('staking', 'staking commands', (yargs) => {
+    yargs
+      .command(
+        'get-validators',
+        'Get a list of validators',
+        (yargs) => {
+          yargs
+        }
+      )
   })
   .command('balance [address]', 'get orai token balance', (yargs) => {
     yargs.positional('address', {
@@ -50,6 +62,53 @@ const argv = yargs(hideBin(process.argv))
         });
       });
   })
+  .command('distr', 'distribution commands', (yargs) => {
+    yargs
+      .command(
+        'get-total-rewards',
+        'Get total rewards of all genesis and trusted validators',
+        (yargs) => {
+          yargs
+            .option('sendAddresses', {
+              describe: 'addresses that have staked into the validators',
+              type: 'array',
+              default: process.env.LIST_SEND_ADDRESSES.split(",") || ["orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg"]
+            })
+            .option('validators', {
+              describe: 'list of validators we want to check',
+              type: 'array',
+              default: process.env.LIST_VALIDATORS.split(",") || ["oraivaloper1lwsq3768lunk78wdsj836svlfpfs09m3mre3wk"]
+            })
+        }
+      )
+      .command(
+        'send-rewards',
+        'Send rewards to all genesis and trusted validators',
+        (yargs) => {
+          yargs
+            .option('sendAddresses', {
+              describe: 'addresses that have staked into the validators',
+              type: 'array',
+              default: process.env.LIST_SEND_ADDRESSES.split(",") || ["orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg"]
+            })
+            .option('validators', {
+              describe: 'list of validators we want to check',
+              type: 'array',
+              default: process.env.LIST_VALIDATORS.split(",") || ["oraivaloper1lwsq3768lunk78wdsj836svlfpfs09m3mre3wk"]
+            })
+            .option('receiveAddresses', {
+              describe: 'addresses that will receive the rewards',
+              type: 'array',
+              default: process.env.LIST_RECEIVE_ADDRESSES.split(",") || ["orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg"]
+            })
+            .option('mnemonics', {
+              describe: 'mnemonics of addresses that will send the rewards',
+              type: 'array',
+              default: process.env.LIST_SEND_MNEMONIC.split(",") || ["survey maze spatial profit narrow memory drop load assist produce exact leaf unique adult token idea mammal cradle catch salmon blade term rubber else"]
+            })
+        }
+      )
+  })
   .option('chain-id', {
     type: 'string',
     default: 'Oraichain'
@@ -57,10 +116,10 @@ const argv = yargs(hideBin(process.argv))
   .option('mnemonic', {
     type: 'string',
     default:
-      'best voice endless similar spell destroy brown accident news round dream wrap vote guilt merry satoshi produce despair merit fence oval ball notice mesh'
+      'survey maze spatial profit narrow memory drop load assist produce exact leaf unique adult token idea mammal cradle catch salmon blade term rubber else'
   })
   .option('url', {
-    default: 'http://localhost:1317',
+    default: 'http://3.139.240.126:1317',
     type: 'string'
   }).argv;
 
