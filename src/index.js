@@ -56,11 +56,19 @@ export class Cosmos {
   }
 
   getAddress(child) {
+    // compartible
+    if (typeof child === 'string') {
+      return this.getAddress(this.getChildKey(child));
+    }
     const words = bech32.toWords(child.identifier);
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
   getECPairPriv(child) {
+    // compartible
+    if (typeof child === 'string') {
+      return this.getECPairPriv(this.getChildKey(child));
+    }
     return child.privateKey;
   }
 
