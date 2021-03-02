@@ -119,7 +119,7 @@ const argv = yargs(hideBin(process.argv))
       'survey maze spatial profit narrow memory drop load assist produce exact leaf unique adult token idea mammal cradle catch salmon blade term rubber else'
   })
   .option('url', {
-    default: 'http://3.139.240.126:1317',
+    default: 'http://localhost:1317',
     type: 'string'
   }).argv;
 
