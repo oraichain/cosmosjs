@@ -4,12 +4,17 @@
 */
 import fetch from 'node-fetch';
 import request from 'request';
-import bip32 from 'bip32';
-import bip39 from 'bip39';
+import * as bip32 from 'bip32';
+import * as bip39 from 'bip39';
 import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
 import crypto from 'crypto';
-import * as message from './messages/proto';
+import message from './messages/proto';
+
+Buffer.prototype.trim = function () {
+  const hex = this.toString('hex').replace(/2000$/, '');
+  return Buffer.from(hex, 'hex');
+};
 
 export class Cosmos {
   constructor(url, chainId) {
@@ -30,7 +35,7 @@ export class Cosmos {
     if (!this.path) throw new Error('path object was not set or invalid');
   }
 
-  getAddress(mnemonic, checkSum = true) {
+  getChildKey(mnemonic, checkSum = true) {
     if (typeof mnemonic !== 'string') {
       throw new Error('mnemonic expects a string');
     }
@@ -41,18 +46,15 @@ export class Cosmos {
     }
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const node = bip32.fromSeed(seed);
-    const child = node.derivePath(this.path);
+    return node.derivePath(this.path);
+  }
+
+  getAddress(child) {
     const words = bech32.toWords(child.identifier);
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getECPairPriv(mnemonic) {
-    if (typeof mnemonic !== 'string') {
-      throw new Error('mnemonic expects a string');
-    }
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
-    const node = bip32.fromSeed(seed);
-    const child = node.derivePath(this.path);
+  getECPairPriv(child) {
     return child.privateKey;
   }
 
@@ -75,16 +77,16 @@ export class Cosmos {
   }
 
   getAccounts(address) {
-    let accountsApi = '/cosmos/auth/v1beta1/accounts/';
+    const accountsApi = '/cosmos/auth/v1beta1/accounts/';
     return fetch(this.url + accountsApi + address).then((response) =>
       response.json()
     );
   }
 
   sign(txBody, authInfo, accountNumber, privKey) {
-    let bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-    // remove record seperator
-    //bodyBytes = bodyBytes.slice(0, bodyBytes.length - 2);
+    const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody)
+      .finish()
+      .trim();
     const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(
       authInfo
     ).finish();
@@ -95,24 +97,12 @@ export class Cosmos {
       chain_id: this.chainId,
       account_number: Number(accountNumber)
     });
-    let signMessage = message.cosmos.tx.v1beta1.SignDoc.encode(
-      signDoc
-    ).finish();
-    // remove record seperator
-    //signMessage = signMessage.slice(0, signMessage.length - 2);
+    const signMessage = message.cosmos.tx.v1beta1.SignDoc.encode(signDoc)
+      .finish()
+      .trim();
+
     const hash = crypto.createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.sign(hash, Buffer.from(privKey));
-
-    // console.log(
-    //   'bodyBytes',
-    //   bodyBytes.join(' '),
-    //   '\n',
-    //   'authInfoBytes',
-    //   authInfoBytes.join(' '),
-    //   '\n',
-    //   'signMessage',
-    //   signMessage.join(' ')
-    // );
 
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes,
@@ -148,5 +138,42 @@ export class Cosmos {
         }
       });
     });
+  }
+
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC') {
+    const address = this.getAddress(child);
+    const privKey = this.getECPairPriv(child);
+    const pubKeyAny = this.getPubKeyAny(privKey);
+
+    const data = await this.getAccounts(address);
+
+    // --------------------------------- (2)authInfo ---------------------------------
+    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+      public_key: pubKeyAny,
+      mode_info: {
+        single: {
+          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
+        }
+      },
+      sequence: data.account.sequence
+    });
+
+    const feeValue = new message.cosmos.tx.v1beta1.Fee({
+      gas_limit: 200000
+    });
+
+    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+      signer_infos: [signerInfo],
+      fee: feeValue
+    });
+
+    const signedTxBytes = this.sign(
+      txBody,
+      authInfo,
+      data.account.account_number,
+      privKey
+    );
+
+    return this.broadcast(signedTxBytes, broadCastMode);
   }
 }

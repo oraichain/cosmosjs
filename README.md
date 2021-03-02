@@ -97,7 +97,7 @@ We will continue to update the protobuf signing structure.
 ## Example & Test
 
 Run test: `yarn test`  
-Send token example: `yarn send --to 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n' --amount 10`
+Send token example: `yarn oraicli send orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n --amount 10`
 
 ## Contribution
 
