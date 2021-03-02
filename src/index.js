@@ -12,8 +12,14 @@ import crypto from 'crypto';
 import message from './messages/proto';
 
 Buffer.prototype.trim = function () {
-  const hex = this.toString('hex').replace(/2000$/, '');
-  return Buffer.from(hex, 'hex');
+  // remove x2000 (space + null)
+  if (
+    this.length > 2 &&
+    this.subarray(this.length - 2).toString('hex') === '2000'
+  ) {
+    return this.slice(0, this.length - 2);
+  }
+  return this;
 };
 
 export class Cosmos {
