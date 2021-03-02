@@ -2,8 +2,7 @@
     Developed / Developing by Cosmostation
     [WARNING] CosmosJS is under ACTIVE DEVELOPMENT and should be treated as alpha version. We will remove this warning when we have a release that is stable, secure, and propoerly tested.
 */
-import fetch from 'node-fetch';
-import request from 'request';
+import 'isomorphic-fetch';
 import * as bip32 from 'bip32';
 import * as bip39 from 'bip39';
 import bech32 from 'bech32';
@@ -93,10 +92,9 @@ export class Cosmos {
   }
 
   getAccounts(address) {
-    const accountsApi = '/cosmos/auth/v1beta1/accounts/';
-    return fetch(this.url + accountsApi + address).then((response) =>
-      response.json()
-    );
+    return fetch(
+      `${this.url}/cosmos/auth/v1beta1/accounts/${address}`
+    ).then((res) => res.json());
   }
 
   sign(txBody, authInfo, accountNumber, privKey) {
@@ -135,25 +133,11 @@ export class Cosmos {
     const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString(
       'base64'
     );
-
-    var options = {
+    return fetch(`${this.url}/cosmos/tx/v1beta1/txs`, {
       method: 'POST',
-      url: this.url + '/cosmos/tx/v1beta1/txs',
       headers: { 'Content-Type': 'application/json' },
-      body: { tx_bytes: txBytesBase64, mode: broadCastMode },
-      json: true
-    };
-
-    return new Promise(function (resolve, reject) {
-      request(options, function (error, response, body) {
-        if (error) return reject(error);
-        try {
-          resolve(body);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+      body: JSON.stringify({ tx_bytes: txBytesBase64, mode: broadCastMode })
+    }).then((res) => res.json());
   }
 
   async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC') {

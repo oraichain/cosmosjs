@@ -1,13 +1,28 @@
+import { Argv } from 'yargs';
 import bech32 from 'bech32';
 import { Cosmos } from '../../../../src/index.js';
 import message from '../../../../src/messages/proto';
 
-export default async (argv) => {
+export default async (yargs: Argv) => {
+  const { argv } = yargs
+    .positional('name', {
+      describe: 'the datasource name',
+      type: 'string'
+    })
+    .positional('contract', {
+      describe: 'the datasource contract address',
+      type: 'string'
+    })
+    .positional('description', {
+      describe: 'the datasource description',
+      type: 'string'
+    });
+
   const cosmos = new Cosmos(argv.url, argv.chainId);
   cosmos.setBech32MainPrefix('orai');
   const childKey = cosmos.getChildKey(argv.mnemonic);
 
-  const [name, contractAddress, description] = argv._;
+  const [name, contractAddress, description] = argv._.slice(-3);
   // get accAddress in binary
   const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
   const msgSend = new message.oraichain.orai.provider.MsgCreateAIDataSource({
@@ -19,9 +34,7 @@ export default async (argv) => {
 
   const msgSendAny = new message.google.protobuf.Any({
     type_url: '/oraichain.orai.provider.MsgCreateAIDataSource',
-    value: message.oraichain.orai.provider.MsgCreateAIDataSource.encode(
-      msgSend
-    ).finish()
+    value: message.oraichain.orai.provider.MsgCreateAIDataSource.encode(msgSend).finish()
   });
 
   const txBody = new message.cosmos.tx.v1beta1.TxBody({

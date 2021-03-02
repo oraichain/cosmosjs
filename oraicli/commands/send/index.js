@@ -1,7 +1,19 @@
+import { Argv } from 'yargs';
 import { Cosmos } from '../../../src';
 import message from '../../../src/messages/proto';
 
-export default async (argv) => {
+export default async (yargs: Argv) => {
+  const { argv } = yargs
+    .positional('address', {
+      describe: 'the orai address',
+      type: 'string',
+      default: 'orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n'
+    })
+    .option('amount', {
+      default: '10',
+      type: 'string'
+    });
+
   const cosmos = new Cosmos(argv.url, argv.chainId);
   cosmos.setBech32MainPrefix('orai');
   const childKey = cosmos.getChildKey(argv.mnemonic);
