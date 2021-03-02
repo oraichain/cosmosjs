@@ -55,21 +55,21 @@ export class Cosmos {
     return node.derivePath(this.path);
   }
 
-  getAddress(child) {
+  getAddress(childOrMnemonic) {
     // compartible
-    if (typeof child === 'string') {
-      return this.getAddress(this.getChildKey(child));
+    if (typeof childOrMnemonic === 'string') {
+      return this.getAddress(this.getChildKey(childOrMnemonic));
     }
-    const words = bech32.toWords(child.identifier);
+    const words = bech32.toWords(childOrMnemonic.identifier);
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getECPairPriv(child) {
+  getECPairPriv(childOrMnemonic) {
     // compartible
-    if (typeof child === 'string') {
-      return this.getECPairPriv(this.getChildKey(child));
+    if (typeof childOrMnemonic === 'string') {
+      return this.getECPairPriv(this.getChildKey(childOrMnemonic));
     }
-    return child.privateKey;
+    return childOrMnemonic.privateKey;
   }
 
   getPubKey(privKey) {
