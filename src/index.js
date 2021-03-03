@@ -12,11 +12,7 @@ import message from './messages/proto';
 
 function trimBuffer(buf) {
   // remove 32,0 (space + null)
-  if (
-    buf.length > 2 &&
-    buf[buf.length - 2] === 32 &&
-    buf[buf.length - 1] === 0
-  ) {
+  if (buf.length > 2 && buf[buf.length - 2] === 32 && buf[buf.length - 1] === 0) {
     return buf.slice(0, buf.length - 2);
   }
   return buf;
@@ -32,8 +28,7 @@ export class Cosmos {
 
   setBech32MainPrefix(value) {
     this.bech32MainPrefix = value;
-    if (!this.bech32MainPrefix)
-      throw new Error('bech32MainPrefix object was not set or invalid');
+    if (!this.bech32MainPrefix) throw new Error('bech32MainPrefix object was not set or invalid');
   }
 
   setPath(value) {
@@ -47,28 +42,27 @@ export class Cosmos {
     }
 
     if (checkSum) {
-      if (!bip39.validateMnemonic(mnemonic))
-        throw new Error('mnemonic phrases have invalid checksums');
+      if (!bip39.validateMnemonic(mnemonic)) throw new Error('mnemonic phrases have invalid checksums');
     }
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const node = bip32.fromSeed(seed);
     return node.derivePath(this.path);
   }
 
-  getAddress(childOrMnemonic) {
+  getAddress(childOrMnemonic, checkSum = true) {
     // compartible
     if (typeof childOrMnemonic === 'string') {
-      return this.getAddress(this.getChildKey(childOrMnemonic));
+      return this.getAddress(this.getChildKey(childOrMnemonic, checkSum));
     }
     const words = bech32.toWords(childOrMnemonic.identifier);
 
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getECPairPriv(childOrMnemonic) {
+  getECPairPriv(childOrMnemonic, checkSum = true) {
     // compartible
     if (typeof childOrMnemonic === 'string') {
-      return this.getECPairPriv(this.getChildKey(childOrMnemonic));
+      return this.getECPairPriv(this.getChildKey(childOrMnemonic, checkSum));
     }
     return childOrMnemonic.privateKey;
   }
@@ -92,18 +86,12 @@ export class Cosmos {
   }
 
   getAccounts(address) {
-    return fetch(
-      `${this.url}/cosmos/auth/v1beta1/accounts/${address}`
-    ).then((res) => res.json());
+    return fetch(`${this.url}/cosmos/auth/v1beta1/accounts/${address}`).then((res) => res.json());
   }
 
   sign(txBody, authInfo, accountNumber, privKey) {
-    const bodyBytes = trimBuffer(
-      message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish()
-    );
-    const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(
-      authInfo
-    ).finish();
+    const bodyBytes = trimBuffer(message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish());
+    const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
 
     const signDoc = new message.cosmos.tx.v1beta1.SignDoc({
       body_bytes: bodyBytes,
@@ -111,9 +99,7 @@ export class Cosmos {
       chain_id: this.chainId,
       account_number: Number(accountNumber)
     });
-    const signMessage = trimBuffer(
-      message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish()
-    );
+    const signMessage = trimBuffer(message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
 
     const hash = crypto.createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.sign(hash, Buffer.from(privKey));
@@ -130,9 +116,7 @@ export class Cosmos {
 
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
   broadcast(signedTxBytes, broadCastMode = 'BROADCAST_MODE_SYNC') {
-    const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString(
-      'base64'
-    );
+    const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString('base64');
     return fetch(`${this.url}/cosmos/tx/v1beta1/txs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -167,12 +151,7 @@ export class Cosmos {
       fee: feeValue
     });
 
-    const signedTxBytes = this.sign(
-      txBody,
-      authInfo,
-      data.account.account_number,
-      privKey
-    );
+    const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
 
     return this.broadcast(signedTxBytes, broadCastMode);
   }

@@ -7,12 +7,9 @@ import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 import i18n from './i18n';
 
 import About from './components/About';
-import Home from './components/Home';
 import Topics from './components/Topics';
 import SignIn from './components/SignIn';
-
-// import { Cosmos } from './cosmos';
-// import message from './cosmos/messages/proto';
+import Import from './components/Import';
 
 import './App.css';
 
@@ -54,11 +51,12 @@ const App = () => {
     <div className="inner">
       <Switch>
         <Route path={`${match.url}/login`} component={SignIn} />
+        <Route path={`${match.url}/import`} component={Import} />
         <Route path={`${match.url}/about`} component={About} />
         <Route path={`${match.url}/topics`} component={Topics} />
       </Switch>
 
-      <div className="languages">
+      <div className="footer">
         <Link to={generateLanguage('vn', location)}>
           <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
         </Link>
@@ -66,6 +64,12 @@ const App = () => {
         <Link to={generateLanguage('en', location)}>
           <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
         </Link>
+
+        <div className="form-fotter">
+          <a href="https://github.com/cosmostation/keystation" target="_blank">
+            <i className="fa fa-fw fa-github" />
+          </a>
+        </div>
       </div>
     </div>
   );

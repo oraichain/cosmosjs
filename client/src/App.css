@@ -1,6 +1,10 @@
+.footer{
+  position: relative;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
 
-
-.languages button {
+.footer button {
   margin: 10px;
  font-size: 30px;   
 }
