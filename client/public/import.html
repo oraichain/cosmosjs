@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>KEYSTATION</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<!-- css -->
+	<link rel="stylesheet" href="css/normalize.custom.css">
+	<link rel="stylesheet" href="fonts/font-awesome-4.2.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/input.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<!-- js -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+	<script src="js/bundle.js"></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-146700011-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-146700011-1');
+	</script>
+</head>
+
+<body>
+	<div id="app">
+		<div class="inner">
+			<h1><img src="img/keystation_logo_.png" alt="KEYSTATION" width="145"></h1>
+			<h2>Import Wallet</h2>
+
+			<!-- 1. Account Name, Mnemonics -->
+			<form class="keystation-form" id="import-form1" novalidate>
+				<span class="input input--fumi">
+					<input class="input__field input__field--fumi input-account" id="account" type="text">
+					<label class="input__label input__label--fumi">
+						<i class="fa fa-fw fa-user icon icon--fumi"></i>
+						<span class="input__label-content input__label-content--fumi">Wallet Name</span>
+					</label>
+				</span>
+				<span class="input input--fumi">
+					<textarea class="input__field input__field--fumi input-mnemonics" id="mnemonics"></textarea>
+					<label class="input__label input__label--fumi">
+						<i class="fa fa-fw fa-key icon icon--fumi"></i>
+						<span class="input__label-content input__label-content--fumi">Mnemonics</span>
+					</label>
+				</span>
+				<p id="formInfoMessage" class="information-text">
+					<i class="fa fa-fw fa-question-circle"></i> Enter 12 / 16 / 24 words including spaces. Mnemonic phrase is encrypted and stored in Keychain.
+				</p>
+				<p id="errorOnImport" class="error">
+					<!-- error msg -->
+					<i class="fa fa-fw fa-exclamation-circle"></i> <span></span>
+				</p>
+				<button type="button" id="importBtn">Next</button>
+			</form>
+			<!-- 1 END -->
+
+
+			<!-- 2. pin ( pin-wrap.open )-->
+			<div class="pin-wrap">
+				<button type="button">&#10005;</button>
+				<div class="pin-cont">
+					<h2 id="pin-title">Please set your PIN.</h2>
+					<p>PIN is required for every transaction.<br><span>If lost, you cannot reset or recover your PIN.<br></span></p>
+					<div class="dots-cointainer">
+						<div class="dots">
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div>+</div>
+							<div class="dot"></div>
+						</div>
+					</div>
+
+					<div class="wrapper-number no-select">
+						{{.ShuffledNumCode}}
+					</div>
+
+					<div class="wrapper-alphabet no-select">
+						{{.ShuffledAlphabetCode}}
+					</div>
+				</div>
+			</div>
+			<!-- 2 end -->
+
+			<!-- 3. re-enter -->
+			<div class="notification-modal">
+				<!-- Encrypted mnemonic phrase is copied. -->
+			</div>
+
+			<form action="/session" method="GET" class="keystation-form re-enter-form" id="import-form2" novalidate>
+				<p>Please copy and paste the mnemonic encryption below.</p>
+				<div class="pw-nnemonics">
+					<div>
+						<span><i class="fa fa-lock"></i>Encrypted mnemonic phrase</span>
+						<button type="button" onclick="copyAddress();"><i class="fa fa-files-o"></i>Copy</button>
+					</div>
+					<!-- <input class="input__field input__field--fumi input-account" id="hidden-account" type="text" name="account" style="display: none" value=""> -->
+					<span id="encrypted-mnemonics">
+						<!-- encrypted string -->
+					</span>
+				</div>
+				<span class="input input--fumi">
+					<input class="input__field input__field--fumi" id="hidden-account" type="text" name="account" style="display: none" value="">
+					<input class="input__field input__field--fumi input-password" type="password" autocomplete="new-password">
+					<label class="input__label input__label--fumi">
+						<i class="fa fa-fw fa-key icon icon--fumi"></i>
+						<span class="input__label-content input__label-content--fumi">Encrypted mnemonic phrase</span>
+					</label>
+				</span>
+				<a href="https://medium.com/cosmostation/introducing-keystation-end-to-end-encrypted-key-manager-for-dapps-built-with-the-cosmos-sdk-37dac753feb5" target="_blank">
+					<i class="fa fa-fw fa-question-circle"></i>Why do I have to encrypt my mnemonic phrase?
+				</a>
+				<input type="hidden" name="client" value="{{.Client}}">
+				<input type="hidden" name="path" value="{{.Path}}">
+				<input type="hidden" name="payload" value="{{.Payload}}">
+				<input type="hidden" name="lcd" value="{{.Lcd}}">
+				<input type="text" value="" id="encrypted-mnemonics-for-copy">
+				<button type="button" id="importBtn2">Next</button>
+			</form>
+			<!-- 3 end -->
+
+			<!-- 4. loader ( loader-wrap.open )-->
+			<div class="loader-wrap">
+				<div>
+					<div class="spinner spinner-blink"></div>
+				</div>
+				<div>
+					<div class="spinner spinner-bounce-middle"></div>
+				</div>
+			</div>
+			<!-- 4 end -->
+
+			<a href="{{.QueryUrl}}">Sign In</a>
+
+			<div class="form-fotter">
+				<a href="https://github.com/cosmostation/keystation" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+			</div>
+
+		</div>
+		<!-- inner end -->
+	</div>
+	<!-- #app end -->
+
+	<!-- js -->
+	<script>window.option = "{{.Option}}";</script>
+	<script src="js/classie.js"></script>
+	<script src="js/input.js"></script>
+	<script src="js/import.js"></script>
+	<script src="js/pin.js"></script>
+</body>
+
+</html>

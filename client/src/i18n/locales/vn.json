@@ -1,0 +1,9 @@
+{
+  "wallet": {
+    "signIn": "Đăng Nhập",
+    "walletName": "Tên Ví",
+    "unableIncognitoMode": "Không khả dụng ở chế độ khách hoặc chế độ ẩn danh",
+    "next": "Tiếp tục",
+    "importWallet": "Nhập Ví"
+  }
+}

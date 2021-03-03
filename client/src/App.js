@@ -1,64 +1,72 @@
-import { Cosmos } from './cosmos';
-import message from './cosmos/messages/proto';
+import React from 'react';
+import { Route, Redirect, Switch, useLocation, useRouteMatch, useHistory } from 'react-router';
+import { pathToRegexp, compile } from 'path-to-regexp';
+import { Link } from 'react-router-dom';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+
+import i18n from './i18n';
+
+import About from './components/About';
+import Home from './components/Home';
+import Topics from './components/Topics';
+import SignIn from './components/SignIn';
+
+// import { Cosmos } from './cosmos';
+// import message from './cosmos/messages/proto';
 
 import './App.css';
 
-const cosmos = new Cosmos('http://localhost:1317', 'Oraichain');
-cosmos.setBech32MainPrefix('orai');
-const childKey = cosmos.getChildKey(
-  'equip swift twelve reveal execute ten news jeans junk talk bronze dignity wrong skirt cigar large situate dumb reduce wait gadget axis deputy update'
-);
+const lang = i18n.language;
+const generateLanguage = (locale, location) => {
+  const ROUTE = '/:locale/:path*';
+  const definePath = compile(ROUTE);
+  const routeComponents = pathToRegexp(ROUTE).exec(location.pathname);
+
+  let subPaths = null;
+  if (routeComponents && routeComponents[2]) {
+    subPaths = routeComponents[2].split('/');
+  }
+
+  return definePath({
+    locale,
+    path: subPaths
+  });
+};
+
+const changeLanguage = (lng) => {
+  i18n.changeLanguage(lng);
+};
 
 const App = () => {
-  const send = async () => {
-    const address = document.querySelector('#address').value;
-    const amount = document.querySelector('#amount').value;
-
-    const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: cosmos.getAddress(childKey),
-      to_address: address,
-      amount: [{ denom: cosmos.bech32MainPrefix, amount: amount }]
-    });
-
-    const msgSendAny = new message.google.protobuf.Any({
-      type_url: '/cosmos.bank.v1beta1.MsgSend',
-      value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish()
-    });
-
-    const txBody = new message.cosmos.tx.v1beta1.TxBody({
-      messages: [msgSendAny],
-      memo: ''
-    });
-
-    const response = await cosmos.submit(childKey, txBody);
-    console.log(response);
-  };
-
-  const showBalance = async () => {
-    const address = document.querySelector('#address').value;
-    const data = await fetch(
-      `${cosmos.url}/cosmos/bank/v1beta1/balances/${address}`
-    ).then((res) => res.json());
-
-    const [balance] = data.balances;
-    document.querySelector(
-      '#balance'
-    ).innerHTML = `${balance.amount} ${balance.denom}`;
-  };
+  const location = useLocation();
+  const history = useHistory();
+  const match = useRouteMatch();
+  const { locale } = match.params;
+  if (i18n.options.resources[locale]) {
+    if (lang != locale) {
+      changeLanguage(locale);
+    }
+  } else {
+    history.replace(`/${i18n.options.fallbackLng}${location.pathname}`);
+  }
 
   return (
-    <div className="App">
-      <div>
-        <label>Address</label>
-        <input size={50} id="address" />
+    <div className="inner">
+      <Switch>
+        <Route path={`${match.url}/login`} component={SignIn} />
+        <Route path={`${match.url}/about`} component={About} />
+        <Route path={`${match.url}/topics`} component={Topics} />
+      </Switch>
+
+      <div className="languages">
+        <Link to={generateLanguage('vn', location)}>
+          <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
+        </Link>
+
+        <Link to={generateLanguage('en', location)}>
+          <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
+        </Link>
       </div>
-      <div>
-        <label>Amount</label>
-        <input id="amount" />
-      </div>
-      <button onClick={send}>Send</button>
-      <div id="balance"></div>
-      <button onClick={showBalance}>Show balance</button>
     </div>
   );
 };

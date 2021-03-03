@@ -1,0 +1,9 @@
+{
+  "wallet": {
+    "signIn": "Sign In",
+    "walletName": "Wallet Name",
+    "unableIncognitoMode": "Unavailable in guest mode or incognito mode",
+    "next": "Next",
+    "importWallet": "Import Wallet"
+  }
+}

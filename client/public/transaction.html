@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>KEYSTATION</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<!-- css -->
+	<link rel="stylesheet" href="css/normalize.custom.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.2.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/input.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<!-- js -->
+	<!-- js -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/5.2.2/big.min.js"></script>
+	<script src="js/bundle.js"></script>
+	<script src="js/common.js"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-146700011-1');
+	</script>
+</head>
+
+<body>
+	<div id="app">
+		<div class="inner">
+			<h1><img src="img/keystation_logo_.png" alt="" width="145"></h1>
+			<h2>Sign Transaction</h2>
+			<form class="keystation-form">
+				<input style="display:none;" type="text" tabindex="-1"
+					   spellcheck="false" name="account" value="{{.Account}}">
+				<input style="display:none;" type="password" autocomplete="current-password" tabindex="-1" spellcheck="false">
+				<div class="keystation-url-info">
+				   <strong><i class="fa fa-fw fa-lock"></i> {{.Client}}</strong> is using secure and private connection
+				</div>
+				<div class="keystation-tx-info">
+					<!--
+					<h3 class="send">SEND</h3>
+					<span>From</span>
+					<p>iaa180z3qagykwpr7v6htawvh7z3n5t7zw6w0zjvc2</p>
+					<span>To</span>
+					<p>iaa1wcsa554l5lx99ylu94ujlxuu6jkvacvpp63ajc</p>
+					<span>Amount</span>
+					<p><span>2,430.928540000000000000</span>IRIS</p>
+					<span>Tx Fee</span>
+					<p><span>0.071460000000000000</span>IRIS</p>
+					<span>Memo</span>
+					<p>keystation</p>
+					-->
+				</div>
+				<div class="keystation-tx-json">
+					<!--
+					{"tx":{"msg":[{"type":"cosmos-sdk/MsgDelegate","value":{"delegator_address":"cosmos14lcgkxv5cxnkdh0qgsmehevls325k2myfdchrq","validator_address":"cosmosvaloper1clpqr4nrk4khgkxj78fcwwh6dl3uw4epsluffn","amount":{"amount":"100000","denom":"uatom"}}}],"fee":{"amount":[{"amount":"500","denom":"uatom"}],"gas":"200000"},"signatures":[{"signature":"hpnjlCJ6DB0Tyn0Yzzsddpk9tX3pj2Wg/+MR4qFANC9WejindfS00iDaNM3wL44wJhdr4pSScitWMrl2omIHCw==","pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Ak0XRLNydM3L93f0E7o6Vi8061FawYhgS8+4Hb51LN97"}}],"memo":""},"mode":"sync"}
+					-->
+				</div>
+				<div class="tx-btn-wrap">
+					<button type="button" class="cancel" onclick="denyHandler();">Deny</button>
+					<button type="button" onclick="requestSignTx();" id="allowBtn">Allow</button>
+				</div>
+			</form>
+
+			<!-- pin -->
+			<div class="pin-wrap">
+				<button type="button">&#10005;</button>
+				<div class="pin-cont">
+					<h2>Please enter your PIN.</h2>
+					<div class="dots-cointainer">
+						<div class="dots">
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div class="dot"></div>
+							<div>+</div>
+							<div class="dot"></div>
+						</div>
+					</div>
+
+					<div class="wrapper-number no-select">
+						{{.ShuffledNumCode}}
+					</div>
+
+					<div class="wrapper-alphabet no-select">
+						{{.ShuffledAlphabetCode}}
+					</div>
+				</div>
+			</div>
+			<!-- pin end -->
+		</div>
+		<!-- inner end -->
+	</div>
+	<!-- #app end -->
+	<script src="js/classie.js"></script>
+	<script src="js/common.js"></script>
+	<script>
+		function getDecimalPlace(denom) {
+			var decimalPlace = 0;
+			switch (denom) {
+				case "iris-atto":
+					decimalPlace = 0.000000000000000001;
+					break;
+				case "usdx":
+					decimalPlace = 0.000001;
+					break;
+				case "btc":
+				case "bnb":
+					decimalPlace = 0.00000001;
+					break;
+				default:
+					decimalPlace = 0.000001;
+					break;
+			}
+			return decimalPlace;
+		}
+
+		function getSymbol(denom) {
+			var symbol = "";
+			switch (denom) {
+				case "iris-atto":
+					symbol = "IRIS";
+					break;
+				default:
+					// removed init u
+					denom = denom.substring(1, denom.length);
+					symbol = denom.toUpperCase();
+					break;
+			}
+			return symbol;
+		}
+
+		var txObj = new Object;
+		txObj = JSON.parse({{.Payload}});
+		$(".keystation-tx-json").text(JSON.stringify(txObj));
+
+		chainIdFromTx = "";
+		var msgType = "";
+		var value = new Object;
+		var amount = new Object;
+		var fee = new Object;
+		var memo = "";
+		var multiMsgCount = 0;
+
+		for (var key in txObj) {
+			if (key == "msgs") {
+				var msgObj = txObj[key];
+				for (var key2 in msgObj) {
+					var valueObj = msgObj[key2]
+					for (var key3 in valueObj) {
+						if (key3 == "type") {
+							msgType = valueObj[key3];
+						} else if (key3 == "value") {
+							if (Object.keys(value).length == 0) {
+								value = valueObj[key3];
+							} else {
+								multiMsgCount++;
+							}
+						}
+					}
+				}
+			} else if (key == "memo") {
+				memo = txObj[key];
+			} else if (key == "fee") {
+				fee = txObj[key];
+			} else if (key == "chain_id") {
+				chainIdFromTx = txObj[key];
+			}
+		}
+
+		// value html codes
+		var valueResult = "";
+		var exceptionAmountResult = "";
+		for (var key in value) {
+			if (typeof value[key] != "object") {
+
+				// IRIS exception handling
+				if (msgType == "irishub/stake/BeginRedelegate") {
+					if (key == "validator_src_addr") {
+						valueResult += '<span>From</span>';
+						valueResult += '<p>' + value[key] + '</p>';
+					} else if (key == "validator_dst_addr") {
+						valueResult += '<span>To</span>';
+						valueResult += '<p>' + value[key] + '</p>';
+					} else if (key == "shares") {
+						valueResult += '<span>' + key + '</span>';
+						valueResult += '<p>' + new Big(value[key]).times(0.000000000000000001).toFixed(18) * 1 + ' IRIS</p>';
+					} else {
+						// Common case
+						valueResult += '<span>' + key + '</span>';
+						valueResult += '<p>' + value[key] + '</p>';
+					}
+				} else if (msgType == "irishub/stake/BeginUnbonding") {
+					if (key == "shares_amount") {
+						valueResult += '<span>' + key + '</span>';
+						valueResult += '<p>' + new Big(value[key]).times(0.000000000000000001).toFixed(18) * 1 + ' IRIS</p>';
+					} else {
+						// Common case
+						valueResult += '<span>' + key + '</span>';
+						valueResult += '<p>' + value[key] + '</p>';
+					}
+				} else {
+					// Common case
+					valueResult += '<span>' + key + '</span>';
+					valueResult += '<p>' + value[key] + '</p>';
+				}
+			}
+		}
+
+		if (multiMsgCount > 0) {
+			msgType += ' +' + multiMsgCount;
+		}
+
+		// amount html codes
+		var amountResult = "";
+		if (typeof(value.amount) != "undefined") {
+			if (value.amount.length === undefined) {
+				amountResult = new Big(value.amount.amount).times(getDecimalPlace(value.amount.denom)) + " " + getSymbol(value.amount.denom);
+			} else {
+				amountResult = new Big(value.amount[0].amount).times(getDecimalPlace(value.amount[0].denom)) + " " + getSymbol(value.amount[0].denom);
+			}
+		}
+
+		// fee html codes
+		var feeResult = new Big(fee.amount[0].amount).times(getDecimalPlace(fee.amount[0].denom)) + " " + getSymbol(fee.amount[0].denom);
+
+		// IRIS exception handling about SEND type
+		if (msgType == "irishub/bank/Send") {
+			valueResult += '<span>From</span>';
+			valueResult += '<p>' + value.inputs[0].address + '</p>';
+			valueResult += '<span>To</span>';
+			valueResult += '<p>' + value.outputs[0].address + '</p>';
+
+			amountResult = new Big(value.outputs[0].coins[0].amount).times(getDecimalPlace(value.outputs[0].coins[0].denom)) + " " + getSymbol(value.outputs[0].coins[0].denom);
+		} else if (msgType == "irishub/stake/MsgDelegate") {
+			amountResult = new Big(value.delegation.amount).times(getDecimalPlace(value.delegation.denom)) + " " + getSymbol(value.delegation.denom);
+		}
+
+		var htmlCode =
+				'<h3 class="send">' + msgType + '</h3>' +
+				valueResult;
+
+		if (amountResult != "") {
+			htmlCode +=
+					'<span>Amount</span>' +
+					'<p>' + amountResult + '</p>';
+		}
+
+		htmlCode +=
+				'<span>Fee</span>' +
+				'<p>' + feeResult + '</p>' +
+				'<span>Memo</span>' +
+				'<p>' + memo + '</p>';
+
+		$(".keystation-tx-info").html(htmlCode);
+	</script>
+	<script>
+		function getParameterByName(name, url) {
+			if (!url) url = window.location.href;
+			name = name.replace(/[\[\]]/g, '\\$&');
+			var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+					results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
+
+		function denyHandler() {
+			window.opener.postMessage("deny", "*");
+			window.close();
+		}
+
+		function requestSignTx() {
+			var password = $("input[type=password]").val();
+
+			if ($.trim(password) == "") {
+				alert("You cannot sign transactions.\n1. Check your browser is in private mode.\n2. Type \"chrome://settings/passwords\" into your browser and press Enter to toggle the switch \"Offer to save passwords\" to the on.");
+				return;
+			}
+
+			window.pinType = "tx";
+			window.lcd = {{.Lcd}};
+			window.stdSignMsgByPayload = {{.Payload}};
+			$(".pin-wrap").addClass("open");
+		}
+	</script>
+	<script src="js/pin.js"></script>
+</body>
+</html>
