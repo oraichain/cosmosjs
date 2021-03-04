@@ -1,153 +1,135 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import CryptoJS from 'crypto-js';
 import _ from 'lodash';
+import { cleanMnemonics } from '../utils';
+import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import * as actions from '../actions';
 
-const getKeyStationMainAddress = (mnemonic, hdPath, checkSum = true) => {
-  window.cosmos.setPath(hdPath);
-  return window.cosmos.getAddress(mnemonic, checkSum);
-};
+window.CryptoJS = CryptoJS;
+const PinWrap = ({ pinType, updateUser }) => {
+  const history = useHistory();
+  const { t, i18n } = useTranslation();
+  let input = '',
+    correct = '';
+  const $ = window.jQuery;
+  const cosmos = window.cosmos;
 
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, '\\$&');
-  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
-const PinWrap = () => {
-  let [state, setState] = useState({});
-  let { input = '', correct = '' } = state;
+  useEffect(() => {
+    $('.dot').attr('class', 'dot');
+  });
 
   function showCorrectPinAnimation() {
-    const dots = Array.prototype.slice.call(document.querySelectorAll('.dot'));
-    dots.forEach(function (dot, index) {
-      dot.className += ' correct';
-    });
+    $('.dot').addClass('correct');
   }
 
   function showWrongPinAnimation() {
-    const dots = Array.prototype.slice.call(document.querySelectorAll('.dot'));
-    dots.forEach(function (dot, index) {
-      dot.className += ' wrong';
-    });
-    window.$('.wrapper-number').css('display', 'grid');
-    window.$('.wrapper-alphabet').css('display', 'none');
-  }
-
-  function cleanMnemonics(mnemonics) {
-    mnemonics = mnemonics.split(',').join(' ');
-    mnemonics = mnemonics.replace(/ +/g, ' '); // Replace connected spaces with one space
-    return mnemonics;
+    $('.dot').addClass('wrong');
+    $('.wrapper-number').css('display', 'grid');
+    $('.wrapper-alphabet').css('display', 'none');
   }
 
   // pin close
   const hidePin = () => {
     // Init PIN
 
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       input = input.substr(0, input.length - 1);
     }
 
-    window.$('#pin-title').text('Please enter your PIN.');
+    $('#pin-title').text('Please enter your PIN.');
 
     // Init Keypad
-    window.$('.wrapper-number').css('display', 'grid');
-    window.$('.wrapper-alphabet').css('display', 'none');
+    $('.wrapper-number').css('display', 'grid');
+    $('.wrapper-alphabet').css('display', 'none');
 
-    setState({
-      input,
-      correct: ''
-    });
+    correct = '';
 
-    window.$('.pin-wrap').removeClass('open');
+    $('.pin-wrap').removeClass('open');
+    $('.dot').attr('class', 'dot');
   };
 
   const numberClick = (e) => {
     const number = e.target;
-    let inputStr = number.outerHTML;
+    let inputStr = number.innerText.trim();
     const dots = Array.prototype.slice.call(document.querySelectorAll('.dot'));
-    if (inputStr.indexOf('<div class="finger grid-number">') != -1) {
-      inputStr = inputStr.replace('<div class="finger grid-number">', '');
-      inputStr = inputStr.replace('</div>', '');
 
-      if (inputStr == '←') {
-        if (input.length > 0) {
-          dots[input.length - 1].className = 'dot';
-          input = input.substr(0, input.length - 1);
+    if (inputStr == '←') {
+      if (input.length > 0) {
+        dots[input.length - 1].className = 'dot';
+        input = input.substr(0, input.length - 1);
 
-          if (input.length < 4) {
-            window.$('.wrapper-number').css('display', 'grid');
-            window.$('.wrapper-alphabet').css('display', 'none');
-          }
+        if (input.length < 4) {
+          $('.wrapper-number').css('display', 'grid');
+          $('.wrapper-alphabet').css('display', 'none');
         }
-      } else {
-        input += inputStr;
-        dots[input.length - 1].className += ' active';
       }
+    } else {
+      input += inputStr;
+      dots[input.length - 1].className = 'dot active';
     }
 
     if (input.length == 4) {
-      window.$('.wrapper-number').css('display', 'none');
-      window.$('.wrapper-alphabet').css('display', 'grid');
+      $('.wrapper-number').css('display', 'none');
+      $('.wrapper-alphabet').css('display', 'grid');
     }
 
     if (input.length >= 5) {
-      if (window.pinType == 'import' && correct == '') {
+      if (pinType == 'import' && correct == '') {
         correct = input;
         // Please confirm your PIN.
-        window.setTimeout(function () {
-          // Change title
-          window.$('#pin-title').text('Please confirm your PIN.');
 
-          // Init Keypad
-          window.$('.wrapper-number').css('display', 'grid');
-          window.$('.wrapper-alphabet').css('display', 'none');
+        // Change title
+        $('#pin-title').text('Please confirm your PIN.');
 
-          // Init PIN
-          for (var i = 0; i < 5; i++) {
-            dots[input.length - 1].className = 'dot';
-            input = input.substr(0, input.length - 1);
-          }
-        }, 200);
-      } else if (window.pinType == 'import' && correct.length == 5) {
+        // Init Keypad
+        $('.wrapper-number').css('display', 'grid');
+        $('.wrapper-alphabet').css('display', 'none');
+
+        // Init PIN
+        console.log(dots, input.length - 1, dots[input.length - 1]);
+        for (let i = 0; i < 5; i++) {
+          dots[input.length - 1].className = 'dot';
+          input = input.substr(0, input.length - 1);
+        }
+      } else if (pinType == 'import' && correct.length == 5) {
         if (input !== correct) {
           showWrongPinAnimation();
         } else {
           showCorrectPinAnimation();
 
           // INIT
-          var mnemonics = '';
+          let mnemonics = '';
           if (window.option == 'disablechecksum') {
-            mnemonics = window.$('.input-mnemonics').val().trim();
+            mnemonics = $('.input-mnemonics').val().trim();
           } else {
-            mnemonics = cleanMnemonics(window.$('.input-mnemonics').val().trim());
+            mnemonics = cleanMnemonics($('.input-mnemonics').val().trim());
           }
-          var pinCode = input;
 
-          var encrypted = CryptoJS.AES.encrypt(mnemonics, pinCode);
+          const account = $('#account').val();
+          const address = cosmos.getAddress(mnemonics, false);
+          updateUser(account, address);
+
+          let encrypted = CryptoJS.AES.encrypt(mnemonics, input);
 
           setTimeout(function () {
-            window.$('#encrypted-mnemonics').text(encrypted);
-            window.$('#encrypted-mnemonics-for-copy').val(encrypted);
-            window.$('.pin-wrap').removeClass('open');
+            $('#encrypted-mnemonics').text(encrypted);
+            $('#encrypted-mnemonics-for-copy').val(encrypted);
+            $('.pin-wrap').removeClass('open');
             // import page2
-            window.$('#import-form1').hide();
-            window.$('#import-form2').show();
-            window.$('#hidden-account').val(window.$('#account').val());
+            $('#import-form1').hide();
+            $('#import-form2').show();
+            $('#hidden-account').val(account);
           }, 500);
         }
-      } else if (window.pinType == 'signin' || window.pinType == 'tx') {
+      } else if (pinType == 'signin' || pinType == 'tx') {
         // decrypt input value
-        var encryptedMnemonics = window.$('input[type=password]').val().trim();
-        var pinCode = input;
+        let encryptedMnemonics = $('input[type=password]').val().trim();
 
         try {
-          var decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, pinCode);
-          var decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
+          let decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, input);
+          let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
 
           if (decryptedMnemonics == '') {
             // wrong
@@ -156,90 +138,41 @@ const PinWrap = () => {
             // correct
             showCorrectPinAnimation();
 
-            if (window.pinType == 'signin') {
-              var hdPath = getParameterByName('path');
-              var hdPathArr = hdPath.split('/');
-              var hdPathResult = '';
-              for (var i = 0; i < hdPathArr.length; i++) {
-                hdPathResult += String(hdPathArr[i]);
-                if (i < 3) {
-                  // 44, 118, 0
-                  if (hdPathArr[i].indexOf("'") == -1) {
-                    hdPathResult += "'";
-                  }
-                }
+            if (pinType == 'signin') {
+              const address = cosmos.getAddress(decryptedMnemonics, false);
+              const account = $('.input-account').val().trim();
 
-                if (i < hdPathArr.length - 1) {
-                  hdPathResult += '/';
-                }
-              }
+              // go to transaction with address
+              console.log(address);
+              updateUser(account, address);
 
-              var address = getKeyStationMainAddress(decryptedMnemonics, hdPathResult, false);
-
-              var msgObj = {
-                address: address,
-                account: window.$('.input-account').val()
-              };
-
-              window.setTimeout(function () {
-                try {
-                  window.opener.postMessage(msgObj, '*');
-                } catch (event) {
-                  console.log(event);
-                }
-                window.close();
-              }, 500);
-            } else if (window.pinType == 'tx') {
-              var password = window.$('input[type=password]').val();
+              history.push(`/${i18n.language}/transaction`);
+            } else if (pinType == 'tx') {
+              let password = $('input[type=password]').val();
 
               if (password.trim() == '') {
                 alert('Could not retrieve account stored in Keychain.');
                 return;
               }
 
-              var decrypted = CryptoJS.AES.decrypt(password.trim(), pinCode);
-              var decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
-
-              // // loader
-              // window.$("#allowBtn").html('<i class="fa fa-spinner fa-spin"></i>');
-
-              var hdPath = getParameterByName('path');
-              var hdPathArr = hdPath.split('/');
-              var hdPathResult = '';
-
-              for (var i = 0; i < hdPathArr.length; i++) {
-                hdPathResult += String(hdPathArr[i]);
-                if (i < 3) {
-                  // 44, 118, 0
-                  if (hdPathArr[i].indexOf("'") == -1) {
-                    hdPathResult += "'";
-                  }
-                }
-
-                if (i < hdPathArr.length - 1) {
-                  hdPathResult += '/';
-                }
-              }
-
-              var stdSignMsg = new Object();
-              stdSignMsg.json = JSON.parse(window.stdSignMsgByPayload);
-
-              // IRIS exception handling
-              if (
-                stdSignMsg.json.msgs[0].type == 'irishub/bank/Send' ||
-                stdSignMsg.json.msgs[0].type == 'irishub/stake/BeginUnbonding' ||
-                stdSignMsg.json.msgs[0].type == 'irishub/stake/BeginRedelegate'
-              ) {
-                // stdSignMsg.jsonForSigningIrisTx = JSON.parse(window.stdSignMsgByPayload);
-                // delete stdSignMsg.jsonForSigningIrisTx.msgs[0].type;
-                // var tempJsonObj = stdSignMsg.jsonForSigningIrisTx.msgs[0].value;
-                // stdSignMsg.jsonForSigningIrisTx.msgs[0] = tempJsonObj;
-                // cosmos.submit(childKey, txBody)
-
-                return;
-              }
-
-              //   cosmos.submit(childKey, txBody)
+              let decrypted = CryptoJS.AES.decrypt(password.trim(), input);
+              let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
+              console.log('payload', window.stdSignMsgByPayload);
+              // loader
+              const childKey = cosmos.getChildKey(decryptedMnemonics);
+              console.log(childKey);
+              cosmos
+                .submit(childKey, window.stdSignMsgByPayload)
+                .then((res) => {
+                  console.log(res);
+                  $('#allowBtn>span').empty();
+                  hidePin();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  $('#allowBtn>span').empty();
+                  hidePin();
+                });
             }
           }
         } catch (error) {
@@ -249,9 +182,7 @@ const PinWrap = () => {
         }
       }
 
-      setState({
-        input: ''
-      });
+      input = '';
     }
     window.setTimeout(function () {
       number.className = 'finger grid-number';
@@ -350,4 +281,4 @@ const PinWrap = () => {
   );
 };
 
-export default PinWrap;
+export default connect(null, actions)(PinWrap);

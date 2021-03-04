@@ -6,6 +6,7 @@ import { Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import configureStore, { history } from './configureStore';
 import { I18nextProvider } from 'react-i18next';
+import { Cosmos } from './cosmos';
 
 import i18n from './i18n';
 import App from './App';
@@ -13,7 +14,11 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-const store = configureStore(/* provide initial state if any */);
+const cosmos = new Cosmos('http://localhost:1317', 'Oraichain');
+cosmos.setBech32MainPrefix('orai');
+window.cosmos = cosmos;
+
+const store = configureStore();
 
 const render = (Component) =>
   ReactDOM.render(

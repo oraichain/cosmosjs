@@ -6,10 +6,10 @@ import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 import i18n from './i18n';
 
-import About from './components/About';
-import Topics from './components/Topics';
 import SignIn from './components/SignIn';
 import Import from './components/Import';
+import Session from './components/Session';
+import Transaction from './components/Transaction';
 
 import './App.css';
 
@@ -49,11 +49,16 @@ const App = () => {
 
   return (
     <div className="inner">
+      <div className="header">
+        <h1>
+          <img src="/img/oraichain_logo.png" alt="" width={145} />
+        </h1>
+      </div>
       <Switch>
-        <Route path={`${match.url}/login`} component={SignIn} />
+        <Route path={`${match.url}/signin`} component={SignIn} />
         <Route path={`${match.url}/import`} component={Import} />
-        <Route path={`${match.url}/about`} component={About} />
-        <Route path={`${match.url}/topics`} component={Topics} />
+        <Route path={`${match.url}/transaction`} component={Transaction} />
+        <Route path={`${match.url}/session`} component={Session} />
       </Switch>
 
       <div className="footer">

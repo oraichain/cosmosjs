@@ -4,6 +4,15 @@
     "walletName": "Tên Ví",
     "unableIncognitoMode": "Không khả dụng ở chế độ khách hoặc chế độ ẩn danh",
     "next": "Tiếp tục",
-    "importWallet": "Nhập Ví"
+    "importWallet": "Nhập Ví",
+    "sign": "Ký giao dịch",
+    "from": "Địa chỉ gửi",
+    "to": "Địa chỉ nhận",
+    "amount": "Số lượng",
+    "fee": "Phí giao dịch",
+    "memo": "Ghi chú",
+    "deny": "Từ chối",
+    "allow": "Cho phép",
+    "usingSecureConnection": "đang sử dụng kết nối an toàn và riêng tư"
   }
 }

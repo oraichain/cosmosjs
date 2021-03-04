@@ -89,12 +89,12 @@ textarea {
   padding: 40px 26px 20px;
 }
 
-.inner>h1 {
+.inner h1 {
   font-size: 0;
   margin-bottom: 30px;
 }
 
-.inner>h2 {
+.inner h2 {
   font-weight: normal;
   font-size: 16px;
   margin-bottom: 40px;
@@ -180,7 +180,7 @@ textarea {
   }
 }
 
-.keystation-form>button {
+.keystation-form .button {
   display: block;
   width: 50%;
   margin: 46px auto 0;
@@ -189,13 +189,17 @@ textarea {
   color: #fff;
   border-radius: 6px;
   font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
 }
 
-.keystation-form>button:hover {
+.keystation-form .button:hover {
   background-color: #000;
 }
 
-.keystation-form>button>i {
+.keystation-form .button>i {
   font-size: 20px;
   color: #05d2dd;
 }
@@ -224,7 +228,7 @@ textarea {
   overflow: hidden;
 }
 
-.tx-btn-wrap>button {
+.tx-btn-wrap button {
   float: right;
   width: 30%;
   /*background: #2d2c2c;*/
@@ -235,22 +239,22 @@ textarea {
   font-size: 16px;
 }
 
-.tx-btn-wrap>button:hover {
+.tx-btn-wrap button:hover {
   /*background-color: #000*/
   background-color: #8354e4;
 }
 
-.tx-btn-wrap>button.cancel {
+.tx-btn-wrap button.cancel {
   float: left;
   background: #eaeaea;
   color: #484848;
 }
 
-.tx-btn-wrap>button.cancel:hover {
+.tx-btn-wrap button.cancel:hover {
   background-color: #e2e2e2;
 }
 
-.inner>a {
+.inner a {
   text-decoration: underline;
 }
 
@@ -286,7 +290,7 @@ textarea {
 }
 
 .keystation-tx-info {
-  height: 216px;
+  height: 300px;
   overflow-y: auto;
   text-align: left;
   font-size: 13px;
@@ -336,7 +340,7 @@ textarea {
   word-break: break-all;
 }
 
-.keystation-form>button.tx-sign-btn {
+.keystation-form .button.tx-sign-btn {
   margin-top: 30px;
 }
 
@@ -361,7 +365,7 @@ textarea {
   display: flex;
 }
 
-.pin-wrap>button {
+.pin-wrap button {
   position: absolute;
   right: 0px;
   top: 0px;
@@ -370,7 +374,7 @@ textarea {
   color: #ccc;
 }
 
-.pin-wrap>button:hover {
+.pin-wrap button:hover {
   color: #000;
 }
 
@@ -625,7 +629,7 @@ textarea {
   margin-right: 6px;
 }
 
-.pw-nnemonics>div>button {
+.pw-nnemonics button {
   position: absolute;
   right: 0;
   top: 0;
@@ -634,11 +638,11 @@ textarea {
   border-left: 1px solid #e8e8e8;
 }
 
-.pw-nnemonics>div>button:hover {
+.pw-nnemonics button:hover {
   background-color: #e8e8e8;
 }
 
-.pw-nnemonics>div>button>i {
+.pw-nnemonics button>i {
   margin-right: 6px;
 }
 
@@ -1028,7 +1032,7 @@ Animations
  ========================================================================== */
 
  @media (max-width: 500px) {
-  .pin-wrap>button {
+  .pin-wrap button {
     position: fixed;
   }
   .cd-transition-layer {
