@@ -1,6 +1,6 @@
-export const updateUser = (name, address) => {
+export const updateUser = (user) => {
   return {
     type: 'updateUser',
-    payload: { name, address }
+    payload: user
   };
 };

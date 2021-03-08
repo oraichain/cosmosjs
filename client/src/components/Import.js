@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Route } from 'react-router-dom';
+import { Link, Route, useHistory } from 'react-router-dom';
 import PinWrap from './PinWrap';
 
 import { InputWrap } from './common';
@@ -8,6 +8,7 @@ import { cleanMnemonics, isMnemonicsValid, countWords } from '../utils';
 
 const Import = () => {
   const { t, i18n } = useTranslation();
+  const history = useHistory();
   const $ = window.jQuery;
   const importMnemonics = () => {
     window.pinType = 'import';
@@ -83,7 +84,7 @@ const Import = () => {
 
     $('input[name=payload]').val(address);
 
-    $('.keystation-form').submit();
+    history.push(`/${i18n.language}/session`);
   };
 
   const copyAddress = () => {
@@ -101,7 +102,7 @@ const Import = () => {
     <div>
       <h2>Import Wallet</h2>
       {/* 1. Account Name, Mnemonics */}
-      <form className="keystation-form" id="import-form1" noValidate>
+      <form id="import-form1" className="keystation-form" noValidate>
         <InputWrap label="Wallet Name">
           <input className="input__field input__field--fumi input-account" id="account" type="text" />
         </InputWrap>
@@ -128,7 +129,7 @@ const Import = () => {
       {/* 2 end */}
       {/* 3. re-enter */}
       <div className="notification-modal">{/* Encrypted mnemonic phrase is copied. */}</div>
-      <form action="/session" method="GET" className="keystation-form re-enter-form" id="import-form2" noValidate>
+      <form id="import-form2" method="GET" className="keystation-form re-enter-form" noValidate>
         <p>Please copy and paste the mnemonic encryption below.</p>
         <div className="pw-nnemonics">
           <div>

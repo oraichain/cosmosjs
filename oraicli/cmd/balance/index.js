@@ -6,8 +6,11 @@ export default async (yargs: Argv) => {
     type: 'string'
   });
   const [address] = argv._.slice(-1);
+  try {
+    const data = await fetch(`${argv.url}/cosmos/bank/v1beta1/balances/${address}`).then((res) => res.json());
 
-  const data = await fetch(`${argv.url}/cosmos/bank/v1beta1/balances/${address}`).then((res) => res.json());
-
-  console.log(data);
+    console.log(data);
+  } catch (ex) {
+    console.log(ex);
+  }
 };

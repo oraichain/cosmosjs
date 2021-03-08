@@ -109,7 +109,7 @@ const PinWrap = ({ pinType, updateUser }) => {
 
           const account = $('#account').val();
           const address = cosmos.getAddress(mnemonics, false);
-          updateUser(account, address);
+          updateUser({ name: account, address });
 
           let encrypted = CryptoJS.AES.encrypt(mnemonics, input);
 
@@ -143,9 +143,7 @@ const PinWrap = ({ pinType, updateUser }) => {
               const account = $('.input-account').val().trim();
 
               // go to transaction with address
-              console.log(address);
-              updateUser(account, address);
-
+              updateUser({ name: account, address });
               history.push(`/${i18n.language}/transaction`);
             } else if (pinType == 'tx') {
               let password = $('input[type=password]').val();
@@ -157,7 +155,8 @@ const PinWrap = ({ pinType, updateUser }) => {
 
               let decrypted = CryptoJS.AES.decrypt(password.trim(), input);
               let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
-              console.log('payload', window.stdSignMsgByPayload);
+              // console.log('payload', window.stdSignMsgByPayload);
+              if (!window.stdSignMsgByPayload) return;
               // loader
               const childKey = cosmos.getChildKey(decryptedMnemonics);
               console.log(childKey);
@@ -176,7 +175,7 @@ const PinWrap = ({ pinType, updateUser }) => {
             }
           }
         } catch (error) {
-          console.log(error);
+          window.alert(error.message);
           // Error: Malformed UTF-8 data
           showWrongPinAnimation();
         }
@@ -259,7 +258,15 @@ const PinWrap = ({ pinType, updateUser }) => {
         ✕
       </button>
       <div className="pin-cont">
-        <h2>Please enter your PIN.</h2>
+        <h2 id="pin-title">Please enter your PIN.</h2>
+        <p>
+          PIN is required for every transaction.
+          <br />
+          <span>
+            If lost, you cannot reset or recover your PIN.
+            <br />
+          </span>
+        </p>
         <div className="dots-cointainer">
           <div className="dots">
             <div className="dot" />

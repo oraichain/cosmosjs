@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>KEYSTATION</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<!-- css -->
+	<link rel="stylesheet" href="css/normalize.custom.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.2.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<!-- js -->
+	<!-- js -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="js/common.js"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-146700011-1');
+	</script>
+	<script>
+		function sendEventToParent(address, account) {
+			var msgObj = {
+				"address": address,
+				"account": account
+			}
+			try {
+				window.opener.postMessage(msgObj, "*");
+			} catch(event) {
+				console.log(event);
+			}
+			window.close();
+		}
+	</script>
+</head>
+
+<body>
+	<div id="app">
+		<div class="inner">
+			<h1><img src="img/keystation_logo_.png" alt="" width="145"></h1>
+			<h2 id="session-page-title">Save your Account to Keychain</h2>
+			<form class="keystation-form">
+				<img src="img/keychain.png" alt="" width="100%"><br><br>
+				<p>You MUST press "Save" in order to complete registration of your account. If this pop-up does not appear, please press the Key logo on the top right corner of your browser.</p>
+				<button type="button" onclick="sendEventToParent({{.Payload}}, {{.Account}})">Connect</button>
+			</form>
+			<a href="https://support.google.com/chrome/answer/95606?co=GENIE.Platform%3DDesktop&hl=en" target="_blank">How can I manage saved mnemonics?</a>
+			<div class="form-fotter">
+				<a href="https://github.com/cosmostation/keystation" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+			</div>
+		</div>
+		<!-- inner end -->
+	</div>
+	<!-- #app end -->
+	<script src="js/classie.js"></script>
+	<script src="js/common.js"></script>
+</body>
+</html>
