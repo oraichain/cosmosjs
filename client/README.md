@@ -32,6 +32,6 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ### deployment
 
 ```bash
-firebase target:apply hosting wallet oraiwallet
+# firebase target:apply hosting wallet oraiwallet
 firebase deploy --only hosting:wallet
 ```
