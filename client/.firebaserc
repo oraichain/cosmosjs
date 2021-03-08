@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "oraichain-mainnet"
+  },
+  "targets": {
+    "oraichain-mainnet": {
+      "hosting": {
+        "wallet": [
+          "oraiwallet"
+        ]
+      }
+    }
+  }
+}

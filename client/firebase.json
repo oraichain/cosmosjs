@@ -1,0 +1,8 @@
+{
+  "hosting": [
+    {
+      "target": "wallet",
+      "public": "build"
+    }
+  ]
+}
