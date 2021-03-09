@@ -40,12 +40,18 @@ function PopupCenter(url, title, w, h) {
 }
 
 class Keystation {
-  constructor(client, lcd, path) {
+  constructor(client, lcd, path, keystationUrl) {
+    // {client,lcd,path,keystationUrl}
+    if (typeof client === 'object') {
+      lcd = client.lcd;
+      path = client.path;
+      keystationUrl = client.keystationUrl;
+      client = client.client;
+    }
     this.client = client || window.location.origin;
     this.lcd = lcd;
     this.path = path;
-
-    this.keystationUrl = 'http://localhost:3000';
+    this.keystationUrl = keystationUrl || 'http://localhost:3000';
     // this.keystationUrl = "https://keystation.cosmostation.io";
   }
 
