@@ -12,7 +12,8 @@ import Send from './components/Send';
 import Import from './components/Import';
 import Session from './components/Session';
 import Transaction from './components/Transaction';
-
+import Contract from './components/Contract';
+import Deploy from './components/Deploy';
 import { Cosmos } from './cosmos';
 import { networks } from './config.json';
 
@@ -40,8 +41,8 @@ window.addEventListener(
   'message',
   (e) => {
     // not the client to send message
-    console.log(e.data);
     if (e.data.client !== window.client) return;
+    console.log(e.data);
     const txBody = e.data.tx;
     window.stdSignMsgByPayload = txBody;
     window.jQuery('#tx-json').html(JSON.stringify(txBody));
@@ -127,6 +128,8 @@ const App = ({ user, updateUser }) => {
         <Switch>
           <Route path={`${match.url}/signin`} component={SignIn} />
           <Route path={`${match.url}/import`} component={Import} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract`} component={Contract} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/deploy`} component={Deploy} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />

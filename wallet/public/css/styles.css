@@ -257,6 +257,7 @@ textarea {
   border-radius: 6px;
   margin-top: 18px;
   word-break: break-all;
+  white-space: break-spaces;
 }
 
 .keystation-form .button.tx-sign-btn {
@@ -777,3 +778,18 @@ textarea {
 }
 
 
+.btn-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input[type="file"] {
+  display: none;
+}
+.file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}

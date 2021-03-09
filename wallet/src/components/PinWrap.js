@@ -159,7 +159,7 @@ const PinWrap = ({ pinType, updateUser }) => {
               if (!window.stdSignMsgByPayload) return;
               // loader
               const childKey = cosmos.getChildKey(decryptedMnemonics);
-              console.log(childKey);
+              // console.log(childKey);
               cosmos
                 .submit(childKey, window.stdSignMsgByPayload)
                 .then((res) => {

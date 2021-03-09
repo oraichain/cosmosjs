@@ -153,6 +153,7 @@ export class Cosmos {
 
     const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
 
-    return this.broadcast(signedTxBytes, broadCastMode);
+    const res = await this.broadcast(signedTxBytes, broadCastMode);
+    return res;
   }
 }

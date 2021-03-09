@@ -52,8 +52,6 @@ const Send = ({ user }) => {
     <div>
       <h2>Sign Transaction</h2>
       <form className="keystation-form">
-        <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
-        <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
         <div className="keystation-tx-info" id="tx-info">
           <h3 className="send">SEND</h3>
           <span>{t('from')}</span>

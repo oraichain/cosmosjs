@@ -7,6 +7,7 @@ yargs(hideBin(process.argv))
   .command('send [address]', 'send orai token', require('./cmd/send').default)
   .command('balance [address]', 'get orai token balance', require('./cmd/balance').default)
   .command('staking', 'staking commands', require('./cmd/staking').default)
+  .command('wasm', 'wasm commands', require('./cmd/wasm').default)
   .command('provider', 'update provider data', require('./cmd/provider').default)
   .command('distr', 'distribution commands', require('./cmd/distr').default)
   .option('chain-id', {

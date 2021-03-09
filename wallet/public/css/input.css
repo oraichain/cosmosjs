@@ -1064,6 +1064,10 @@
     margin-top: 10px;
 }
 
+.keystation-form .field span {
+	display: block;
+}
+
 .keystation-form .field input {
     height: 20px;
     border-radius: 0;    
