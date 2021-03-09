@@ -143,7 +143,7 @@ const App = ({ user, updateUser }) => {
           </Link>
         </div>
 
-        {user && (
+        {user && !location.pathname?.match(/\/(?:signin|import)\b/) && (
           <button onClick={() => updateUser(null)}>
             Logout <i className="fa fa-sign-out" />
           </button>
