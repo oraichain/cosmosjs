@@ -55,7 +55,7 @@ const PinWrap = ({ pinType, updateUser }) => {
     let inputStr = number.innerText.trim();
     const dots = Array.prototype.slice.call(document.querySelectorAll('.dot'));
 
-    if (inputStr == '←') {
+    if (inputStr === '←') {
       if (input.length > 0) {
         dots[input.length - 1].className = 'dot';
         input = input.substr(0, input.length - 1);
@@ -70,13 +70,13 @@ const PinWrap = ({ pinType, updateUser }) => {
       dots[input.length - 1].className = 'dot active';
     }
 
-    if (input.length == 4) {
+    if (input.length === 4) {
       $('.wrapper-number').css('display', 'none');
       $('.wrapper-alphabet').css('display', 'grid');
     }
 
     if (input.length >= 5) {
-      if (pinType == 'import' && correct == '') {
+      if (pinType === 'import' && correct === '') {
         correct = input;
         // Please confirm your PIN.
 
@@ -93,7 +93,7 @@ const PinWrap = ({ pinType, updateUser }) => {
           dots[input.length - 1].className = 'dot';
           input = input.substr(0, input.length - 1);
         }
-      } else if (pinType == 'import' && correct.length == 5) {
+      } else if (pinType === 'import' && correct.length === 5) {
         if (input !== correct) {
           showWrongPinAnimation();
         } else {
@@ -101,7 +101,7 @@ const PinWrap = ({ pinType, updateUser }) => {
 
           // INIT
           let mnemonics = '';
-          if (window.option == 'disablechecksum') {
+          if (window.option === 'disablechecksum') {
             mnemonics = $('.input-mnemonics').val().trim();
           } else {
             mnemonics = cleanMnemonics($('.input-mnemonics').val().trim());
@@ -123,7 +123,7 @@ const PinWrap = ({ pinType, updateUser }) => {
             $('#hidden-account').val(account);
           }, 500);
         }
-      } else if (pinType == 'signin' || pinType == 'tx') {
+      } else if (pinType === 'signin' || pinType === 'tx') {
         // decrypt input value
         let encryptedMnemonics = $('input[type=password]').val().trim();
 
@@ -131,24 +131,24 @@ const PinWrap = ({ pinType, updateUser }) => {
           let decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, input);
           let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
 
-          if (decryptedMnemonics == '') {
+          if (decryptedMnemonics === '') {
             // wrong
             showWrongPinAnimation();
           } else {
             // correct
             showCorrectPinAnimation();
 
-            if (pinType == 'signin') {
+            if (pinType === 'signin') {
               const address = cosmos.getAddress(decryptedMnemonics, false);
               const account = $('.input-account').val().trim();
 
               // go to transaction with address
               updateUser({ name: account, address });
               history.push(`/${i18n.language}/transaction`);
-            } else if (pinType == 'tx') {
+            } else if (pinType === 'tx') {
               let password = $('input[type=password]').val();
 
-              if (password.trim() == '') {
+              if (password.trim() === '') {
                 alert('Could not retrieve account stored in Keychain.');
                 return;
               }
@@ -240,7 +240,7 @@ const PinWrap = ({ pinType, updateUser }) => {
           {alphabetSlice[i]}
         </div>
       );
-      if (i == 25) {
+      if (i === 25) {
         shuffledAlphabetCode.push(<div key={key++} className="grid-number" onClick={numberClick}></div>);
         shuffledAlphabetCode.push(
           <div key={key++} className="finger grid-number" onClick={numberClick}>

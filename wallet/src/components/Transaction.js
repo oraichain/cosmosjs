@@ -10,7 +10,7 @@ const Transaction = ({ user }) => {
   // const history = useHistory();
   // const cosmos = window.cosmos;
 
-  useEffect(async () => {
+  useEffect(() => {
     if (window.stdSignMsgByPayload) {
       const txBody = window.stdSignMsgByPayload;
       $('#tx-json').html(JSON.stringify(txBody));
@@ -28,7 +28,7 @@ const Transaction = ({ user }) => {
   const requestSignTx = () => {
     let password = $('input[type=password]').val();
 
-    if ($.trim(password) == '') {
+    if ($.trim(password) === '') {
       alert(
         'You cannot sign transactions.\n1. Check your browser is in private mode.\n2. Type "chrome://settings/passwords" into your browser and press Enter to toggle the switch "Offer to save passwords" to the on.'
       );

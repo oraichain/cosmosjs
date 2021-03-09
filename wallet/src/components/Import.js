@@ -16,19 +16,19 @@ const Import = () => {
     var account = $('#account').val();
     var mnemonics = $('#mnemonics').val();
 
-    if ($.trim(account) == '') {
+    if ($.trim(account) === '') {
       $('#formInfoMessage').hide();
       $('#errorOnImport').show().find('span').text('Invalid account.');
       return;
     }
 
-    if ($.trim(mnemonics) == '') {
+    if ($.trim(mnemonics) === '') {
       $('#formInfoMessage').hide();
       $('#errorOnImport').show().find('span').text('Mnemonics is not valid.');
       return;
     }
 
-    if (countWords($.trim(mnemonics)) != 12 && countWords($.trim(mnemonics)) != 16 && countWords($.trim(mnemonics)) != 24) {
+    if (countWords($.trim(mnemonics)) !== 12 && countWords($.trim(mnemonics)) !== 16 && countWords($.trim(mnemonics)) !== 24) {
       $('#formInfoMessage').hide();
       $('#errorOnImport').show().find('span').text('Mnemonics is not valid.');
       // TODO: Check validation of mnemonics
@@ -42,7 +42,7 @@ const Import = () => {
       return;
     }
 
-    if (window.option == 'disablechecksum') {
+    if (window.option === 'disablechecksum') {
       $('#mnemonics').val(mnemonics);
     } else {
       $('#mnemonics').val(cleanMnemonics(mnemonics));
@@ -55,20 +55,20 @@ const Import = () => {
     var account = $.trim($('#hidden-account').val());
     var mnemonics = $.trim($('#mnemonics').val());
 
-    if (account == '') {
+    if (account === '') {
       $('#formInfoMessage').hide();
       $('#errorOnImport').show().find('span').text('Invalid account.');
       return;
     }
 
-    if (mnemonics == '') {
+    if (mnemonics === '') {
       $('#formInfoMessage').hide();
       $('#errorOnImport').show().find('span').text('Invalid mnemonics.');
       return;
     }
 
     // Check encrypted mnemonic phrase and pasted value
-    if (document.getElementById('encrypted-mnemonics').innerText != $('input[type=password]').val()) {
+    if (document.getElementById('encrypted-mnemonics').innerText !== $('input[type=password]').val()) {
       $('.notification-modal').text('Encrypted mnemonic phrase does not match.');
       $('.notification-modal').show();
       setTimeout(function () {

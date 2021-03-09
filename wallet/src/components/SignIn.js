@@ -14,13 +14,13 @@ const SignIn = () => {
     var account = $('.input-account').val();
     var password = $('input[type=password]').val();
 
-    if ($.trim(account) == '') {
+    if ($.trim(account) === '') {
       $('#formInfoMessage').hide();
       $('#errorOnSignIn').show().find('span').text('Invalid account.');
       return;
     }
 
-    if ($.trim(password) == '') {
+    if ($.trim(password) === '') {
       $('#formInfoMessage').hide();
       $('#errorOnSignIn').show().find('span').text('Could not retrieve account stored in Keychain. Press the button below the Import Wallet.');
       return;

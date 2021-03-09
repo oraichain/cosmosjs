@@ -95,7 +95,7 @@ const App = ({ user, updateUser }) => {
   };
 
   if (i18n.options.resources[locale]) {
-    if (i18n.language != locale) {
+    if (i18n.language !== locale) {
       changeLanguage(locale);
     }
   } else {

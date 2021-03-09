@@ -5,7 +5,7 @@ import createRootReducer from './reducers';
 
 export const history = createBrowserHistory();
 
-const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+// const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
 
 const reducer = createRootReducer(history);
 const prefix = 'cosmos.user';
@@ -28,8 +28,8 @@ const configureStore = () => {
     compose(
       applyMiddleware(
         routerMiddleware(history) // for dispatching history actions
-      ),
-      reduxDevTools
+      )
+      // reduxDevTools
     )
   );
 
