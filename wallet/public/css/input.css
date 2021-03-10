@@ -1068,11 +1068,11 @@
   margin-top: 10px;
 }
 
-.keystation-form .field span {
+.keystation-form .field > span {
   display: block;
 }
 
-.keystation-form .field input {
+.keystation-form .field > input {
   height: 20px;
   border-radius: 0;
   border-bottom: 1px solid #ddd;
@@ -1085,11 +1085,11 @@
   align-items: center;
 }
 
-.keystation-form .field.readonly span {
+.keystation-form .field.readonly > span {
   text-align: left;
 }
 
-.keystation-form .field.readonly input {
+.keystation-form .field.readonly > input {
   font-weight: bold;
   color: #008000;
 }

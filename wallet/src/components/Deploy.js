@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
@@ -92,7 +93,12 @@ const Deploy = ({ user }) => {
 
   return (
     <BlockUi tag="div" blocking={blocking}>
-      <h2>Deploy Contract </h2>
+      <h2>
+        Deploy Contract |{' '}
+        <Link to={`/${i18n.language}/contract`}>
+          <button>Interact</button>
+        </Link>
+      </h2>
       <form className="keystation-form" id="interact-form">
         <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
         <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
