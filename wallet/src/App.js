@@ -12,8 +12,9 @@ import Send from './components/Send';
 import Import from './components/Import';
 import Session from './components/Session';
 import Transaction from './components/Transaction';
-import Contract from './components/Contract';
-import Deploy from './components/Deploy';
+import ContractQuery from './components/contract/Query';
+import ContractExecute from './components/contract/Execute';
+import ContractDeploy from './components/contract/Deploy';
 import { Cosmos } from './cosmos';
 import { networks } from './config';
 
@@ -128,8 +129,9 @@ const App = ({ user, updateUser }) => {
         <Switch>
           <Route path={`${match.url}/signin`} component={SignIn} />
           <Route path={`${match.url}/import`} component={Import} />
-          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract`} component={Contract} />
-          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/deploy`} component={Deploy} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/deploy`} component={ContractDeploy} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />

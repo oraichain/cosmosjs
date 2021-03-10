@@ -6,7 +6,7 @@
  */
 
 /* web fonts */
-@import url("https://fonts.googleapis.com/css?family=Noto+Sans+KR|Open+Sans");
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR|Open+Sans');
 
 /* Custom
    ========================================================================== */
@@ -20,7 +20,7 @@ body {
   height: 100%;
   line-height: 1.4;
   font-size: 14px;
-  font-family: "Open Sans", "Noto Sans KR", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', 'Noto Sans KR', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .not-scroll {
@@ -39,7 +39,7 @@ textarea {
 
 /* float 해제 */
 .clear:after {
-  content: "";
+  content: '';
   display: block;
   clear: both;
 }
@@ -72,7 +72,6 @@ textarea {
   word-break: break-all;
 }
 
-
 /* go
  ========================================================================== */
 
@@ -80,7 +79,7 @@ textarea {
   color: #000;
 }
 
-.input__field--fumi:focus+.input__label--fumi .input__label-content--fumi,
+.input__field--fumi:focus + .input__label--fumi .input__label-content--fumi,
 .input--filled .input__label-content--fumi {
   padding: 0.9em 0;
 }
@@ -120,26 +119,26 @@ textarea {
   background-color: #000;
 }
 
-.keystation-form .button>i {
+.keystation-form .button > i {
   font-size: 20px;
   color: #05d2dd;
 }
 
-.keystation-form>p {
+.keystation-form > p {
   text-align: left;
   font-size: 13px;
 }
 
-.keystation-form>p.error {
+.keystation-form > p.error {
   display: none;
-  color: #F44336;
+  color: #f44336;
 }
 
-.keystation-form>p.information-text {
+.keystation-form > p.information-text {
   color: #cccccc;
 }
 
-.keystation-form>p>i {
+.keystation-form > p > i {
   font-size: 20px;
   vertical-align: bottom;
 }
@@ -147,10 +146,12 @@ textarea {
 .tx-btn-wrap {
   margin-top: 30px;
   overflow: hidden;
+  justify-content: space-between;
+  display: flex;
 }
 
-.tx-btn-wrap button {
-  float: right;
+.tx-btn-wrap button,
+button[type='submit'] {
   width: 30%;
   /*background: #2d2c2c;*/
   background: #9c6cff;
@@ -187,29 +188,29 @@ textarea {
   font-size: 20px;
 }
 
-.form-fotter>a {
+.form-fotter > a {
   color: #6e6d6d;
 }
 
-.form-fotter>a:hover {
+.form-fotter > a:hover {
   color: #000;
 }
 
-.keystation-url-info {  
+.keystation-url-info {
   font-size: 13px;
   padding-bottom: 16px;
   border-bottom: 1px solid #eeeeee;
 }
 
-.keystation-url-info>strong {
+.keystation-url-info > strong {
   display: block;
 }
 
-.keystation-url-info>strong i {
+.keystation-url-info > strong i {
   color: #3aae1e;
 }
 
-.keystation-tx-info {  
+.keystation-tx-info {
   text-align: left;
   font-size: 13px;
   border-bottom: 1px solid #eeeeee;
@@ -217,28 +218,28 @@ textarea {
   padding-top: 12px;
 }
 
-.keystation-tx-info>h3 {
+.keystation-tx-info > h3 {
   font-weight: normal;
   color: #9c6cff;
   padding: 2px 0px 2px 32px;
   margin-bottom: 6px;
 }
 
-.keystation-tx-info>h3.send {
+.keystation-tx-info > h3.send {
   background: url(https://www.mintscan.io/static/media/send_ic.902591a0.svg) no-repeat left center;
 }
 
-.keystation-tx-info>span {
+.keystation-tx-info > span {
   color: #9e9e9e;
 }
 
-.keystation-tx-info>p {
+.keystation-tx-info > p {
   margin-bottom: 4px;
   color: #222;
   word-break: break-all;
 }
 
-.keystation-tx-info>p>span {
+.keystation-tx-info > p > span {
   margin-right: 3px;
 }
 
@@ -302,20 +303,19 @@ textarea {
   width: 100%;
 }
 
-.pin-cont>h2 {
+.pin-cont > h2 {
   font-size: 16px;
   margin-bottom: 18px;
 }
 
-.pin-cont>p {
+.pin-cont > p {
   margin-bottom: 40px;
   font-size: 13px;
 }
 
-.pin-cont>p>span {
+.pin-cont > p > span {
   color: #f44336;
 }
-
 
 .dots-cointainer {
   position: relative;
@@ -351,8 +351,8 @@ textarea {
 }
 
 .dot.active {
-  -webkit-animation: growDot .5s ease;
-  animation: growDot .5s ease;
+  -webkit-animation: growDot 0.5s ease;
+  animation: growDot 0.5s ease;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
   /* position: relative;
@@ -365,13 +365,13 @@ textarea {
 }
 
 .dot.wrong {
-  -webkit-animation: wrong .9s ease;
-  animation: wrong .9s ease;
+  -webkit-animation: wrong 0.9s ease;
+  animation: wrong 0.9s ease;
 }
 
 .dot.correct {
-  -webkit-animation: correct .9s ease;
-  animation: correct .9s ease;
+  -webkit-animation: correct 0.9s ease;
+  animation: correct 0.9s ease;
 }
 
 .wrapper-number {
@@ -501,27 +501,26 @@ textarea {
   }
 }
 
-
 .re-enter-form {
   display: none;
 }
 
-.re-enter-form>p {
+.re-enter-form > p {
   text-align: center;
 }
 
-.re-enter-form>a {
+.re-enter-form > a {
   display: block;
   text-align: left;
   font-size: 13px;
   color: #a7a7a7;
 }
 
-.re-enter-form>a:hover {
+.re-enter-form > a:hover {
   text-decoration: underline;
 }
 
-.re-enter-form>a>i {
+.re-enter-form > a > i {
   margin-right: 4px;
 }
 
@@ -534,18 +533,18 @@ textarea {
   overflow: hidden;
 }
 
-.pw-nnemonics>div {
+.pw-nnemonics > div {
   position: relative;
   padding: 6px 14px;
   border-bottom: 1px solid #e8e8e8;
 }
 
-.pw-nnemonics>div>span {
+.pw-nnemonics > div > span {
   font-size: 13px;
   color: #696969;
 }
 
-.pw-nnemonics>div>span>i {
+.pw-nnemonics > div > span > i {
   margin-right: 6px;
 }
 
@@ -562,11 +561,11 @@ textarea {
   background-color: #e8e8e8;
 }
 
-.pw-nnemonics button>i {
+.pw-nnemonics button > i {
   margin-right: 6px;
 }
 
-.pw-nnemonics>span {
+.pw-nnemonics > span {
   display: block;
   padding: 10px 14px;
   word-break: break-all;
@@ -582,7 +581,6 @@ textarea {
   padding: 0;
   border: 0;
 }
-
 
 /* loader
  ========================================================================== */
@@ -606,7 +604,7 @@ textarea {
   display: flex;
 }
 
-.loader-wrap>div {
+.loader-wrap > div {
   padding: 50px;
 }
 
@@ -626,7 +624,7 @@ textarea {
 
 .spinner:before,
 .spinner:after {
-  content: "";
+  content: '';
   position: absolute;
   display: block;
   top: 0px;
@@ -755,7 +753,7 @@ textarea {
 /* compleat
  ========================================================================== */
 
- .test-wrap {
+.test-wrap {
   display: flex;
   position: absolute;
   left: 0;
@@ -769,7 +767,7 @@ textarea {
   opacity: 0;
   visibility: hidden;
   overflow: hidden;
-  transition: opacity .3s 0s;
+  transition: opacity 0.3s 0s;
 }
 
 .test-wrap.open {
@@ -777,19 +775,42 @@ textarea {
   visibility: visible;
 }
 
-
 .btn-center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-input[type="file"] {
+input[type='file'] {
   display: none;
 }
 .file-upload {
   border: 1px solid #ccc;
   display: inline-block;
-  padding: 6px 12px;
+  padding: 0;
   cursor: pointer;
+}
+
+.file-upload i {
+  padding: 6px;
+}
+.file-upload small {
+  padding-right: 6px;
+}
+
+.rjsf [type='submit'] {
+  display: none;
+}
+
+.contract-menu > * {
+  margin: 0 10px;
+}
+
+.contract-menu > span {
+  color: #1998ff;
+  font-weight: bold;
+}
+
+.ml-10 {
+  margin-left: 10px;
 }

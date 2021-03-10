@@ -22,3 +22,10 @@ export const isMnemonicsValid = (mnemonics, disablechecksum = false) => {
   }
   return validFlag;
 };
+
+export const getFileSize = (size) => {
+  const fileSize = size.toString();
+  if (fileSize.length < 4) return `${fileSize} bytes`;
+  if (fileSize.length < 7) return `${Math.round(+fileSize / 1024).toFixed(2)} kb`;
+  return `${(Math.round(+fileSize / 1024) / 1000).toFixed(2)} MB`;
+};
