@@ -156,9 +156,13 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
               const address = cosmos.getAddress(decryptedMnemonics, false);
               const account = $('.input-account').val().trim();
 
-              // go to transaction with address
+              // go to transaction with address, other go to send
               updateUser({ name: account, address });
-              history.push(`/${i18n.language}/transaction`);
+              if (window.stdSignMsgByPayload) {
+                history.push(`/${i18n.language}/transaction`);
+              } else {
+                history.push(`/${i18n.language}/send`);
+              }
             } else if (pinType === 'tx') {
               let password = $('input[type=password]').val();
 
