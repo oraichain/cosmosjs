@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import BlockUi from 'react-block-ui';
+import 'react-block-ui/style.css';
+
+import PinWrap, { openPinWrap } from './PinWrap';
 import Editor from '@monaco-editor/react';
 import message from '../cosmos/messages/proto';
 
@@ -13,6 +17,7 @@ const getFileSize = (size) => {
 const Deploy = ({ user }) => {
   const $ = window.jQuery;
   const { t, i18n } = useTranslation();
+  const [blocking, setBlocking] = useState(false);
   const [inputContract, inputContractChange] = useState('{}');
   const cosmos = window.cosmos;
   let wasmBody = '';
@@ -51,10 +56,10 @@ const Deploy = ({ user }) => {
     });
   };
 
-  const deployContract = async () => {
+  const onChildKey = async (childKey) => {
     try {
+      setBlocking(true);
       // will allow return childKey from Pin
-      const childKey = cosmos.getChildKey('sock isolate water indoor worry rally reveal scheme gasp food army library during drip gentle foam attract popular elite shoot trophy lyrics stereo topic');
       const txBody1 = getStoreMessage(wasmBody);
       // higher gas limit
       const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 1000000);
@@ -72,6 +77,8 @@ const Deploy = ({ user }) => {
       $('#tx-json').text(`${res1.tx_response.raw_log}\n\n${res2.tx_response.raw_log}`);
     } catch (ex) {
       alert(ex.message);
+    } finally {
+      setBlocking(false);
     }
   };
 
@@ -84,9 +91,11 @@ const Deploy = ({ user }) => {
   };
 
   return (
-    <div>
+    <BlockUi tag="div" blocking={blocking}>
       <h2>Deploy Contract </h2>
       <form className="keystation-form" id="interact-form">
+        <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
+        <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
         <div className="keystation-tx-info" id="tx-info">
           <div className="field">
             <span>Label</span>
@@ -107,7 +116,7 @@ const Deploy = ({ user }) => {
           </div>
         </div>
         <div className="tx-btn-wrap btn-center">
-          <button type="button" onClick={deployContract} id="allowBtn">
+          <button type="button" onClick={openPinWrap} id="allowBtn">
             Continue <i className="fa fa-arrow-right" />
           </button>
         </div>
@@ -119,7 +128,9 @@ const Deploy = ({ user }) => {
       </form>
 
       <div className="keystation-tx-json" id="tx-json"></div>
-    </div>
+
+      <PinWrap show={false} pinType="tx" onChildKey={onChildKey} />
+    </BlockUi>
   );
 };
 

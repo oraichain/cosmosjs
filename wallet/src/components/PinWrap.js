@@ -7,8 +7,22 @@ import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import * as actions from '../actions';
 
-window.CryptoJS = CryptoJS;
-const PinWrap = ({ pinType, updateUser }) => {
+export const openPinWrap = () => {
+  const $ = window.jQuery;
+  let password = $('input[type=password]').val();
+
+  if ($.trim(password) === '') {
+    alert(
+      'You cannot sign transactions.\n1. Check your browser is in private mode.\n2. Type "chrome://settings/passwords" into your browser and press Enter to toggle the switch "Offer to save passwords" to the on.'
+    );
+    window.location.href = '/import';
+    return;
+  }
+  $('#allowBtn>span').html('<i class="fa fa-spinner fa-spin"></i>');
+  $('.pin-wrap').addClass('open');
+};
+
+const PinWrap = ({ pinType, updateUser, onChildKey }) => {
   const history = useHistory();
   const { t, i18n } = useTranslation();
   let input = '',
@@ -155,22 +169,28 @@ const PinWrap = ({ pinType, updateUser }) => {
 
               let decrypted = CryptoJS.AES.decrypt(password.trim(), input);
               let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
+              const childKey = cosmos.getChildKey(decryptedMnemonics);
+
+              // hide UI
+              $('#allowBtn>span').empty();
+              hidePin();
+
+              if (onChildKey) {
+                onChildKey(childKey);
+                return;
+              }
+              // normal sign
               // console.log('payload', window.stdSignMsgByPayload);
               if (!window.stdSignMsgByPayload) return;
               // loader
-              const childKey = cosmos.getChildKey(decryptedMnemonics);
               // console.log(childKey);
               cosmos
                 .submit(childKey, window.stdSignMsgByPayload)
                 .then((res) => {
                   console.log(res);
-                  $('#allowBtn>span').empty();
-                  hidePin();
                 })
                 .catch((err) => {
                   console.log(err);
-                  $('#allowBtn>span').empty();
-                  hidePin();
                 });
             }
           }

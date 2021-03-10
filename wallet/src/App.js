@@ -15,7 +15,7 @@ import Transaction from './components/Transaction';
 import Contract from './components/Contract';
 import Deploy from './components/Deploy';
 import { Cosmos } from './cosmos';
-import { networks } from './config.json';
+import { networks } from './config';
 
 import './App.css';
 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 // import { useHistory } from 'react-router';
-import PinWrap from './PinWrap';
+import PinWrap, { openPinWrap } from './PinWrap';
 
 const Transaction = ({ user }) => {
   const $ = window.jQuery;
@@ -25,19 +25,6 @@ const Transaction = ({ user }) => {
     }
   };
 
-  const requestSignTx = () => {
-    let password = $('input[type=password]').val();
-
-    if ($.trim(password) === '') {
-      alert(
-        'You cannot sign transactions.\n1. Check your browser is in private mode.\n2. Type "chrome://settings/passwords" into your browser and press Enter to toggle the switch "Offer to save passwords" to the on.'
-      );
-      return;
-    }
-    $('#allowBtn>span').html('<i class="fa fa-spinner fa-spin"></i>');
-    $('.pin-wrap').addClass('open');
-  };
-
   return (
     <div>
       <h2>Sign Transaction</h2>
@@ -49,7 +36,7 @@ const Transaction = ({ user }) => {
           <button className="button" type="button" className="cancel" onClick={denyHandler}>
             {t('deny')}
           </button>
-          <button type="button" onClick={requestSignTx} id="allowBtn">
+          <button type="button" onClick={openPinWrap} id="allowBtn">
             {t('allow')} <span></span>
           </button>
         </div>
