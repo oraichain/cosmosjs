@@ -28,7 +28,7 @@ const Contract = () => {
 
           <div className="field">
             <span>Input</span>
-            <Editor height={150} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
+            <Editor height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
           </div>
         </div>
         <div className="tx-btn-wrap btn-center">

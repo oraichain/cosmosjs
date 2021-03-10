@@ -114,6 +114,10 @@ export class Cosmos {
     return txBytes;
   }
 
+  getTxs(txHash) {
+    return fetch(`${this.url}/cosmos/tx/v1beta1/txs/${txHash}`).then((res) => res.json());
+  }
+
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
   broadcast(signedTxBytes, broadCastMode = 'BROADCAST_MODE_SYNC') {
     const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString('base64');
@@ -124,7 +128,7 @@ export class Cosmos {
     }).then((res) => res.json());
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC') {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', gas_limit = 200000) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
@@ -142,13 +146,11 @@ export class Cosmos {
       sequence: data.account.sequence
     });
 
-    const feeValue = new message.cosmos.tx.v1beta1.Fee({
-      gas_limit: 200000
-    });
-
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
-      fee: feeValue
+      fee: new message.cosmos.tx.v1beta1.Fee({
+        gas_limit
+      })
     });
 
     const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);

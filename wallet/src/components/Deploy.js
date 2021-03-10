@@ -13,7 +13,7 @@ const getFileSize = (size) => {
 const Deploy = ({ user }) => {
   const $ = window.jQuery;
   const { t, i18n } = useTranslation();
-  const [inputContract, inputContractChange] = useState('');
+  const [inputContract, inputContractChange] = useState('{}');
   const cosmos = window.cosmos;
   let wasmBody = '';
 
@@ -56,16 +56,20 @@ const Deploy = ({ user }) => {
       // will allow return childKey from Pin
       const childKey = cosmos.getChildKey('sock isolate water indoor worry rally reveal scheme gasp food army library during drip gentle foam attract popular elite shoot trophy lyrics stereo topic');
       const txBody1 = getStoreMessage(wasmBody);
-      const res1 = await cosmos.submit(childKey, txBody1);
+      // higher gas limit
+      const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 1000000);
+
+      if (res1.tx_response.code !== 0) return;
 
       // next instantiate code
+      const codeId = res1.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'code_id').value;
       const label = $('#label').val().trim();
-      const codeId = res1.tx_response.code;
       const input = Buffer.from(inputContract).toString('base64');
       const txBody2 = getInstantiateMessage(codeId, input, label);
-      const res2 = await cosmos.submit(childKey, txBody2);
-
-      $('#tx-json').text(`${JSON.stringify(res1)}\n\n${JSON.stringify(res2)}`);
+      const res2 = await cosmos.submit(childKey, txBody2, 'BROADCAST_MODE_BLOCK');
+      const contractAddress = res2.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'contract_address').value;
+      $('#address').val(contractAddress);
+      $('#tx-json').text(`${res1.tx_response.raw_log}\n\n${res2.tx_response.raw_log}`);
     } catch (ex) {
       alert(ex.message);
     }
@@ -99,7 +103,7 @@ const Deploy = ({ user }) => {
 
           <div className="field">
             <span>Init Input</span>
-            <Editor height={150} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
+            <Editor height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
           </div>
         </div>
         <div className="tx-btn-wrap btn-center">
@@ -107,7 +111,13 @@ const Deploy = ({ user }) => {
             Continue <i className="fa fa-arrow-right" />
           </button>
         </div>
+
+        <div className="field readonly">
+          <span style={{ minWidth: 125 }}>Contract Address</span>
+          <input id="address" readOnly />
+        </div>
       </form>
+
       <div className="keystation-tx-json" id="tx-json"></div>
     </div>
   );
