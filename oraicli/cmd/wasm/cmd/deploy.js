@@ -46,12 +46,8 @@ export default async (yargs: Argv) => {
     .option('label', {
       describe: 'the label of smart contract',
       type: 'string'
-    })
-    .option('input', {
-      describe: 'the input to initilize smart contract',
-      default: '{}',
-      type: 'string'
     });
+
   const [file] = argv._.slice(-1);
 
   const cosmos = new Cosmos(argv.url, argv.chainId);

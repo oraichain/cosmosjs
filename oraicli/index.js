@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config({ silent: process.env.NODE_ENV === 'development' });
 
 yargs(hideBin(process.argv))
+  .alias('help', 'h')
+  .alias('version', 'v')
   .command('send [address]', 'send orai token', require('./cmd/send').default)
   .command('balance [address]', 'get orai token balance', require('./cmd/balance').default)
   .command('staking', 'staking commands', require('./cmd/staking').default)
