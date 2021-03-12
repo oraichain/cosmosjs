@@ -9,20 +9,20 @@ export default async (yargs: Argv) => {
       describe: 'the datasource name',
       type: 'string'
     })
+    .positional('description', {
+      describe: 'the datasource description',
+      type: 'string'
+    })
     .positional('contract', {
       describe: 'the datasource contract address',
       type: 'string'
     })
-    .positional('description', {
-      describe: 'the datasource description',
-      type: 'string'
-    });
 
   const cosmos = new Cosmos(argv.url, argv.chainId);
   cosmos.setBech32MainPrefix('orai');
   const childKey = cosmos.getChildKey(argv.mnemonic);
 
-  const [name, contractAddress, description] = argv._.slice(-3);
+  const [name, description, contractAddress] = argv._.slice(-3);
   // get accAddress in binary
   const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
   const msgSend = new message.oraichain.orai.provider.MsgCreateAIDataSource({
@@ -49,3 +49,5 @@ export default async (yargs: Argv) => {
     console.log(ex);
   }
 };
+
+// yarn oraicli provider set-datasource cv009 "test cv009" orai17ak0ku2uvfs04w4u867xhgvfg4ta6mgqu79cf0

@@ -80,6 +80,7 @@ yarn.lock
 
 # dotenv environment variables file
 .env
+*.env
 
 #
 *.txt

@@ -19,6 +19,6 @@ yargs(hideBin(process.argv))
     default: process.env.SEND_MNEMONIC
   })
   .option('url', {
-    default: 'http://localhost:1317',
+    default: process.env.URL,
     type: 'string'
   }).argv;

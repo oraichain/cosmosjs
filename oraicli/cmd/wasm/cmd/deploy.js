@@ -64,9 +64,11 @@ export default async (yargs: Argv) => {
 
   const txBody1 = getStoreMessage(wasmBody, sender);
 
-  const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 1000000);
+  const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 2000000);
 
-  if (res1.tx_response.code !== 0) return;
+  if (res1.tx_response.code !== 0) {
+    console.log("response: ", res1)
+  };
 
   // next instantiate code
   const codeId = res1.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'code_id').value;
@@ -75,4 +77,9 @@ export default async (yargs: Argv) => {
   const res2 = await cosmos.submit(childKey, txBody2, 'BROADCAST_MODE_BLOCK');
 
   console.log(res2);
+  let address = JSON.parse(res2.tx_response.raw_log)[0].events[1].attributes[0].value
+  console.log("contract address: ", address)
+  fs.writeFileSync('./address.txt', address);
 };
+
+// yarn oraicli wasm deploy ../oraiwasm/smart-contracts/classification/artifacts/classification.wasm --label "classification 14" --input '{}'
