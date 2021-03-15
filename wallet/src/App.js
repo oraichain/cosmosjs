@@ -11,6 +11,7 @@ import SignIn from './components/SignIn';
 import Send from './components/Send';
 import Import from './components/Import';
 import Session from './components/Session';
+import Menu from './components/menu';
 import Transaction from './components/Transaction';
 import ContractQuery from './components/contract/Query';
 import ContractExecute from './components/contract/Execute';
@@ -135,6 +136,8 @@ const App = ({ user, updateUser }) => {
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/menu`} component={Menu} />
+          {isLoggedIn ? null : <Redirect from="*" to="/signin" />}
         </Switch>
       </div>
       <div className="footer">
@@ -146,6 +149,8 @@ const App = ({ user, updateUser }) => {
           <Link to={generateLanguage('en', location)}>
             <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
           </Link>
+
+          <button onClick={() => history.push('/menu')}>{t('menu')}</button>
         </div>
 
         {user && !location.pathname?.match(/\/(?:signin|import)\b/) && (

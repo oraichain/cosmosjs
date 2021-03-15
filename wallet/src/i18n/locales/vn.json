@@ -13,6 +13,12 @@
     "memo": "Ghi chú",
     "deny": "Từ chối",
     "allow": "Cho phép",
-    "usingSecureConnection": "đang sử dụng kết nối an toàn và riêng tư"
+    "usingSecureConnection": "đang sử dụng kết nối an toàn và riêng tư",
+    "send": "Gui tien",
+    "query": "Xem hop dong wasm",
+    "execute": "Thuc hien hop dong wasm",
+    "deploy": "deploy hop dong wasm",
+    "transaction": "giao dich",
+    "session": "phien"
   }
 }

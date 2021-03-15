@@ -202,6 +202,16 @@ button[type='submit'] {
   border-bottom: 1px solid #eeeeee;
 }
 
+.menu {
+  font-size: 13px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
+}
+
 .keystation-url-info > strong {
   display: block;
 }

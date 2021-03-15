@@ -13,6 +13,12 @@
     "memo": "Memo",
     "deny": "Deny",
     "allow": "Allow",
-    "usingSecureConnection": "is using secure and private connection"
+    "usingSecureConnection": "is using secure and private connection",
+    "send": "Send tokens",
+    "query": "Query wasm contract",
+    "execute": "Exceute wasm contract",
+    "deploy": "Deploy wasm contract",
+    "transaction": "transaction",
+    "session": "session"
   }
 }
