@@ -16,6 +16,7 @@
     "usingSecureConnection": "đang sử dụng kết nối an toàn và riêng tư",
     "send": "Gui tien",
     "query": "Xem hop dong wasm",
+    "interact": "Thao tac voi contract",
     "execute": "Thuc hien hop dong wasm",
     "deploy": "deploy hop dong wasm",
     "transaction": "giao dich",

@@ -11,7 +11,7 @@ import SignIn from './components/SignIn';
 import Send from './components/Send';
 import Import from './components/Import';
 import Session from './components/Session';
-import Menu from './components/menu';
+import Home from './components/Home';
 import Transaction from './components/Transaction';
 import ContractQuery from './components/contract/Query';
 import ContractExecute from './components/contract/Execute';
@@ -130,28 +130,25 @@ const App = ({ user, updateUser }) => {
         <Switch>
           <Route path={`${match.url}/signin`} component={SignIn} />
           <Route path={`${match.url}/import`} component={Import} />
+          <PrivateRoute exact isLoggedIn={isLoggedIn} path={`${match.url}/`} component={Home} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/deploy`} component={ContractDeploy} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />
-          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/menu`} component={Menu} />
           {isLoggedIn ? null : <Redirect from="*" to="/signin" />}
         </Switch>
       </div>
       <div className="footer">
         <div>
-          <button onClick={() => history.push('/menu')}>{t('menu')}</button>
-          <div>
-            <Link to={generateLanguage('vn', location)}>
-              <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
-            </Link>
+          <Link to={generateLanguage('vn', location)}>
+            <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
+          </Link>
 
-            <Link to={generateLanguage('en', location)}>
-              <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
-            </Link>
-          </div>
+          <Link to={generateLanguage('en', location)}>
+            <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
+          </Link>
         </div>
 
         {user && !location.pathname?.match(/\/(?:signin|import)\b/) && (

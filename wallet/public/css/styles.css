@@ -212,6 +212,11 @@ button[type='submit'] {
   flex-direction:column;
 }
 
+.menu a.button.full {
+  text-decoration: none;  
+  width: 100%;
+}
+
 .keystation-url-info > strong {
   display: block;
 }
