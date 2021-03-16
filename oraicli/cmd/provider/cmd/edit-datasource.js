@@ -30,7 +30,6 @@ export default async (yargs: Argv) => {
     console.log("argv: ", argv._.slice(-4))
     // get accAddress in binary
     const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
-    console.log("acc address: ", oldName)
     const msgSend = new message.oraichain.orai.provider.MsgEditAIDataSource({
         old_name: oldName,
         new_name: newName,

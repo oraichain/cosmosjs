@@ -1,110 +1,59 @@
-<!-- TOTAL-DOWNLOADS-BADGE:START - Do not remove or modify this section -->
-<!-- [![NPM Downloads](https://img.shields.io/npm/dt/@oraitation/oraijs.svg)](https://www.npmjs.com/package/@oraitation/oraijs) -->
-<!-- TOTAL-DOWNLOADS-BADGE:END -->
+# Oraichain Cosmosjs CLI installation and usage
 
-## Installation
+## Prerequisites
 
-In order to fully use this library, you need to run a local or remote full node and set up its rest server, which acts as an intermediary between the front-end and the full-node
+### 1. Install dependencies
 
-## Import
-
-```js
-import { Cosmos } from '../src/index.js';
+```bash
+npm install --global yarn && yarn
 ```
 
-## Usage
+### 2. Create .env file according to the .env.example file
 
-- You need to import Protobuf message file as js. It is created by using `make proto-js` from [orai](https://github.com/oraichain/orai).
+## Use oraicli to interact with the Oraichain network
 
-```js
-import message from '../src/messages/proto';
+### Simplest way to deploy scripts
+
+This is a aggregated way to deploy data sources, test cases and oracle scripts with one command. Type:
+
+```bash
+./deploy_ai_services.sh <datasource1,datasource2,...> <testcas1,testcase2,...> <oracle-script> <ds-init-in-json-string> <tc-init-in-json-string> <os-init-in-json-string> <identifier number> ../oraiwasm/smart-contracts/package/cv
+
+Eg:
+
+./deploy_ai_services.sh classification,cv009 '' '' '' '' '' 7 ../oraiwasm/smart-contracts/package/cv
 ```
 
-- Generate orai address from mnemonic
+If the scripts have been deployed and you run the above command again, it will deploy new smart contracts, and check if the data sources, test cases, and oracle scripts exist or not. If not => create new, if yes then edit accordingly.
 
-```js
-const lcdUrl = 'localhost:1317';
-const mnemonic = '...';
-const chainId = 'Oraichain';
-const cosmos = new Cosmos(lcdUrl, chainId);
+### Deploy smart contract + data source and test case
 
-cosmos.setPath("m/44'/118'/0'/0/0");
-const address = cosmos.getAddress(mnemonic);
+Deploy data source / test case
+
+```bash
+./deploy_ds_tc.sh <datasource/testcase> <smart-contract-name> <init-in-json-string> <identifier-number> <path-to-smart-contract-dir>
+
+Eg:
+
+ ./deploy_ds_tc.sh datasource classification '' 17 ../oraiwasm/smart-contracts/package/cv
+ ./deploy_ds_tc.sh testcase classification_testcase '' 17 ../oraiwasm/smart-contracts/package/cv
 ```
 
-Generate both privKey and pubKeyAny that are needed for signing.
+Normally, the initial inputs for data source and test case are uneccessary => can leave them empty.
 
-```js
-const privKey = cosmos.getECPairPriv(mnemonic);
-const pubKeyAny = cosmos.getPubKeyAny(privKey);
+### Deploy smart contract + oracle script
+
+```bash
+
+./deploy_oscript.sh <datasource1,datasource2,...> <testcas1,testcase2,...> <smart-contract-name> <init-in-json-string> <identifier-number> <path-to-smart-contract-dir>
+
+./deploy_oscript.sh classification,cv009 classification_testcase classification_oscript '' 17 ../oraiwasm/smart-contracts/package/cv
 ```
 
-Transfer Orai to designated address.
+Initial input for the oracle script shoud contain information about the data sources and test cases, but the deploy_oscript.sh has taken care of it already, so it should be left empty
 
-- Make sure to input proper type, account number, and sequence of the orai account to generate protobuf structure. You can get those account information on blockchain. Protobuf signing is different from Amino signing.
+### Interact with the scripts
 
-```js
-cosmos.getAccounts(address).then(data => {
-	// signDoc = (1)txBody + (2)authInfo
-	// ---------------------------------- (1)txBody ----------------------------------
-	const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-		from_address: address,
-		to_address: "orai1jf874x5vr6wkza6ahvamck4sy4w76aq4w9c4s5",
-		amount: [{ denom: "orai", amount: String(100000) }]
-	});
+#### 1. CLI
 
-	const msgSendAny = new message.google.protobuf.Any({
-		type_url: "/cosmos.bank.v1beta1.MsgSend",
-		value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish()
-	});
 
-	const txBody = new message.cosmos.tx.v1beta1.TxBody({ messages: [msgSendAny], memo: "" });
-
-	// --------------------------------- (2)authInfo ---------------------------------
-	const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
-		public_key: pubKeyAny,
-		mode_info: { single: { mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT } },
-		sequence: data.account.sequence
-	});
-
-	const feeValue = new message.cosmos.tx.v1beta1.Fee({
-
-		gas_limit: 200000
-	});
-
-	const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee: feeValue });
-
-	...
-});
-```
-
-Sign transaction by using stdSignMsg and broadcast by using [/txs](http://localhost:1317/cosmos/tx/v1beta1/txs) REST API
-
-```js
-const signedTxBytes = cosmos.sign(
-  txBody,
-  authInfo,
-  data.account.account_number,
-  privKey
-);
-cosmos.broadcast(signedTxBytes).then((response) => console.log(response));
-```
-
-## Supporting Message Types (Updating...)
-
-We will continue to update the protobuf signing structure.
-
-## Example & Test
-
-Run test: `yarn test`  
-Send token example: `yarn oraicli send orai1u4jjn7adh46gmtnf2a9tsc2g9nm489d7nuhv8n --amount 10`
-
-## Contribution
-
-- Contributions, suggestions, improvements, and feature requests are always welcome
-
-When opening a PR with a minor fix, make sure to add #trivial to the title/description of said PR.
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

@@ -2,19 +2,19 @@
 
 CHAIN_ID=${CHAIN_ID:-Oraichain}
 TYPE=${1:-datasource}
-IFS=',' read -r -a DS <<< "$2"
-DS=${DS:-classification}
-DS_INPUT=${3:-''}
+IFS=',' read -r -a SCRIPT <<< "$2"
+SCRIPT=${SCRIPT:-classification}
+INPUT=${3:-''}
 NONCE=${4:-1}
 DIR_PATH=${5:-$PWD}
 
-echo "data sources: ${DS[@]}"
+echo "scripts: ${SCRIPT[@]}"
 echo "dir path: $DIR_PATH"
 
 # deploy smart contract data source and create data source
-for i in "${DS[@]}"
+for i in "${SCRIPT[@]}"
 do
-    yarn oraicli wasm deploy $DIR_PATH/smart-contracts/$i/artifacts/$i.wasm --label "$i $NONCE"
+    yarn oraicli wasm deploy $DIR_PATH/$i/artifacts/$i.wasm --label "$i $NONCE" --input $INPUT
 
     # check if the data source exists or not
     yarn oraicli provider get-script $TYPE $i
@@ -35,5 +35,5 @@ do
     sleep 3
 done
 
-# ./deploy_ds_tc.sh datasource classification '' 17 ../oraiwasm
-# ./deploy_ds_tc.sh testcase classification_testcase '' 17 ../oraiwasm
+# ./deploy_ds_tc.sh datasource classification '' 17 ../oraiwasm/smart-contracts/package/cv
+# ./deploy_ds_tc.sh testcase classification_testcase '' 17 ../oraiwasm/smart-contracts/package/cv

@@ -59,6 +59,11 @@
   font-family: "Open Sans", "Noto Sans KR", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
 .keystation-form input {
   width: 100%;
   height: 50px;

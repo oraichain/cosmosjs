@@ -31,7 +31,7 @@ OS_TC=${OS_TC::-1}
 
 OS_INPUT=${4:-'{"ai_data_source":['$OS_DS'],"testcase":['$OS_TC']}'}
 
-yarn oraicli wasm deploy $DIR_PATH/smart-contracts/$OS/artifacts/$OS.wasm --label "$OS $NONCE" --input "$OS_INPUT"
+yarn oraicli wasm deploy $DIR_PATH/$OS/artifacts/$OS.wasm --label "$OS $NONCE" --input "$OS_INPUT"
 
 # check if the oracle script exists or not
 yarn oraicli provider get-script oscript $OS
@@ -49,4 +49,4 @@ else
     yarn oraicli provider edit-oscript $OS $OS "test $OS" $address --ds ${DS[*]} --tc ${TC[*]}
 fi
 
-# ./deploy_oscript.sh classification,cv009 classification_testcase '' '' '' ../oraiwasm
+# ./deploy_oscript.sh classification,cv009 classification_testcase classification_oscript '' 17 ../oraiwasm/smart-contracts/package/cv

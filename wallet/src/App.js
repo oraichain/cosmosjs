@@ -142,15 +142,16 @@ const App = ({ user, updateUser }) => {
       </div>
       <div className="footer">
         <div>
-          <Link to={generateLanguage('vn', location)}>
-            <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
-          </Link>
-
-          <Link to={generateLanguage('en', location)}>
-            <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
-          </Link>
-
           <button onClick={() => history.push('/menu')}>{t('menu')}</button>
+          <div>
+            <Link to={generateLanguage('vn', location)}>
+              <button onClick={() => changeLanguage('vn')}>{getUnicodeFlagIcon('VN')}</button>
+            </Link>
+
+            <Link to={generateLanguage('en', location)}>
+              <button onClick={() => changeLanguage('en')}>{getUnicodeFlagIcon('US')}</button>
+            </Link>
+          </div>
         </div>
 
         {user && !location.pathname?.match(/\/(?:signin|import)\b/) && (
