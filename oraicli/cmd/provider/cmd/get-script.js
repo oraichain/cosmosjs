@@ -21,3 +21,5 @@ export default async (yargs: Argv) => {
     fs.writeFileSync('./is_exist.txt', data.code.toString());
   }
 };
+
+// yarn oraicli provider get-script datasource nl008

@@ -32,7 +32,7 @@ do
         # if it exists already, we update the contract
         yarn oraicli provider edit-$TYPE $i $i "test edit $i" $address
     fi
-    sleep 3
+    sleep 6
 done
 
 # ./deploy_ds_tc.sh datasource classification '' 17 ../oraiwasm/smart-contracts/package/cv
