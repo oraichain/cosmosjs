@@ -12,6 +12,7 @@ yargs(hideBin(process.argv))
   .command('staking', 'staking commands', require('./cmd/staking').default)
   .command('wasm', 'wasm commands', require('./cmd/wasm').default)
   .command('provider', 'update provider data', require('./cmd/provider').default)
+  .command('airequest', 'airequest commands', require('./cmd/airequest').default)
   .command('distr', 'distribution commands', require('./cmd/distr').default)
   .option('chain-id', {
     type: 'string',
