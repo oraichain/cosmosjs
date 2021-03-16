@@ -44,10 +44,13 @@ window.addEventListener(
   (e) => {
     // not the client to send message
     if (e.data.client !== window.client) return;
-    console.log(e.data);
-    const txBody = e.data.tx;
-    window.stdSignMsgByPayload = txBody;
-    window.jQuery('#tx-json').html(JSON.stringify(txBody));
+    if (e.data.tx) {
+      const txBody = e.data.tx;
+      window.stdSignMsgByPayload = txBody;
+      window.jQuery('#tx-json').html(JSON.stringify(txBody));
+    } else if (e.data.file) {
+      window.jQuery('#filename').trigger('file', e.data.file);
+    }
   },
   false
 );

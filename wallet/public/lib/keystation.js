@@ -65,6 +65,9 @@ class Keystation {
       case 'transaction':
         apiUrl = 'transaction';
         break;
+      case 'deploy':
+        apiUrl = 'contract/deploy';
+        break;
     }
 
     const url =
@@ -102,6 +105,23 @@ class Keystation {
     } else {
       this.popup.focus();
       this.popup.postMessage({ tx: message, client: this.client }, '*');
+    }
+  }
+
+  deploy(file) {
+    if (!this.popup || this.popup.closed) {
+      this.openWindow('deploy');
+      const handler = (e) => {
+        if (e.data === 'ready') {
+          this.popup.focus();
+          this.popup.postMessage({ file: file, client: this.client }, '*');
+        }
+        window.removeEventListener('message', handler);
+      };
+      window.addEventListener('message', handler);
+    } else {
+      this.popup.focus();
+      this.popup.postMessage({ file: file, client: this.client }, '*');
     }
   }
 }
