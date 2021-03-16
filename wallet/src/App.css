@@ -4,6 +4,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  padding-bottom: 60px;
 }
 
 .inner {
@@ -13,9 +14,8 @@
   padding: 20px;
 }
 
-.inner h1 {
-  font-size: 0;
-  margin: 10px 0;
+.inner h1 {  
+  margin:  0;
 }
 
 .inner h2 {
@@ -106,13 +106,15 @@
   margin-bottom: 0;
 }
 .footer{
-  position: relative;
+  position: fixed;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid #eee;
-  margin-top: 20px;
+  bottom: 0;
+  left: 0;
+  padding:0 10px;
 }
 
 .footer button {
