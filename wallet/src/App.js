@@ -118,7 +118,9 @@ const App = ({ user, updateUser }) => {
       <div className="inner">
         <div className="header">
           <h1>
-            <img src="/img/oraichain_logo.png" alt="" width={145} />
+            <Link to={`${match.url}`}>
+              <img src="/img/oraichain_logo.png" alt="Home" width={145} />
+            </Link>
           </h1>
           <Select defaultValue={selectedOption} onChange={changeNetwork} options={options} className="select" />
         </div>
