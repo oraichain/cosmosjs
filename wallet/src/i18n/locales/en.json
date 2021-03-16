@@ -16,6 +16,7 @@
     "usingSecureConnection": "is using secure and private connection",
     "send": "Send tokens",
     "query": "Query wasm contract",
+    "interact": "Interact wasm contract",
     "execute": "Exceute wasm contract",
     "deploy": "Deploy wasm contract",
     "transaction": "transaction",

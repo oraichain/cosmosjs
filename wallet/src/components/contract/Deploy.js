@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -21,6 +21,16 @@ const Deploy = ({ user }) => {
   const [schema, setSchema] = useState();
   const [wasmBody, setWasmBody] = useState('');
   const cosmos = window.cosmos;
+
+  useEffect(() => {
+    const handler = (e, file) => {
+      processFile(file);
+    };
+    $('#filename').on('file', handler);
+    return () => {
+      $('#filename').off('file', handler);
+    };
+  }, []);
 
   const getStoreMessage = (wasm_byte_code) => {
     const msgSend = new message.cosmwasm.wasm.v1beta1.MsgStoreCode({
@@ -82,13 +92,22 @@ const Deploy = ({ user }) => {
     }
   };
 
-  const onFileChange = async (e) => {
-    const file = e.target.files[0];
+  const onFileChange = (e) => {
+    return processFile(e.target.files[0]);
+  };
+
+  const processFile = async (file) => {
     if (!file) return;
-    $('#filename').html(`<strong>${file.name} (${getFileSize(file.size)})</strong>`);
-    const blob = new Blob([file]);
-    const fileBuffer = await blob.arrayBuffer();
+
+    let fileBuffer;
+    if (file.data) {
+      fileBuffer = file.data;
+    } else {
+      const blob = new Blob([file]);
+      fileBuffer = await blob.arrayBuffer();
+    }
     setWasmBody(Buffer.from(fileBuffer).toString('base64'));
+    $('#filename').html(`<strong>${file.name} (${getFileSize(file.size)})</strong>`);
   };
 
   const onSchemaFileChange = async (e) => {
