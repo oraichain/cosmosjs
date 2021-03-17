@@ -102,11 +102,10 @@ const App = ({ user, updateUser }) => {
 
   if (i18n.options.resources[locale]) {
     if (i18n.language !== locale) {
-      // changeLanguage(locale);
-      history.replace(`/${locale}${location.pathname}`);
+      changeLanguage(locale);
     }
   } else {
-    history.replace(`/${i18n.options.fallbackLng}${location.pathname}`);
+    window.location.href = `/${i18n.options.fallbackLng}${location.pathname}`;
   }
 
   useEffect(() => {
