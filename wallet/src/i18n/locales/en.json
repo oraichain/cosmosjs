@@ -1,5 +1,4 @@
 {
-  "wallet": {
     "signIn": "Sign In",
     "walletName": "Wallet Name",
     "unableIncognitoMode": "Unavailable in guest mode or incognito mode",
@@ -32,5 +31,4 @@
     "deploy": "Deploy wasm contract",
     "transaction": "transaction",
     "session": "session"
-  }
 }

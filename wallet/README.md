@@ -34,4 +34,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ```bash
 # firebase target:apply hosting wallet oraiwallet
 firebase deploy --only hosting:wallet
+
+# translate
+yarn i18next-scanner
 ```

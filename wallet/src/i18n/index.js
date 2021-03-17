@@ -6,8 +6,8 @@ import vn from './locales/vn.json';
 i18n.use(LanguageDetector).init({
   // we init with resources
   resources: {
-    en,
-    vn
+    en: { wallet: en },
+    vn: { wallet: vn }
   },
   fallbackLng: 'en',
   debug: true,
