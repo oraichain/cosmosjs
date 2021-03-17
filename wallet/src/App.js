@@ -17,6 +17,7 @@ import ContractQuery from './components/contract/Query';
 import ContractExecute from './components/contract/Execute';
 import ContractDeploy from './components/contract/Deploy';
 import ScriptSet from './components/provider/SetScript';
+import ScriptEdit from './components/provider/EditScript';
 import { Cosmos } from './cosmos';
 import { networks } from './config';
 
@@ -141,7 +142,8 @@ const App = ({ user, updateUser }) => {
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/deploy`} component={ContractDeploy} />
-          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/provider/script`} component={ScriptSet} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/provider/set`} component={ScriptSet} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/provider/edit`} component={ScriptEdit} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />

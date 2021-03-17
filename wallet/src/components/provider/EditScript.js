@@ -10,76 +10,103 @@ import message from '../../cosmos/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import ProviderMenu from './ProviderMenu';
 
-const SetScript = ({ user }) => {
+const EditScript = ({ user }) => {
     const $ = window.jQuery;
     const { t, i18n } = useTranslation();
     const [blocking, setBlocking] = useState(false);
     const [isOScript, setIsOScript] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [curName, setCurName] = useState('');
+    const [newName, setNewName] = useState('');
+    const [description, setDes] = useState('');
+    const [contractAddress, setAddress] = useState('');
+    const [type, setType] = useState('');
+    const [ds, setDs] = useState([]);
+    const [tc, setTc] = useState([]);
     const cosmos = window.cosmos;
 
     const pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';/{}|\\":<>\?]/);
 
-    const getTxBody = (childKey) => {
-        const name = $('#name').val().trim();
+    const handleEdit = async () => {
+        const curName = $('#curName').val().trim();
+        const newName = $('#newName').val().trim();
         const description = $('#des').val().trim();
         const contractAddress = $('#contract').val().trim();
         const memo = $('#memo').val().trim();
         const type = $('#type').val().trim();
-        if (pattern.test(name) || pattern.test(description) || pattern.test(contractAddress) || pattern.test(memo) || pattern.test(type)) {
+        if (pattern.test(curName) || pattern.test(newName) || pattern.test(description) || pattern.test(contractAddress) || pattern.test(memo) || pattern.test(type)) {
             alert("inputs has invalid values");
             return;
         }
+        const data = await fetch(`${cosmos.url}/provider/${type}/${curName}`).then((res) => res.json());
+        console.log("data: ", data)
+        if (data.code !== undefined) {
+            alert("current name of the script is not found");
+            return;
+        } else {
+            setCurName(curName);
+            setNewName(newName === "" ? curName : newName);
+            setDes(description === "" ? data.description : description);
+            setAddress(contractAddress === "" ? data.contract : contractAddress);
+            setType(type);
+            if (type === constants.ORACLE_SCRIPT) {
+                const ds = $('#ds').val().trim();
+                const tc = $('#tc').val().trim();
+                if (pattern.test(ds) || pattern.test(tc)) {
+                    alert("inputs has invalid values");
+                    return;
+                }
+                setDs(ds === "" ? data.d_sources : ds.split(","));
+                setTc(tc === "" ? data.t_cases : tc.split(","));
+            }
+            openPinWrap();
+        }
+    }
+
+    const getTxBody = (childKey) => {
         let msgSend = "";
         let msgSendAny = "";
         let accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
         if (type === constants.DATA_SOURCE) {
-            msgSend = new message.oraichain.orai.provider.MsgCreateAIDataSource({
-                name,
-                description,
+            msgSend = new message.oraichain.orai.provider.MsgEditAIDataSource({
+                old_name: curName,
+                new_name: newName,
+                description: description,
                 contract: contractAddress,
                 owner: accAddress
             });
 
             msgSendAny = new message.google.protobuf.Any({
-                type_url: '/oraichain.orai.provider.MsgCreateAIDataSource',
-                value: message.oraichain.orai.provider.MsgCreateAIDataSource.encode(msgSend).finish()
+                type_url: '/oraichain.orai.provider.MsgEditAIDataSource',
+                value: message.oraichain.orai.provider.MsgEditAIDataSource.encode(msgSend).finish()
             });
         } else if (type === constants.TEST_CASE) {
-            msgSend = new message.oraichain.orai.provider.MsgCreateTestCase({
-                name,
-                description,
+            msgSend = new message.oraichain.orai.provider.MsgEditTestCase({
+                old_name: curName,
+                new_name: newName,
+                description: description,
                 contract: contractAddress,
                 owner: accAddress
             });
 
             msgSendAny = new message.google.protobuf.Any({
-                type_url: '/oraichain.orai.provider.MsgCreateTestCase',
-                value: message.oraichain.orai.provider.MsgCreateTestCase.encode(msgSend).finish()
+                type_url: '/oraichain.orai.provider.MsgEditTestCase',
+                value: message.oraichain.orai.provider.MsgEditTestCase.encode(msgSend).finish()
             });
         } else if (type === constants.ORACLE_SCRIPT) {
-            const ds = $('#ds').val().trim();
-            const tc = $('#tc').val().trim();
-            console.log("data source: ", ds);
-            console.log("pattern: ", pattern.test(ds))
-            if (pattern.test(ds) || pattern.test(tc)) {
-                alert("input data sources or test cases has invalid values");
-                return;
-            }
-            const dsArr = ds.split(",");
-            const tcArr = tc.split(",");
-            msgSend = new message.oraichain.orai.provider.MsgCreateOracleScript({
-                name,
-                description,
+            msgSend = new message.oraichain.orai.provider.MsgEditOracleScript({
+                old_name: curName,
+                new_name: newName,
+                description: description,
                 contract: contractAddress,
                 owner: accAddress,
-                data_sources: dsArr,
-                test_cases: tcArr,
+                data_sources: ds,
+                test_cases: tc,
             });
 
             msgSendAny = new message.google.protobuf.Any({
-                type_url: '/oraichain.orai.provider.MsgCreateOracleScript',
-                value: message.oraichain.orai.provider.MsgCreateOracleScript.encode(msgSend).finish()
+                type_url: '/oraichain.orai.provider.MsgEditOracleScript',
+                value: message.oraichain.orai.provider.MsgEditOracleScript.encode(msgSend).finish()
             });
         } else {
             console.log("error in choosing script type");
@@ -89,7 +116,7 @@ const SetScript = ({ user }) => {
 
         return new message.cosmos.tx.v1beta1.TxBody({
             messages: [msgSendAny],
-            memo
+            memo: $('#memo').val().trim()
         });
     };
 
@@ -122,7 +149,7 @@ const SetScript = ({ user }) => {
 
     return (
         <BlockUi tag="div" blocking={blocking}>
-            <ProviderMenu selected="set" />
+            <ProviderMenu selected="edit" />
             <form className="keystation-form">
                 <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
                 <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
@@ -133,16 +160,20 @@ const SetScript = ({ user }) => {
                         {user.address}{' '}
                     </p>
                     <div className="field">
-                        <span>{t('name')}</span>
-                        <input id="name" />
+                        <span>{t('curName')}</span>
+                        <input id="curName" />
                     </div>
                     <div className="field">
-                        <span>{t('description')}</span>
+                        <span>{t('newName')}</span>
+                        <input id="newName" />
+                    </div>
+                    <div className="field">
+                        <span>{t('editDescription')}</span>
                         <input id="des" />
                     </div>
 
                     <div className="field">
-                        <span>{t('contract')}</span>
+                        <span>{t('editContract')}</span>
                         <input id="contract" />
                     </div>
                     <span>{t('memo')}</span>
@@ -178,7 +209,7 @@ const SetScript = ({ user }) => {
                 </div>
                 {!isSuccess ?
                     <div className="tx-btn-wrap btn-center">
-                        <button type="button" onClick={openPinWrap} id="allowBtn">
+                        <button type="button" onClick={handleEdit} id="allowBtn">
                             Submit
           </button>
                     </div> : null
@@ -198,4 +229,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(SetScript);
+export default connect(mapStateToProps)(EditScript);
