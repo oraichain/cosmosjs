@@ -102,7 +102,8 @@ const App = ({ user, updateUser }) => {
 
   if (i18n.options.resources[locale]) {
     if (i18n.language !== locale) {
-      changeLanguage(locale);
+      // changeLanguage(locale);
+      history.replace(`/${locale}${location.pathname}`);
     }
   } else {
     history.replace(`/${i18n.options.fallbackLng}${location.pathname}`);
