@@ -16,17 +16,15 @@ yarn
 
 ## Example flow and script for simplification
 
-### 1. Clone oraiwasm repository
+### 1. Deploy nlp008 service
 
-Assume that the oraiwasm repo after cloning is in the same directory as this directory
-
-### 2. Deploy nlp008 service
+Assume that the oraiwasm (smart contract repo) dir has the same parent dir as this one.
 
 ```bash
 ./deploy_ai_services.sh nl008 nl008_testcase nl008_oscript '' '' '' 1 ../oraiwasm/smart-contracts/package/nlp
 ```
 
-### 3. Run the AI request
+### 2. Run the AI request
 
 command for running an AI request:
 
@@ -38,7 +36,7 @@ Eg:
 yarn oraicli airequest set-aireq nl008_oscript 5 --input '{"paragraph":"my name is duc"}' --expected-output "english"
 ```
 
-### 4. Query the AI request afterwards
+### 3. Query the AI request afterwards
 
 ```bash
 curl http://<ip>:1317/airesult/fullreq/<request-id>
