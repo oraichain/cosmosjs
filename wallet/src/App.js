@@ -16,6 +16,7 @@ import Transaction from './components/Transaction';
 import ContractQuery from './components/contract/Query';
 import ContractExecute from './components/contract/Execute';
 import ContractDeploy from './components/contract/Deploy';
+import ScriptSet from './components/provider/SetScript';
 import { Cosmos } from './cosmos';
 import { networks } from './config';
 
@@ -101,6 +102,7 @@ const App = ({ user, updateUser }) => {
   };
 
   if (i18n.options.resources[locale]) {
+    console.log("match params: ", match)
     if (i18n.language !== locale) {
       changeLanguage(locale);
     }
@@ -139,6 +141,7 @@ const App = ({ user, updateUser }) => {
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/deploy`} component={ContractDeploy} />
+          <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/provider/script`} component={ScriptSet} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/send`} component={Send} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/transaction`} component={Transaction} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/session`} component={Session} />

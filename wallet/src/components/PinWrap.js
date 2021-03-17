@@ -161,7 +161,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
               if (window.stdSignMsgByPayload) {
                 history.push(`/${i18n.language}/transaction`);
               } else {
-                history.push(`/${i18n.language}/menu`);
+                history.push(`/${i18n.language}/`);
               }
             } else if (pinType === 'tx') {
               let password = $('input[type=password]').val();
