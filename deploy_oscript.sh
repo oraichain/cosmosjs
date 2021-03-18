@@ -18,8 +18,10 @@ for ((i=0; i<${#DS[@]}; i++));
 do
     OS_DS+=\"${DS[$i]}\",
 done
+echo $OS_DS
 # remove the last character (comma)
 OS_DS=${OS_DS::-1}
+echo $OS_DS
 
 # add double quotes in the list of test cases
 for ((i=0; i<${#TC[@]}; i++));

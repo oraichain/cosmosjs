@@ -12,6 +12,7 @@ Node version should be >= 12.0.0
 yarn
 ```
 
+
 ### 2. Create .env file according to the .env.example file
 
 ## Example flow and script for simplification
@@ -107,3 +108,34 @@ yarn oraicli wasm query orai1v5l3yfxnmu4j3e2z7s73try82jg5kjnc238mg3 --input '{"t
 Note that the image url when passed needs to be encoded beforehand
 
 #### 2. GUI
+
+
+'{"get":{"input":"{\"withdrawFee\": {\"yearn\": 100000,\"idle\": 100000,\"compound\": 100000}\",\"doHarkWorkFee\":\"{\"yearn\": 100000,\"idle\": 100000,\"compound\": 100000}\",\"underlyingBalanceInVault\": 1000000,\"investedBalance\":\"{\"yearn\": 1000,\"idle\": 1000,\"compound\": 10000}\"}"}}'
+'{"get":{"input":"{\"withdrawFee\": \"100\"}"}}'
+
+
+yarn oraicli wasm query orai10pyejy66429refv3g35g2t7am0was7yatpwf7x  --input '{"get":{"input":"{\"withdrawFee\": \"{\"yearn\": 100000,\"idle\": 100000,\"compound\": 100000}\",\"doHarkWorkFee\":\"{\"yearn\": 100000,\"idle\": 100000,\"compound\": 100000}\",\"underlyingBalanceInVault\": 1000000,\"investedBalance\":\"{\"yearn\": 1000,\"idle\": 1000,\"compound\": 10000}\"}"}}'
+
+yarn oraicli wasm query orai14v0vxdjutmllvltsfq64lcuz9xphwnltgjvxjh  --input '{"get":{"input":"{\"withdrawFee\": \"100\"}"}}'
+yarn oraicli airequest set-aireq ai_farming_oscript  1 --input '{"withdrawFee": "{\"a\":\"1\"}"}'
+
+yarn oraicli wasm query orai14v0vxdjutmllvltsfq64lcuz9xphwnltgjvxjh  --input '{"get":{"input":"{\"withdrawFee\":{\"yearn":100000,"idle":100000,"compound":100000},"doHarkWorkFee":{"yearn":100000,"idle":100000,"compound":100000},"underlyingBalanceInVault":1000000,"investedBalance":{"yearn":1000,"idle":1000,"compound":10000}}"}}'
+
+yarn oraicli airequest set-aireq ai_farming_oscript  1 --input {"withdrawFee":{"yearn":100000,"idle":100000,"compound":100000}}
+
+
+{"withdrawFee":{"yearn":100000,"idle":100000,"compound":100000},"doHarkWorkFee":{"yearn":100000,"idle":100000,"compound":100000},"underlyingBalanceInVault":1000000,"investedBalance":{"yearn":1000,"idle":1000,"compound":10000}}
+
+body: format!(
+"{{\"withdrawFee\":{{\"yearn\":{},\"idle\":{},\"compound\":{}}},\"doHarkWorkFee\": {{\"yearn\":{},\"idle\":{},\"compound\":{}}},\"underlyingBalanceInVault\": {},\"investedBalance\": {{\"yearn\":{},\"idle\":{},\"compound\":{}}}}}",
+payload.withdrawFee.yearn,
+payload.withdrawFee.idle,
+payload.withdrawFee.compound,
+payload.doHarkWorkFee.yearn,
+payload.doHarkWorkFee.idle,
+payload.doHarkWorkFee.compound,
+payload.underlyingBalanceInVault,
+payload.investedBalance.yearn,
+payload.investedBalance.idle,
+payload.investedBalance.compound
+),
