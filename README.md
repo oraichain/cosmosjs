@@ -139,3 +139,15 @@ payload.investedBalance.yearn,
 payload.investedBalance.idle,
 payload.investedBalance.compound
 ),
+
+
+yarn oraicli wasm query orai1d4nuwfgfc4jakazsslztmpz4ez8z8rucms7zpg --input '{"get":{"input":"{\\"withdrawFee\\":{\\"yearn":100000,"idle":100000,"compound":100000},"doHarkWorkFee":{"yearn":100000,"idle":100000,"compound":100000},"underlyingBalanceInVault":1000000,"investedBalance":{"yearn":1000,"idle":1000,"compound":10000}}"}}'
+
+yarn oraicli wasm query orai1d4nuwfgfc4jakazsslztmpz4ez8z8rucms7zpg --input '{"get":{"input":"{\\"withdrawFee\\": {\\"yearn\\": 100000,\\"idle\\": 100000,\\"compound\\": 100000},\\"doHarkWorkFee\\":{\\"yearn\\": 100000,\\"idle\\": 100000,\\"compound\\": 100000},\\"underlyingBalanceInVault\\": 1000000,\\"investedBalance\\":{\\"yearn\\": 1000,\\"idle\\": 1000,\\"compound\\": 10000}}}}'
+
+
+./deploy_ai_services.sh ai_farming ai_farming_testcase ai_farming_oscript '' '' '{"ai_data_source":["ai_farming"],"testcase":["ai_farming_testcase"]}' 1 ../oraiwasm/smart-contracts/package/farming
+
+yarn oraicli airequest set-aireq ai_farming_oscript  1 --input '{"withdrawFee":{"yearn":100000,"idle":100000,"compound":100000},"doHarkWorkFee":{"yearn":100000,"idle":100000,"compound":100000},"underlyingBalanceInVault":1000000,"investedBalance":{"yearn":1000,"idle":1000,"compound":10000}}'
+
+curl http://178.128.57.195:1317/airesult/fullreq/1pyXYNqULgc6v357tUxw2aPIVSj
