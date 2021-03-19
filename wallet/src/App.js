@@ -37,7 +37,6 @@ if (path && path !== 'undefined') {
 
 // global params
 window.cosmos = cosmos;
-window.client = url.searchParams.get('client');
 window.localStorage.setItem('wallet.network', network);
 
 // there is post message from parent window, just update the stdSignMsgByPayload and ready for broadcast
@@ -45,7 +44,7 @@ window.addEventListener(
   'message',
   (e) => {
     // not the client to send message
-    if (e.data.client !== window.client) return;
+    console.log(e.data);
     if (e.data.tx) {
       const txBody = e.data.tx;
       window.stdSignMsgByPayload = txBody;
@@ -103,7 +102,7 @@ const App = ({ user, updateUser }) => {
   };
 
   if (i18n.options.resources[locale]) {
-    console.log("match params: ", match)
+    console.log('match params: ', match);
     if (i18n.language !== locale) {
       changeLanguage(locale);
     }

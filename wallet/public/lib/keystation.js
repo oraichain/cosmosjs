@@ -109,19 +109,21 @@ class Keystation {
   }
 
   deploy(file) {
+    const data = { file: file, client: this.client };
     if (!this.popup || this.popup.closed) {
       this.openWindow('deploy');
       const handler = (e) => {
         if (e.data === 'ready') {
           this.popup.focus();
-          this.popup.postMessage({ file: file, client: this.client }, '*');
+          window.mypopup = this.popup;
+          this.popup.postMessage(data, '*');
         }
         window.removeEventListener('message', handler);
       };
       window.addEventListener('message', handler);
     } else {
       this.popup.focus();
-      this.popup.postMessage({ file: file, client: this.client }, '*');
+      this.popup.postMessage(data, '*');
     }
   }
 }
