@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
 import bech32 from 'bech32';
-import constants from '../../utils/constants';
+import constants from '../../constants';
 
 import message from '../../cosmos/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
@@ -127,7 +127,7 @@ const SetScript = ({ user }) => {
                 <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
                 <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
                 <div className="keystation-tx-info" id="tx-info">
-                    <h3 className="send">SEND</h3>
+                    <h3 className="send">Set</h3>
                     <span>{t('creator')}</span>
                     <p>
                         {user.address}{' '}

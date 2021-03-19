@@ -17,6 +17,9 @@ const Home = () => {
       <Link to={`/${i18n.language}/provider/set`} className="button full">
         {t('interactScript')}
       </Link>
+      <Link to={`/${i18n.language}/airequest/set`} className="button full">
+        {t('interactRequest')}
+      </Link>
     </div>
   );
 };

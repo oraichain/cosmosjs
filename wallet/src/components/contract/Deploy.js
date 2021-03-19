@@ -72,9 +72,12 @@ const Deploy = ({ user }) => {
       // will allow return childKey from Pin
       const txBody1 = getStoreMessage(wasmBody);
       // higher gas limit
-      const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 1000000);
+      const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 2000000);
 
-      if (res1.tx_response.code !== 0) return;
+      if (res1.tx_response.code !== 0) {
+        alert(res1.tx_response.raw_log)
+        return;
+      }
 
       // next instantiate code
       const codeId = res1.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'code_id').value;
@@ -82,6 +85,7 @@ const Deploy = ({ user }) => {
       const input = Buffer.from(schema ? JSON.stringify(formData) : inputContract).toString('base64');
       const txBody2 = getInstantiateMessage(codeId, input, label);
       const res2 = await cosmos.submit(childKey, txBody2, 'BROADCAST_MODE_BLOCK');
+      console.log("response: ", res2);
       const contractAddress = res2.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'contract_address').value;
       $('#address').val(contractAddress);
       $('#tx-json').text(`${res1.tx_response.raw_log}\n\n${res2.tx_response.raw_log}`);

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
 import bech32 from 'bech32';
-import constants from '../../utils/constants';
+import constants from '../../constants';
 
 import message from '../../cosmos/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
@@ -38,28 +38,33 @@ const EditScript = ({ user }) => {
             alert("inputs has invalid values");
             return;
         }
-        const data = await fetch(`${cosmos.url}/provider/${type}/${curName}`).then((res) => res.json());
-        console.log("data: ", data)
-        if (data.code !== undefined) {
-            alert("current name of the script is not found");
-            return;
-        } else {
-            setCurName(curName);
-            setNewName(newName === "" ? curName : newName);
-            setDes(description === "" ? data.description : description);
-            setAddress(contractAddress === "" ? data.contract : contractAddress);
-            setType(type);
-            if (type === constants.ORACLE_SCRIPT) {
-                const ds = $('#ds').val().trim();
-                const tc = $('#tc').val().trim();
-                if (pattern.test(ds) || pattern.test(tc)) {
-                    alert("inputs has invalid values");
-                    return;
+        try {
+            const data = await fetch(`${cosmos.url}/provider/${type}/${curName}`).then((res) => res.json());
+            console.log("data: ", data)
+            if (data.code !== undefined) {
+                alert("current name of the script is not found");
+                return;
+            } else {
+                setCurName(curName);
+                setNewName(newName === "" ? curName : newName);
+                setDes(description === "" ? data.description : description);
+                setAddress(contractAddress === "" ? data.contract : contractAddress);
+                setType(type);
+                if (type === constants.ORACLE_SCRIPT) {
+                    const ds = $('#ds').val().trim();
+                    const tc = $('#tc').val().trim();
+                    if (pattern.test(ds) || pattern.test(tc)) {
+                        alert("inputs has invalid values");
+                        return;
+                    }
+                    setDs(ds === "" ? data.d_sources : ds.split(","));
+                    setTc(tc === "" ? data.t_cases : tc.split(","));
                 }
-                setDs(ds === "" ? data.d_sources : ds.split(","));
-                setTc(tc === "" ? data.t_cases : tc.split(","));
+                openPinWrap();
             }
-            openPinWrap();
+        } catch (err) {
+            alert("unexpected error from the server: ", err);
+            return;
         }
     }
 
@@ -154,7 +159,7 @@ const EditScript = ({ user }) => {
                 <input style={{ display: 'none' }} type="text" tabIndex={-1} spellCheck="false" name="account" defaultValue={user.name} />
                 <input style={{ display: 'none' }} type="password" autoComplete="current-password" tabIndex={-1} spellCheck="false" />
                 <div className="keystation-tx-info" id="tx-info">
-                    <h3 className="send">SEND</h3>
+                    <h3 className="send">Edit</h3>
                     <span>{t('creator')}</span>
                     <p>
                         {user.address}{' '}

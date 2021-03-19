@@ -22,6 +22,7 @@
     "newName": "ten hop dong moi (bo trong neu khong muon thay doi)",
     "editContract": "dia chi hop dong (bo trong neu khong muon thay doi)",
     "editDescription": "mo ta (bo trong neu khong muon thay doi)",
+    "interactRequest": "Tuong tac voi giao dich AI",
     "contract": "dia chi hop dong",
     "description": "mo ta",
     "dsources": "Danh sach cac data sources. Vi du: nl002,nl008",

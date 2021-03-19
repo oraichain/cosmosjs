@@ -22,6 +22,7 @@
     "newName": "new contract name (leave empty if don't change)",
     "editContract": "contract address (leave empty if don't change)",
     "editDescription": "description (leave empty if don't change)",
+    "interactRequest": "Interact with AI request",
     "contract": "contract address",
     "description": "description",
     "dsources": "list of data sources. Example: nl002,nl008",
