@@ -115,7 +115,6 @@ class Keystation {
       const handler = (e) => {
         if (e.data === 'ready') {
           this.popup.focus();
-          window.mypopup = this.popup;
           this.popup.postMessage(data, '*');
         }
         window.removeEventListener('message', handler);
