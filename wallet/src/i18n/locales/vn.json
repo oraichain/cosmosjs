@@ -1,5 +1,4 @@
 {
-  "wallet": {
     "signIn": "Đăng Nhập",
     "walletName": "Tên Ví",
     "unableIncognitoMode": "Không khả dụng ở chế độ khách hoặc chế độ ẩn danh",
@@ -33,5 +32,4 @@
     "deploy": "deploy hop dong wasm",
     "transaction": "giao dich",
     "session": "phien"
-  }
 }
