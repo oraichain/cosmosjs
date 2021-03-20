@@ -38,23 +38,29 @@ if (path && path !== 'undefined') {
 // global params
 window.cosmos = cosmos;
 window.localStorage.setItem('wallet.network', network);
+const $ = window.jQuery;
 
 // there is post message from parent window, just update the stdSignMsgByPayload and ready for broadcast
 window.addEventListener(
   'message',
   (e) => {
     // not the client to send message
-    console.log(e.data);
     if (e.data.tx) {
       const txBody = e.data.tx;
       window.stdSignMsgByPayload = txBody;
-      window.jQuery('#tx-json').html(JSON.stringify(txBody));
+      $('#tx-json').html(JSON.stringify(txBody));
     } else if (e.data.file) {
-      window.jQuery('#filename').trigger('file', e.data.file);
+      $('#filename').trigger('file', e.data.file);
     }
   },
   false
 );
+
+// trigger when document ready
+$(() => {
+  // send ready signal
+  window.opener?.postMessage('ready', '*');
+});
 
 const generateLanguage = (locale, location) => {
   const ROUTE = '/:locale/:path*';
@@ -109,11 +115,6 @@ const App = ({ user, updateUser }) => {
   } else {
     window.location.href = `/${i18n.options.fallbackLng}${location.pathname}`;
   }
-
-  useEffect(() => {
-    // send ready signal
-    window.opener?.postMessage('ready', '*');
-  }, []);
 
   return (
     <>
