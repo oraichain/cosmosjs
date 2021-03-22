@@ -50,6 +50,7 @@ window.addEventListener(
       window.stdSignMsgByPayload = txBody;
       $('#tx-json').html(JSON.stringify(txBody));
     } else if (e.data.file) {
+      // console.log(e.data.file);
       $('#filename').trigger('file', e.data.file);
     }
   },
