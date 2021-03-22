@@ -108,13 +108,14 @@ const Deploy = ({ user }) => {
 
     let fileBuffer;
     if (file.data) {
+      // data must be a buffer to work
       fileBuffer = file.data;
     } else {
       const blob = new Blob([file]);
       fileBuffer = await blob.arrayBuffer();
     }
     setWasmBody(Buffer.from(fileBuffer).toString('base64'));
-    $('#filename').html(`<strong>${file.name} (${getFileSize(file.size)})</strong>`);
+    $('#filename').html(`<strong>${file.name} (${getFileSize(fileBuffer.byteLength)})</strong>`);
   };
 
   const onSchemaFileChange = async (e) => {

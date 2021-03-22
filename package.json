@@ -35,6 +35,7 @@
   ],
   "scripts": {
     "oraicli": "node -r @babel/register oraicli",
+    "wallet": "cd wallet && yarn start",
     "test": "mocha -r @babel/register test"
   },
   "author": "Cosmostation",
