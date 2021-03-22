@@ -68,6 +68,11 @@ const Deploy = ({ user }) => {
 
   const onChildKey = async (childKey) => {
     try {
+      const label = $('#label').val().trim();
+      if (label.length == 0) {
+        alert("label of the smart contract cannot be empty");
+        return;
+      }
       setBlocking(true);
       // will allow return childKey from Pin
       const txBody1 = getStoreMessage(wasmBody);
@@ -81,11 +86,9 @@ const Deploy = ({ user }) => {
 
       // next instantiate code
       const codeId = res1.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'code_id').value;
-      const label = $('#label').val().trim();
       const input = Buffer.from(schema ? JSON.stringify(formData) : inputContract).toString('base64');
       const txBody2 = getInstantiateMessage(codeId, input, label);
       const res2 = await cosmos.submit(childKey, txBody2, 'BROADCAST_MODE_BLOCK');
-      console.log("response: ", res2);
       const contractAddress = res2.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'contract_address').value;
       $('#address').val(contractAddress);
       $('#tx-json').text(`${res1.tx_response.raw_log}\n\n${res2.tx_response.raw_log}`);

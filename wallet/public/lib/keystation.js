@@ -55,20 +55,22 @@ class Keystation {
     // this.keystationUrl = "https://keystation.cosmostation.io";
   }
 
-  openWindow(type = 'transaction', payload = '', account = '') {
-    // The account parameter is required for users having multiple keychain accounts.
-    var apiUrl = '';
+  getApiUrl(type = 'transaction') {
     switch (type) {
       case 'signin':
-        apiUrl = 'signin';
-        break;
+        return 'signin';
       case 'transaction':
-        apiUrl = 'transaction';
-        break;
+        return 'transaction';
       case 'deploy':
-        apiUrl = 'contract/deploy';
-        break;
+        return 'contract/deploy';
+      default:
+        return type;
     }
+  }
+
+  openWindow(type = 'transaction', payload = '', account = '') {
+    // The account parameter is required for users having multiple keychain accounts.
+    var apiUrl = this.getApiUrl(type);
 
     const url =
       this.keystationUrl +
@@ -86,43 +88,38 @@ class Keystation {
       encodeURIComponent(payload);
     // create new one if closed
 
-    this.popup = PopupCenter(url, '', '400', '705');
+    return PopupCenter(url, '', '400', '705');
+  }
 
-    return this.popup;
+  postMessage(popup, data, type) {
+    popup.focus();
+    popup.postMessage(data, '*');
   }
 
   send(message) {
-    if (!this.popup || this.popup.closed) {
-      this.openWindow('transaction');
-      const handler = (e) => {
-        if (e.data === 'ready') {
-          this.popup.focus();
-          this.popup.postMessage({ tx: message, client: this.client }, '*');
-        }
-        window.removeEventListener('message', handler);
-      };
-      window.addEventListener('message', handler);
-    } else {
-      this.popup.focus();
-      this.popup.postMessage({ tx: message, client: this.client }, '*');
-    }
+    const popup = this.openWindow('transaction');
+    const handler = (e) => {
+      if (e.data === 'ready') {
+        this.postMessage(popup, { tx: message, client: this.client });
+      }
+      window.removeEventListener('message', handler);
+    };
+    window.addEventListener('message', handler);
+    return popup;
   }
 
   deploy(file) {
-    if (!this.popup || this.popup.closed) {
-      this.openWindow('deploy');
-      const handler = (e) => {
-        if (e.data === 'ready') {
-          this.popup.focus();
-          this.popup.postMessage({ file: file, client: this.client }, '*');
-        }
-        window.removeEventListener('message', handler);
-      };
-      window.addEventListener('message', handler);
-    } else {
-      this.popup.focus();
-      this.popup.postMessage({ file: file, client: this.client }, '*');
-    }
+    const data = { file: file, client: this.client };
+
+    const popup = this.openWindow('deploy');
+    const handler = (e) => {
+      if (e.data === 'ready') {
+        this.postMessage(popup, data);
+      }
+      window.removeEventListener('message', handler);
+    };
+    window.addEventListener('message', handler);
+    return popup;
   }
 }
 
