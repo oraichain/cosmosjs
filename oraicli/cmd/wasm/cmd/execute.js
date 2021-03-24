@@ -36,7 +36,7 @@ export default async (yargs: Argv) => {
   const input = Buffer.from(argv.input).toString('base64');
 
   const txBody = getHandleMessage(address, input, sender);
-  const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK');
+  const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(argv.fees) ? 0 : parseInt(argv.fees));
 
   console.log(res);
 };

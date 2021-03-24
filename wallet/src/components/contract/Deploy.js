@@ -78,7 +78,7 @@ const Deploy = ({ user, updateContractAddress }) => {
       // will allow return childKey from Pin
       const txBody1 = getStoreMessage(wasmBody);
       // higher gas limit
-      const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 2000000);
+      const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 0, 2000000);
 
       if (res1.tx_response.code !== 0) {
         alert(res1.tx_response.raw_log)
