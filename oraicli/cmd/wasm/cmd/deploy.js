@@ -62,6 +62,8 @@ export default async (yargs: Argv) => {
 
   const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 2000000);
 
+  console.log("res1: ", res1)
+
   if (res1.tx_response.code !== 0) {
     console.log("response: ", res1)
   };

@@ -12,8 +12,9 @@ import message from '../../cosmos/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import Long from 'long';
 import RequestMenu from './RequestMenu';
+import * as actions from '../../actions';
 
-const CreateAIRequest = ({ user }) => {
+const CreateAIRequest = ({ user, updateRequestId }) => {
     const $ = window.jQuery;
     const { t, i18n } = useTranslation();
     const [blocking, setBlocking] = useState(false);
@@ -112,7 +113,6 @@ const CreateAIRequest = ({ user }) => {
             let memo = $('#memo').val().trim();
             let input = $('#input').val().trim();
             let expectedOutput = $('#expected-output').val().trim();
-            console.log("is number: ", pattern.test(memo))
             if (pattern.test(oscriptName) || pattern.test(description) || Number.isInteger(parseInt(valCount)) === false || pattern.test(memo)) {
                 alert("inputs has invalid values");
                 return;
@@ -169,17 +169,13 @@ const CreateAIRequest = ({ user }) => {
             console.log("tx body: ", txBody)
             // higher gas limit
             const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK');
-            $('#tx-json').text(res.tx_response.raw_log + "\n" + "request id: " + JSON.parse(res.tx_response.raw_log)[0].events[0].attributes[0].value);
+            const requestId = JSON.parse(res.tx_response.raw_log)[0].events[0].attributes[0].value;
+            $('#tx-json').text(res.tx_response.raw_log + "\n" + "request id: " + requestId);
             // check if the broadcast message is successful or not
-            try {
-                let log = JSON.parse(res.tx_response.raw_log)
-                console.log("response: ", JSON.parse(res.tx_response.raw_log)[0].events[0].attributes[0].value)
-            } catch (err) {
-                // if error then we don't set success to hide the next button
-                return;
-            }
+            updateRequestId({ requestId });
         } catch (ex) {
             alert(ex.message);
+            return;
         } finally {
             setBlocking(false);
         }
@@ -253,4 +249,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(CreateAIRequest);
+export default connect(mapStateToProps, actions)(CreateAIRequest);

@@ -128,7 +128,7 @@ export class Cosmos {
     }).then((res) => res.json());
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', gas_limit = 200000) {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', gas_limit = 200000, fees = 0) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
@@ -149,6 +149,7 @@ export class Cosmos {
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
       fee: new message.cosmos.tx.v1beta1.Fee({
+        amount: [{ denom: process.env.DENOM || "orai", amount: String(fees) }],
         gas_limit
       })
     });

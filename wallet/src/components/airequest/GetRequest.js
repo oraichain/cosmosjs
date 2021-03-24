@@ -13,7 +13,7 @@ import PinWrap, { openPinWrap } from '../PinWrap';
 import Long from 'long';
 import RequestMenu from './RequestMenu';
 
-const GetAIRequest = ({ user }) => {
+const GetAIRequest = ({ user, request }) => {
     const $ = window.jQuery;
     const { t, i18n } = useTranslation();
     const [blocking, setBlocking] = useState(false);
@@ -31,6 +31,9 @@ const GetAIRequest = ({ user }) => {
             processFile(file);
         };
         $('#filename').on('file', handler);
+        if (typeof request.requestId === "string") {
+            $('#request-id').val(request.requestId);
+        }
         return () => {
             $('#filename').off('file', handler);
         };
@@ -133,7 +136,7 @@ const GetAIRequest = ({ user }) => {
                 </div>
                 <div className="tx-btn-wrap btn-center">
                     <button type="button" onClick={handleGet} id="allowBtn">
-                        Submit
+                        Search
           </button>
                 </div>
             </form>
@@ -145,7 +148,8 @@ const GetAIRequest = ({ user }) => {
 
 function mapStateToProps(state) {
     return {
-        user: state.user
+        user: state.user,
+        request: state.request
     };
 }
 

@@ -10,7 +10,7 @@ import message from '../../cosmos/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import ProviderMenu from './ProviderMenu';
 
-const EditScript = ({ user }) => {
+const EditScript = ({ user, contract }) => {
     const $ = window.jQuery;
     const { t, i18n } = useTranslation();
     const [blocking, setBlocking] = useState(false);
@@ -26,6 +26,12 @@ const EditScript = ({ user }) => {
     const cosmos = window.cosmos;
 
     const pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';/{}|\\":<>\?]/);
+
+    useEffect(() => {
+        if (typeof contract === "string") {
+            $('#contract').val(contract);
+        }
+    }, []);
 
     const handleEdit = async () => {
         const curName = $('#curName').val().trim();
@@ -230,7 +236,8 @@ const EditScript = ({ user }) => {
 
 function mapStateToProps(state) {
     return {
-        user: state.user
+        user: state.user,
+        contract: state.contract
     };
 }
 

@@ -11,8 +11,9 @@ import PinWrap, { openPinWrap } from '../PinWrap';
 import Editor from '@monaco-editor/react';
 import message from '../../cosmos/messages/proto';
 import ContractMenu from './ContractMenu';
+import * as actions from '../../actions';
 
-const Deploy = ({ user }) => {
+const Deploy = ({ user, updateContractAddress }) => {
   const $ = window.jQuery;
   const { t, i18n } = useTranslation();
   const [blocking, setBlocking] = useState(false);
@@ -91,6 +92,7 @@ const Deploy = ({ user }) => {
       const res2 = await cosmos.submit(childKey, txBody2, 'BROADCAST_MODE_BLOCK');
       const contractAddress = res2.tx_response.logs[0].events[0].attributes.find((attr) => attr.key === 'contract_address').value;
       $('#address').val(contractAddress);
+      updateContractAddress(contractAddress);
       $('#tx-json').text(`${res1.tx_response.raw_log}\n\n${res2.tx_response.raw_log}`);
     } catch (ex) {
       alert(ex.message);
@@ -194,4 +196,4 @@ const Deploy = ({ user }) => {
 
 export default connect((state) => ({
   user: state.user
-}))(Deploy);
+}), actions)(Deploy);
