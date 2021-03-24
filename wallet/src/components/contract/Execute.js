@@ -92,7 +92,7 @@ const Execute = ({ user }) => {
           {!schema && (
             <div className="field">
               <span>Input</span>
-              <Editor height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
+              <Editor theme="vs-dark" height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
             </div>
           )}
         </div>

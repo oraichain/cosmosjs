@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import CryptoJS from 'crypto-js';
 import _ from 'lodash';
-import { cleanMnemonics } from '../utils';
+import { cleanMnemonics, getPassword, getChildkeyFromDecrypted } from '../utils';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import * as actions from '../actions';
 
 export const openPinWrap = () => {
   const $ = window.jQuery;
-  let password = $('input[type=password]').val();
+  let password = getPassword();
 
   if ($.trim(password) === '') {
     alert(
@@ -90,7 +90,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
     }
 
     if (input.length >= 5) {
-      if (pinType === 'import' && correct === '') {
+      if (pinType.indexOf('import') !== -1 && correct === '') {
         correct = input;
         // Please confirm your PIN.
 
@@ -102,34 +102,35 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
         $('.wrapper-alphabet').css('display', 'none');
 
         // Init PIN
-        console.log(dots, input.length - 1, dots[input.length - 1]);
+        // console.log(dots, input.length - 1, dots[input.length - 1]);
         for (let i = 0; i < 5; i++) {
           dots[input.length - 1].className = 'dot';
           input = input.substr(0, input.length - 1);
         }
-      } else if (pinType === 'import' && correct.length === 5) {
+      } else if (pinType.indexOf('import') !== -1 && correct.length === 5) {
         if (input !== correct) {
           showWrongPinAnimation();
         } else {
           showCorrectPinAnimation();
-
-          // INIT
-          let mnemonics = '';
-          if (window.option === 'disablechecksum') {
-            mnemonics = $('.input-mnemonics').val().trim();
+          let decrypted = '';
+          const account = $('#account').val();
+          if (pinType === 'import-privatekey') {
+            decrypted = $('#privatekey').val().trim();
           } else {
-            mnemonics = cleanMnemonics($('.input-mnemonics').val().trim());
+            // INIT
+            decrypted = $('#mnemonics').val().trim();
+            if (window.option !== 'disablechecksum') {
+              decrypted = cleanMnemonics(decrypted);
+            }
           }
 
-          const account = $('#account').val();
-          const address = cosmos.getAddress(mnemonics, false);
-          updateUser({ name: account, address });
-
-          let encrypted = CryptoJS.AES.encrypt(mnemonics, input);
+          const childKey = getChildkeyFromDecrypted(decrypted);
+          updateUser({ name: account, address: cosmos.getAddress(childKey) });
+          const encrypted = CryptoJS.AES.encrypt(decrypted, input);
 
           setTimeout(function () {
-            $('#encrypted-mnemonics').text(encrypted);
-            $('#encrypted-mnemonics-for-copy').val(encrypted);
+            $('#encrypted-import').text(encrypted);
+            $('#encrypted-import-for-copy').val(encrypted);
             $('.pin-wrap').removeClass('open');
             // import page2
             $('#import-form1').hide();
@@ -139,11 +140,12 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
         }
       } else if (pinType === 'signin' || pinType === 'tx') {
         // decrypt input value
-        let encryptedMnemonics = $('input[type=password]').val().trim();
+        let encryptedMnemonics = getPassword().trim();
 
         try {
           let decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, input);
           let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
+          console.log(decryptedMnemonics);
 
           if (decryptedMnemonics === '') {
             // wrong
@@ -153,7 +155,8 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
             showCorrectPinAnimation();
 
             if (pinType === 'signin') {
-              const address = cosmos.getAddress(decryptedMnemonics, false);
+              const childKey = getChildkeyFromDecrypted(decryptedMnemonics);
+              const address = cosmos.getAddress(childKey);
               const account = $('.input-account').val().trim();
 
               // go to transaction with address, other go to send
@@ -164,7 +167,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
                 history.push(`/${i18n.language}/`);
               }
             } else if (pinType === 'tx') {
-              let password = $('input[type=password]').val();
+              let password = getPassword();
 
               if (password.trim() === '') {
                 alert('Could not retrieve account stored in Keychain.');
@@ -173,7 +176,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
 
               let decrypted = CryptoJS.AES.decrypt(password.trim(), input);
               let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
-              const childKey = cosmos.getChildKey(decryptedMnemonics);
+              const childKey = getChildkeyFromDecrypted(decryptedMnemonics);
 
               // hide UI
               $('#allowBtn>span').empty();

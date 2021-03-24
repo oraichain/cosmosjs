@@ -6,7 +6,7 @@
  */
 
 /* web fonts */
-@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR|Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 /* Custom
    ========================================================================== */
@@ -16,11 +16,13 @@ html {
 }
 
 body {
+  color: rgb(255 255 255);
+  background-color: rgb(33 33 33);
   min-width: 320px;
   height: 100%;
   line-height: 1.4;
   font-size: 14px;
-  font-family: 'Open Sans', 'Noto Sans KR', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
 .not-scroll {
@@ -76,7 +78,7 @@ textarea {
  ========================================================================== */
 
 .input__field--fumi {
-  color: #000;
+  color: #ddd;
 }
 
 .input__field--fumi:focus + .input__label--fumi .input__label-content--fumi,
@@ -155,7 +157,7 @@ button[type='submit'] {
   width: 30%;
   /*background: #2d2c2c;*/
   background: #9c6cff;
-  height: 50px;
+  height: 40px;
   color: #fff;
   border-radius: 6px;
   font-size: 16px;
@@ -199,21 +201,19 @@ button[type='submit'] {
 .keystation-url-info {
   font-size: 13px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #eeeeee;
 }
 
 .menu {
   font-size: 13px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #eeeeee;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction:column;
+  flex-direction: column;
 }
 
 .menu a.button.full {
-  text-decoration: none;  
+  text-decoration: none;
   width: 100%;
 }
 
@@ -228,7 +228,6 @@ button[type='submit'] {
 .keystation-tx-info {
   text-align: left;
   font-size: 13px;
-  border-bottom: 1px solid #eeeeee;
   padding-bottom: 12px;
   padding-top: 12px;
 }
@@ -250,7 +249,6 @@ button[type='submit'] {
 
 .keystation-tx-info > p {
   margin-bottom: 4px;
-  color: #222;
   word-break: break-all;
 }
 
@@ -268,7 +266,7 @@ button[type='submit'] {
   padding-top: 12px;
   padding-left: 12px;
   padding-right: 12px;
-  background: #222;
+  background: #000;
   color: #ccc;
   border-radius: 6px;
   margin-top: 18px;
@@ -290,7 +288,7 @@ button[type='submit'] {
   top: 0;
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: rgb(22, 22, 22);
   border-radius: 6px;
   justify-content: center;
   align-items: center;
@@ -357,7 +355,7 @@ button[type='submit'] {
 
 .dot {
   position: relative;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(200, 200, 200, 0.4);
   border-radius: 0.8em;
   width: 1em;
   height: 1em;
@@ -540,7 +538,6 @@ button[type='submit'] {
 }
 
 .pw-nnemonics {
-  background: #f5f5f5;
   border-radius: 6px;
   margin: 14px 0 10px;
   text-align: left;
@@ -586,7 +583,7 @@ button[type='submit'] {
   word-break: break-all;
 }
 
-#encrypted-mnemonics-for-copy {
+#encrypted-import-for-copy {
   position: absolute;
   top: 0;
   left: -10px;
@@ -608,7 +605,6 @@ button[type='submit'] {
   top: 0;
   width: 100%;
   height: 100%;
-  background: #fff;
   border-radius: 6px;
   justify-content: center;
   align-items: center;

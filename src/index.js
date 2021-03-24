@@ -149,7 +149,7 @@ export class Cosmos {
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
       fee: new message.cosmos.tx.v1beta1.Fee({
-        amount: [{ denom: process.env.DENOM || "orai", amount: String(fees) }],
+        amount: [{ denom: process.env.DENOM || 'orai', amount: String(fees) }],
         gas_limit
       })
     });

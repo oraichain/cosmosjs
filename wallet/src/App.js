@@ -10,6 +10,7 @@ import * as actions from './actions';
 import SignIn from './components/SignIn';
 import Send from './components/Send';
 import Import from './components/Import';
+import ImportPrivateKey from './components/ImportPrivateKey';
 import Session from './components/Session';
 import Home from './components/Home';
 import Transaction from './components/Transaction';
@@ -22,6 +23,7 @@ import RequestSet from './components/airequest/SetRequest';
 import RequestGet from './components/airequest/GetRequest';
 import { Cosmos } from './cosmos';
 import { networks } from './config';
+import { customStyles } from './utils';
 
 import './App.css';
 
@@ -125,10 +127,10 @@ const App = ({ user, updateUser }) => {
         <div className="header">
           <h1>
             <Link to={`${match.url}`}>
-              <img src="/img/oraichain_logo.png" alt="Home" width={145} />
+              <img src="/img/full-logo-dark.png" alt="Home" width={145} />
             </Link>
           </h1>
-          <Select defaultValue={selectedOption} onChange={changeNetwork} options={options} className="select" />
+          <Select styles={customStyles} defaultValue={selectedOption} onChange={changeNetwork} options={options} className="select" />
         </div>
         <div className="keystation-url-info">
           <strong>
@@ -141,6 +143,7 @@ const App = ({ user, updateUser }) => {
         <Switch>
           <Route path={`${match.url}/signin`} component={SignIn} />
           <Route path={`${match.url}/import`} component={Import} />
+          <Route path={`${match.url}/import-privatekey`} component={ImportPrivateKey} />
           <PrivateRoute exact isLoggedIn={isLoggedIn} path={`${match.url}/`} component={Home} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />

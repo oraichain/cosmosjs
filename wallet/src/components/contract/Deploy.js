@@ -71,7 +71,7 @@ const Deploy = ({ user, updateContractAddress }) => {
     try {
       const label = $('#label').val().trim();
       if (label.length == 0) {
-        alert("label of the smart contract cannot be empty");
+        alert('label of the smart contract cannot be empty');
         return;
       }
       setBlocking(true);
@@ -81,7 +81,7 @@ const Deploy = ({ user, updateContractAddress }) => {
       const res1 = await cosmos.submit(childKey, txBody1, 'BROADCAST_MODE_BLOCK', 0, 2000000);
 
       if (res1.tx_response.code !== 0) {
-        alert(res1.tx_response.raw_log)
+        alert(res1.tx_response.raw_log);
         return;
       }
 
@@ -171,7 +171,7 @@ const Deploy = ({ user, updateContractAddress }) => {
           {!schema && (
             <div className="field">
               <span>Init Input</span>
-              <Editor height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
+              <Editor theme="vs-dark" height={100} defaultLanguage="json" value={inputContract} onChange={inputContractChange} />
             </div>
           )}
         </div>
@@ -194,6 +194,9 @@ const Deploy = ({ user, updateContractAddress }) => {
   );
 };
 
-export default connect((state) => ({
-  user: state.user
-}), actions)(Deploy);
+export default connect(
+  (state) => ({
+    user: state.user
+  }),
+  actions
+)(Deploy);
