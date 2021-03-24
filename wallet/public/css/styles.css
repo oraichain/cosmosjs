@@ -78,7 +78,7 @@ textarea {
  ========================================================================== */
 
 .input__field--fumi {
-  color: #000;
+  color: #ddd;
 }
 
 .input__field--fumi:focus + .input__label--fumi .input__label-content--fumi,

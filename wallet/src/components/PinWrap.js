@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import CryptoJS from 'crypto-js';
 import _ from 'lodash';
-import { cleanMnemonics } from '../utils';
+import { cleanMnemonics, getPassword } from '../utils';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import * as actions from '../actions';
 
 export const openPinWrap = () => {
   const $ = window.jQuery;
-  let password = $('input[type=password]').val();
+  let password = getPassword();
 
   if ($.trim(password) === '') {
     alert(
@@ -139,7 +139,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
         }
       } else if (pinType === 'signin' || pinType === 'tx') {
         // decrypt input value
-        let encryptedMnemonics = $('input[type=password]').val().trim();
+        let encryptedMnemonics = getPassword().trim();
 
         try {
           let decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, input);
@@ -164,7 +164,7 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
                 history.push(`/${i18n.language}/`);
               }
             } else if (pinType === 'tx') {
-              let password = $('input[type=password]').val();
+              let password = getPassword();
 
               if (password.trim() === '') {
                 alert('Could not retrieve account stored in Keychain.');

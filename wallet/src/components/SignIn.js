@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-
+import { getPassword } from '../utils';
 import { InputWrap } from './common';
 
 import PinWrap from './PinWrap';
@@ -11,7 +11,7 @@ const SignIn = () => {
   const $ = window.jQuery;
   function showPin() {
     var account = $('.input-account').val();
-    var password = $('input[type=password]').val();
+    var password = getPassword();
 
     if ($.trim(account) === '') {
       $('#formInfoMessage').hide();

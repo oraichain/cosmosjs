@@ -4,7 +4,7 @@ import { Link, Route, useHistory } from 'react-router-dom';
 import PinWrap from './PinWrap';
 
 import { InputWrap } from './common';
-import { cleanMnemonics, isMnemonicsValid, countWords } from '../utils';
+import { cleanMnemonics, isMnemonicsValid, countWords, getPassword } from '../utils';
 
 const Import = () => {
   const { t, i18n } = useTranslation();
@@ -68,7 +68,7 @@ const Import = () => {
     }
 
     // Check encrypted mnemonic phrase and pasted value
-    if (document.getElementById('encrypted-mnemonics').innerText !== $('input[type=password]').val()) {
+    if (document.getElementById('encrypted-mnemonics').innerText !== getPassword()) {
       $('.notification-modal').text('Encrypted mnemonic phrase does not match.');
       $('.notification-modal').show();
       setTimeout(function () {
@@ -88,8 +88,9 @@ const Import = () => {
   };
 
   const copyAddress = () => {
-    var copyText = document.getElementById('encrypted-mnemonics-for-copy');
+    const copyText = document.getElementById('encrypted-mnemonics-for-copy');
     copyText.select();
+    localStorage.setItem('password', copyText.value);
     document.execCommand('copy');
     $('.notification-modal').text('Encrypted mnemonic phrase is copied.');
     $('.notification-modal').show();

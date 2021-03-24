@@ -61,3 +61,7 @@ export const customStyles = {
     };
   }
 };
+
+export const getPassword = () => {
+  return window.jQuery('input[type=password]').val() || localStorage.getItem('password');
+};
