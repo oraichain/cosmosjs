@@ -6,7 +6,7 @@
  */
 
 /* web fonts */
-@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR|Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 /* Custom
    ========================================================================== */
@@ -16,11 +16,13 @@ html {
 }
 
 body {
+  color: rgb(255 255 255);
+  background-color: rgb(33 33 33);
   min-width: 320px;
   height: 100%;
   line-height: 1.4;
   font-size: 14px;
-  font-family: 'Open Sans', 'Noto Sans KR', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
 .not-scroll {
@@ -199,21 +201,19 @@ button[type='submit'] {
 .keystation-url-info {
   font-size: 13px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #eeeeee;
 }
 
 .menu {
   font-size: 13px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #eeeeee;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction:column;
+  flex-direction: column;
 }
 
 .menu a.button.full {
-  text-decoration: none;  
+  text-decoration: none;
   width: 100%;
 }
 

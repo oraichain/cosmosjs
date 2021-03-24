@@ -29,3 +29,35 @@ export const getFileSize = (size) => {
   if (fileSize.length < 7) return `${Math.round(+fileSize / 1024).toFixed(2)} kb`;
   return `${(Math.round(+fileSize / 1024) / 1000).toFixed(2)} MB`;
 };
+
+export const customStyles = {
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? 'rgb(255 255 255 / 16%)' : 'rgb(33 33 33)',
+    color: '#eee'
+  }),
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'rgb(33 33 33)'
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: '#eee'
+  }),
+  menu: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'rgb(33 33 33)',
+    border: '1px solid rgb(144 202 249 / 50%)'
+  }),
+  singleValue: (provided, state) => {
+    const opacity = state.isDisabled ? 0.5 : 1;
+    const transition = 'opacity 300ms';
+
+    return {
+      ...provided,
+      opacity,
+      transition,
+      color: '#eee'
+    };
+  }
+};

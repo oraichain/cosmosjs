@@ -22,6 +22,7 @@ import RequestSet from './components/airequest/SetRequest';
 import RequestGet from './components/airequest/GetRequest';
 import { Cosmos } from './cosmos';
 import { networks } from './config';
+import { customStyles } from './utils';
 
 import './App.css';
 
@@ -125,10 +126,10 @@ const App = ({ user, updateUser }) => {
         <div className="header">
           <h1>
             <Link to={`${match.url}`}>
-              <img src="/img/oraichain_logo.png" alt="Home" width={145} />
+              <img src="/img/full-logo-dark.png" alt="Home" width={145} />
             </Link>
           </h1>
-          <Select defaultValue={selectedOption} onChange={changeNetwork} options={options} className="select" />
+          <Select styles={customStyles} defaultValue={selectedOption} onChange={changeNetwork} options={options} className="select" />
         </div>
         <div className="keystation-url-info">
           <strong>
