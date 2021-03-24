@@ -10,6 +10,7 @@
 .inner {
   position: relative;
   width: 100%;
+  min-height: calc(100vh - 40px);
   text-align: center;
   padding: 20px;
 }
@@ -78,7 +79,6 @@
 .keystation-form input,
 .keystation-form textarea {
   width: 100%;
-  border: 1px solid rgb(206 212 218);
   background: rgb(66 66 66);
   /* border-radius: 6px; */
 }
@@ -90,6 +90,8 @@
 .keystation-form textarea {
   height: 120px;
   line-height: 1.6;
+  border: 1px solid rgb(206 212 218);
+  color: #fff;
 }
 
 /* .keystation-form input:focus{

@@ -73,7 +73,6 @@
 
 .input__field--manami {
   width: 100%;
-  background: transparent;
   padding: 0.5em;
   margin-bottom: 2em;
   color: #f9f7f6;
@@ -166,7 +165,6 @@
 
 .input__field--nariko {
   width: 100%;
-  background: transparent;
   opacity: 0;
   padding: 0.35em;
   z-index: 100;
@@ -190,7 +188,6 @@
   height: 4em;
   top: 100%;
   left: 0;
-  background: #fff;
   border-top: 4px solid #9b9f9f;
   -webkit-transform: translate3d(0, -3px, 0);
   transform: translate3d(0, -3px, 0);
@@ -242,7 +239,6 @@
 .input__field--nao {
   padding: 0.5em 0em 0.25em;
   width: 100%;
-  background: transparent;
   color: #9da8b2;
   font-size: 1.25em;
 }
@@ -298,7 +294,6 @@
   padding: 0;
   margin-top: 1.2em;
   width: 100%;
-  background: transparent;
   color: #fff;
   font-size: 1.55em;
 }
@@ -426,7 +421,6 @@
 .input__field--chisato {
   width: 100%;
   padding: 0.8em 0.5em;
-  background: transparent;
   border: 2px solid;
   color: #b5b5b5;
   -webkit-transition: border-color 0.25s;
@@ -551,7 +545,6 @@
   padding: 0.25em 0.5em;
   margin-top: 1.25em;
   width: 100%;
-  background: transparent;
   color: #2f3238;
   font-size: 1.55em;
   opacity: 0;
@@ -644,7 +637,6 @@
 
 .input__field--makiko {
   width: 100%;
-  background: transparent;
   color: #797693;
   z-index: 10;
   font-weight: 500;
@@ -692,7 +684,6 @@
 }
 
 .input__field--sae {
-  background: transparent;
   width: 100%;
   color: #fff;
   padding: 1em 0 0.5em;
@@ -714,7 +705,6 @@
   position: absolute;
   width: 100%;
   height: 2px;
-  background: #fff;
   bottom: 0;
   -webkit-transform: translate3d(100%, 0, 0);
   transform: translate3d(100%, 0, 0);
@@ -771,7 +761,6 @@
 
 /* Fumi */
 .input--fumi {
-  background: #fff;
   overflow: hidden;
   padding: 0.25em 0;
 }
@@ -788,7 +777,6 @@
 }
 
 .input__field--fumi {
-  background: transparent;
   padding: 1.5em 1em 0.25em 3.15em;
   width: 100%;
   color: #9c6cff;
@@ -926,7 +914,6 @@
 /* Ruri */
 .input__field--ruri {
   width: 100%;
-  background: transparent;
   padding: 0.5em 0;
   margin-bottom: 2em;
   color: #fff;
@@ -980,12 +967,10 @@
 /* Kohana */
 .input--kohana {
   overflow: hidden;
-  background: #fff;
 }
 
 .input__field--kohana {
   width: 100%;
-  background: transparent;
   padding-left: 2.75em;
   color: #6a7989;
 }
@@ -1076,7 +1061,7 @@
   height: 20px;
   border-radius: 0;
   border-bottom: 1px solid #ddd;
-  background: transparent;
+  color: #fff;
 }
 
 .keystation-form .field.readonly {
