@@ -99,6 +99,10 @@
   border-color: #9c6cff;
 } */
 
+.keystation-form input:valid {
+  background-color: inherit;
+}
+
 .keystation-form .icon--fumi {
   padding-top: 1.26em;
 }
