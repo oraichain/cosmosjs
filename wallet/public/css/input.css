@@ -1060,7 +1060,7 @@
 .keystation-form .field > input {
   height: 20px;
   border-radius: 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #999;
   color: #fff;
 }
 

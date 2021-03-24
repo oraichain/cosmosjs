@@ -48,10 +48,9 @@ const SignIn = () => {
         </button>
       </form>
       <Link to={`/${i18n.language}/import`}>{t('importWallet')}</Link>
-      <a className="disableChecksum" style={{ position: 'fixed', bottom: 0, left: 0, color: '#fff' }}>
-        ■
-      </a>
-
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <Link to={`/${i18n.language}/import-privatekey`}>{t('importPrivateKey')}</Link>
+      <a className="disableChecksum" style={{ position: 'fixed', bottom: 0, left: 0, color: '#fff' }}></a>
       <PinWrap show={false} pinType="signin" />
     </div>
   );

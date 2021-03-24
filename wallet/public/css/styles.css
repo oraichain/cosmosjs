@@ -249,7 +249,6 @@ button[type='submit'] {
 
 .keystation-tx-info > p {
   margin-bottom: 4px;
-  color: #222;
   word-break: break-all;
 }
 
@@ -267,7 +266,7 @@ button[type='submit'] {
   padding-top: 12px;
   padding-left: 12px;
   padding-right: 12px;
-  background: #222;
+  background: #000;
   color: #ccc;
   border-radius: 6px;
   margin-top: 18px;
@@ -584,7 +583,7 @@ button[type='submit'] {
   word-break: break-all;
 }
 
-#encrypted-mnemonics-for-copy {
+#encrypted-import-for-copy {
   position: absolute;
   top: 0;
   left: -10px;

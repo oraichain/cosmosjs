@@ -1,3 +1,6 @@
+import bech32 from 'bech32';
+import * as bip32 from 'bip32';
+
 export const countWords = (str) => {
   return str.trim().split(/\s+/).length;
 };
@@ -64,4 +67,15 @@ export const customStyles = {
 
 export const getPassword = () => {
   return window.jQuery('input[type=password]').val() || localStorage.getItem('password');
+};
+
+export const getChildkeyFromDecrypted = (decrypted) => {
+  // it is mnemonics
+  if (decrypted.length > 60 + window.cosmos.bech32MainPrefix.length) {
+    return window.cosmos.getChildKey(decrypted);
+  }
+  const { prefix, words } = bech32.decode(decrypted);
+  const buffer = Buffer.from(bech32.fromWords(words));
+  const childKey = bip32.fromPrivateKey(buffer, Buffer.from(new Array(32)));
+  return childKey;
 };

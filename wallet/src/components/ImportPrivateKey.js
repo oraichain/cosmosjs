@@ -6,15 +6,16 @@ import PinWrap from './PinWrap';
 import { InputWrap } from './common';
 import { cleanMnemonics, isMnemonicsValid, countWords, getPassword } from '../utils';
 
-const Import = () => {
+const ImportPrivateKey = () => {
+  const cosmos = window.cosmos;
   const { t, i18n } = useTranslation();
   const history = useHistory();
   const $ = window.jQuery;
-  const importMnemonics = () => {
+  const importPrivateKey = () => {
     window.pinType = 'import';
 
     var account = $('#account').val();
-    var mnemonics = $('#mnemonics').val();
+    var privatekey = $('#privatekey').val();
 
     if ($.trim(account) === '') {
       $('#formInfoMessage').hide();
@@ -22,38 +23,27 @@ const Import = () => {
       return;
     }
 
-    if ($.trim(mnemonics) === '') {
+    if ($.trim(privatekey) === '') {
       $('#formInfoMessage').hide();
-      $('#errorOnImport').show().find('span').text('Mnemonics is not valid.');
+      $('#errorOnImport').show().find('span').text('Private Key is not valid.');
       return;
     }
 
-    if (countWords($.trim(mnemonics)) !== 12 && countWords($.trim(mnemonics)) !== 16 && countWords($.trim(mnemonics)) !== 24) {
+    if ($.trim(privatekey).length !== 59 + cosmos.bech32MainPrefix.length) {
       $('#formInfoMessage').hide();
-      $('#errorOnImport').show().find('span').text('Mnemonics is not valid.');
-      // TODO: Check validation of mnemonics
+      $('#errorOnImport').show().find('span').text('Private Key is not valid.');
+      // TODO: Check validation of private key
       return;
     }
 
-    if (!isMnemonicsValid(mnemonics)) {
-      $('#formInfoMessage').hide();
-      $('#errorOnImport').show().find('span').text('Invalid mnemonics checksum error.');
-      // TODO: Check validation of mnemonics
-      return;
-    }
-
-    if (window.option === 'disablechecksum') {
-      $('#mnemonics').val(mnemonics);
-    } else {
-      $('#mnemonics').val(cleanMnemonics(mnemonics));
-    }
+    $('#privatekey').val(privatekey);
 
     $('.pin-wrap').addClass('open');
   };
 
-  const submitForm = (checksum = true) => {
+  const submitForm = () => {
     var account = $.trim($('#hidden-account').val());
-    var mnemonics = $.trim($('#mnemonics').val());
+    var privatekey = $.trim($('#privatekey').val());
 
     if (account === '') {
       $('#formInfoMessage').hide();
@@ -61,9 +51,9 @@ const Import = () => {
       return;
     }
 
-    if (mnemonics === '') {
+    if (privatekey === '') {
       $('#formInfoMessage').hide();
-      $('#errorOnImport').show().find('span').text('Invalid mnemonics.');
+      $('#errorOnImport').show().find('span').text('Invalid privatekey.');
       return;
     }
 
@@ -85,7 +75,7 @@ const Import = () => {
     copyText.select();
     localStorage.setItem('password', copyText.value);
     document.execCommand('copy');
-    $('.notification-modal').text('Encrypted mnemonic phrase is copied.');
+    $('.notification-modal').text('Encrypted private key is copied.');
     $('.notification-modal').show();
     setTimeout(function () {
       $('.notification-modal').hide();
@@ -95,41 +85,41 @@ const Import = () => {
   return (
     <div>
       <h2>Import Wallet</h2>
-      {/* 1. Account Name, Mnemonics */}
+      {/* 1. Account Name, Private Key */}
       <form id="import-form1" className="keystation-form" noValidate>
         <InputWrap label="Wallet Name">
           <input className="input__field input__field--fumi input-account" id="account" type="text" />
         </InputWrap>
 
-        <InputWrap label="Mnemonics">
-          <textarea className="input__field input__field--fumi input-mnemonics" id="mnemonics" defaultValue={''} />
+        <InputWrap label="Private Key">
+          <input className="input__field input__field--fumi input-mnemonics" id="privatekey" type="text" defaultValue={''} />
         </InputWrap>
 
         <p id="formInfoMessage" className="information-text">
-          <i className="fa fa-fw fa-question-circle" /> Enter 12 / 16 / 24 words including spaces. Mnemonic phrase is encrypted and stored in Keychain.
+          <i className="fa fa-fw fa-question-circle" /> Enter private key. Private key is encrypted and stored in Keychain.
         </p>
         <p id="errorOnImport" className="error">
           {/* error msg */}
           <i className="fa fa-fw fa-exclamation-circle" /> <span />
         </p>
-        <button className="button" type="button" onClick={importMnemonics}>
+        <button className="button" type="button" onClick={importPrivateKey}>
           Next
         </button>
       </form>
       {/* 1 END */}
       {/* 2. pin ( pin-wrap.open )*/}
-      <PinWrap pinType="import" />
+      <PinWrap pinType="import-privatekey" />
 
       {/* 2 end */}
       {/* 3. re-enter */}
-      <div className="notification-modal">{/* Encrypted mnemonic phrase is copied. */}</div>
+      <div className="notification-modal">{/* Encrypted private key phrase is copied. */}</div>
       <form id="import-form2" method="GET" className="keystation-form re-enter-form" noValidate>
-        <p>Please copy and paste the mnemonic encryption below.</p>
+        <p>Please copy and paste the private key encryption below.</p>
         <div className="pw-nnemonics">
           <div>
             <span>
               <i className="fa fa-lock" />
-              Encrypted mnemonic phrase
+              Encrypted private key phrase
             </span>
             <button type="button" onClick={copyAddress}>
               <i className="fa fa-files-o" />
@@ -146,7 +136,7 @@ const Import = () => {
         </InputWrap>
         <a href="https://medium.com/cosmostation/introducing-keystation-end-to-end-encrypted-key-manager-for-dapps-built-with-the-cosmos-sdk-37dac753feb5" target="_blank">
           <i className="fa fa-fw fa-question-circle" />
-          Why do I have to encrypt my mnemonic phrase?
+          Why do I have to encrypt my private key?
         </a>
         <input type="text" defaultValue id="encrypted-import-for-copy" />
         <button className="button" type="button" onClick={submitForm}>
@@ -169,4 +159,4 @@ const Import = () => {
   );
 };
 
-export default Import;
+export default ImportPrivateKey;

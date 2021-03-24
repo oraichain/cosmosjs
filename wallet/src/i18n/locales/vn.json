@@ -31,5 +31,12 @@
     "execute": "Thuc hien hop dong wasm",
     "deploy": "deploy hop dong wasm",
     "transaction": "giao dich",
-    "session": "phien"
+    "session": "phien",
+    "requestId": "",
+    "oracleScriptName": "",
+    "validatorCount": "",
+    "requestFees": "",
+    "input": "",
+    "output": "",
+    "importPrivateKey": ""
 }

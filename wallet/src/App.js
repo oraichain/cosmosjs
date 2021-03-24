@@ -10,6 +10,7 @@ import * as actions from './actions';
 import SignIn from './components/SignIn';
 import Send from './components/Send';
 import Import from './components/Import';
+import ImportPrivateKey from './components/ImportPrivateKey';
 import Session from './components/Session';
 import Home from './components/Home';
 import Transaction from './components/Transaction';
@@ -142,6 +143,7 @@ const App = ({ user, updateUser }) => {
         <Switch>
           <Route path={`${match.url}/signin`} component={SignIn} />
           <Route path={`${match.url}/import`} component={Import} />
+          <Route path={`${match.url}/import-privatekey`} component={ImportPrivateKey} />
           <PrivateRoute exact isLoggedIn={isLoggedIn} path={`${match.url}/`} component={Home} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/query`} component={ContractQuery} />
           <PrivateRoute isLoggedIn={isLoggedIn} path={`${match.url}/contract/execute`} component={ContractExecute} />
