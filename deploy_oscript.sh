@@ -32,7 +32,7 @@ OS_TC=${OS_TC::-1}
 
 OS_INPUT=${4:-'{"ai_data_source":['$OS_DS'],"testcase":['$OS_TC']}'}
 
-yarn oraicli wasm deploy $DIR_PATH/$OS/artifacts/$OS.wasm --label "$OS $NONCE" --input "$OS_INPUT" --fees $FEES
+yarn oraicli wasm deploy $DIR_PATH/$OS/artifacts/$OS.wasm --label "$OS $NONCE" --input "$OS_INPUT" --fees $FEES --chain-id $CHAIN_ID
 
 # check if the oracle script exists or not
 yarn oraicli provider get-script oscript $OS
@@ -45,9 +45,9 @@ echo $TC_RAW
 
 if [ -s $PWD/is_exist.txt ]
 then
-    yarn oraicli provider set-oscript $OS "test $OS" $address --ds ${DS[*]} --tc ${TC[*]} --fees $FEES
+    yarn oraicli provider set-oscript $OS "test $OS" $address --ds ${DS[*]} --tc ${TC[*]} --fees $FEES --chain-id $CHAIN_ID
 else
-    yarn oraicli provider edit-oscript $OS $OS "test $OS" $address --ds ${DS[*]} --tc ${TC[*]} --fees $FEES
+    yarn oraicli provider edit-oscript $OS $OS "test $OS" $address --ds ${DS[*]} --tc ${TC[*]} --fees $FEES --chain-id $CHAIN_ID
 fi
 
-# ./deploy_oscript.sh classification,cv009 classification_testcase classification_oscript '' 17 ../oraiwasm/smart-contracts/package/cv 5000
+# ./deploy_oscript.sh classification,cv009 classification_testcase classification_oscript '' 17 ../oraiwasm/smart-contracts/package/cv 5000orai

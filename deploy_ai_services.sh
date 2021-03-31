@@ -22,4 +22,4 @@ bash $PWD/deploy_ds_tc.sh "testcase" $TC_RAW "$TC_INPUT" $NONCE $DIR_PATH $FEES
 # deploy oracle scripts
 bash $PWD/deploy_oscript.sh $DS_RAW $TC_RAW $OS "$OS_INPUT" $NONCE $DIR_PATH $FEES
 
-# ./deploy_ai_services.sh classification,cv009 '' '' '' '' '' 7 ../oraiwasm/smart-contracts/package/cv 5000
+# ./deploy_ai_services.sh classification,cv009 '' '' '' '' '' 7 ../oraiwasm/smart-contracts/package/cv 5000orai

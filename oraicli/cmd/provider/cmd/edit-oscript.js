@@ -39,7 +39,7 @@ export default async (yargs: Argv) => {
     const childKey = cosmos.getChildKey(argv.mnemonic);
 
     const [oldName, newName, description, contractAddress] = argv._.slice(-4);
-    const { ds, tc } = argv;
+    const { ds, tc, fees } = argv;
     // get accAddress in binary
     const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
     const msgSend = new message.oraichain.orai.provider.MsgEditOracleScript({
@@ -49,7 +49,8 @@ export default async (yargs: Argv) => {
         contract: contractAddress,
         owner: accAddress,
         data_sources: ds,
-        test_cases: tc
+        test_cases: tc,
+        fees: fees === "" ? "0orai" : fees,
     });
 
     const msgSendAny = new message.google.protobuf.Any({
