@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
 
-import message from '../cosmos/messages/proto';
+import message from 'cosmosjs/messages/proto';
 import PinWrap, { openPinWrap } from './PinWrap';
 
 const Send = ({ user }) => {

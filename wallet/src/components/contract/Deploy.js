@@ -9,7 +9,7 @@ import Form from '@rjsf/core';
 import { getFileSize } from '../../utils';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import Editor from '@monaco-editor/react';
-import message from '../../cosmos/messages/proto';
+import message from 'cosmosjs/messages/proto';
 import ContractMenu from './ContractMenu';
 import * as actions from '../../actions';
 
