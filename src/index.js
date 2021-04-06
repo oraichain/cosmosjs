@@ -128,7 +128,7 @@ export class Cosmos {
     }).then((res) => res.json());
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', gas_limit = 200000, fees = 0) {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = 0, gas_limit = 200000) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);

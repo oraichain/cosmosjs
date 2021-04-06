@@ -17,6 +17,6 @@ export class Cosmos {
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): any;
   getTxs(txHash: string): Promise<Message.cosmos.tx.v1beta1.GetTxResponse>;
   broadcast(signedTxBytes: any, broadCastMode?: string, gasLimit?: Long): Promise<Message.cosmos.tx.v1beta1.BroadcastTxResponse>;
-  submit(child: any, txBody: Message.cosmos.tx.v1beta1.TxBody, broadCastMode?: string, fees?: number): Promise<Message.cosmos.tx.v1beta1.BroadcastTxResponse>;
+  submit(child: any, txBody: Message.cosmos.tx.v1beta1.TxBody, broadCastMode?: string, fees?: number, gasLimit?: number): Promise<Message.cosmos.tx.v1beta1.BroadcastTxResponse>;
 }
 import * as bip32 from 'bip32';

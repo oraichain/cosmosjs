@@ -29,13 +29,17 @@ export default async (yargs: Argv) => {
             describe: 'test case names',
             type: 'array'
         })
+        .option('fees', {
+            describe: 'the transaction fees',
+            type: 'string'
+        });
 
     const cosmos = new Cosmos(argv.url, argv.chainId);
     cosmos.setBech32MainPrefix('orai');
     const childKey = cosmos.getChildKey(argv.mnemonic);
 
     const [oldName, newName, description, contractAddress] = argv._.slice(-4);
-    const { ds, tc } = argv;
+    const { ds, tc, fees } = argv;
     // get accAddress in binary
     const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
     const msgSend = new message.oraichain.orai.provider.MsgEditOracleScript({
@@ -45,7 +49,8 @@ export default async (yargs: Argv) => {
         contract: contractAddress,
         owner: accAddress,
         data_sources: ds,
-        test_cases: tc
+        test_cases: tc,
+        fees: fees === "" ? "0orai" : fees,
     });
 
     const msgSendAny = new message.google.protobuf.Any({
@@ -59,7 +64,7 @@ export default async (yargs: Argv) => {
     });
 
     try {
-        const response = await cosmos.submit(childKey, txBody);
+        const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(argv.fees) ? 0 : parseInt(argv.fees));
         console.log(response);
     } catch (ex) {
         console.log(ex);

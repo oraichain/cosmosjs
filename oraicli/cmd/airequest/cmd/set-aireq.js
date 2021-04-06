@@ -15,6 +15,10 @@ export default async (yargs: Argv) => {
             describe: 'the number of validators',
             type: 'string'
         })
+        .option('fees', {
+            describe: 'fees that user is willing to pay',
+            type: 'string'
+        })
 
     const req_id = KSUID.randomSync().string;
 
@@ -23,7 +27,7 @@ export default async (yargs: Argv) => {
     const childKey = cosmos.getChildKey(argv.mnemonic);
 
     const [oscriptName, count] = argv._.slice(-2);
-    const { input, expectedOutput } = argv;
+    const { input, expectedOutput, fees } = argv;
     // get accAddress in binary
     const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
     const msgSend = new message.oraichain.orai.airequest.MsgSetAIRequest({
@@ -31,7 +35,7 @@ export default async (yargs: Argv) => {
         oracle_script_name: oscriptName,
         creator: accAddress,
         validator_count: new Long(count),
-        fees: '',
+        fees: fees === "" ? "0orai" : fees,
         input: Buffer.from(input),
         expected_output: Buffer.from(expectedOutput)
     });
@@ -47,7 +51,7 @@ export default async (yargs: Argv) => {
     });
 
     try {
-        const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK');
+        const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', 0, 300000);
         console.log(response);
         console.log("request id: ", req_id)
         const data = await fetch(`${argv.url}/airesult/fullreq/${req_id}`).then((res) => res.json());

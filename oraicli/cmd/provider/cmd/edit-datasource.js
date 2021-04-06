@@ -21,13 +21,18 @@ export default async (yargs: Argv) => {
             describe: 'the datasource contract address',
             type: 'string'
         })
+        .option('fees', {
+            describe: 'the transaction fees',
+            type: 'string'
+        });
+
 
     const cosmos = new Cosmos(argv.url, argv.chainId);
     cosmos.setBech32MainPrefix('orai');
     const childKey = cosmos.getChildKey(argv.mnemonic);
 
     const [oldName, newName, description, contractAddress] = argv._.slice(-4);
-    console.log("argv: ", argv._.slice(-4))
+    const { fees } = argv;
     // get accAddress in binary
     const accAddress = bech32.fromWords(bech32.toWords(childKey.identifier));
     const msgSend = new message.oraichain.orai.provider.MsgEditAIDataSource({
@@ -35,7 +40,8 @@ export default async (yargs: Argv) => {
         new_name: newName,
         description: description,
         contract: contractAddress,
-        owner: accAddress
+        owner: accAddress,
+        fees: fees === "" ? "0orai" : fees,
     });
 
     const msgSendAny = new message.google.protobuf.Any({
@@ -49,7 +55,7 @@ export default async (yargs: Argv) => {
     });
 
     try {
-        const response = await cosmos.submit(childKey, txBody);
+        const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(argv.fees) ? 0 : parseInt(argv.fees));
         console.log(response);
     } catch (ex) {
         console.log(ex);
