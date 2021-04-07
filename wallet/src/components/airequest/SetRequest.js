@@ -145,7 +145,7 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             oracle_script_name: oscriptName,
             creator: accAddress,
             validator_count: new Long(valCount),
-            fees: requestFees,
+            fees: requestFees == "" ? '0orai' : requestFees.toString(),
             input: Buffer.from(input),
             expected_output: Buffer.from(expectedOutput)
         });
@@ -169,6 +169,11 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             console.log("tx body: ", txBody)
             // higher gas limit
             const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK');
+            console.log("response: ", res.tx_response)
+            if (res.tx_response.code !== 0) {
+                alert(res.tx_response.raw_log);
+                return;
+            }
             const requestId = JSON.parse(res.tx_response.raw_log)[0].events[0].attributes[0].value;
             $('#tx-json').text(res.tx_response.raw_log + "\n" + "request id: " + requestId);
             // check if the broadcast message is successful or not

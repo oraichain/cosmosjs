@@ -2,90 +2,97 @@ import { Argv } from 'yargs';
 import { Cosmos } from '../../../../src/index.js';
 import message from '../../../../src/messages/proto';
 import totalRewards from './get-total-rewards';
+import dotenv from "dotenv";
+import xlsx from 'xlsx';
+dotenv.config({ silent: process.env.NODE_ENV === 'production' });
+
+function calculateTotalRewards(sheet) {
+  let total = 0.0;
+  for (let j = 1; sheet['B' + j.toString()] !== undefined; j++) {
+    let amount = parseFloat(sheet['B' + j.toString()].v) / 1000;
+    total += amount;
+  }
+  return total;
+}
 
 export default async (yargs: Argv) => {
   const { argv } = yargs
-    .option('sendAddresses', {
-      describe: 'addresses that have staked into the validators',
-      type: 'array',
-      default: process.env.LIST_SEND_ADDRESSES.split(',') || [
-        'orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg'
-      ]
-    })
-    .option('validators', {
-      describe: 'list of validators we want to check',
-      type: 'array',
-      default: process.env.LIST_VALIDATORS.split(',') || [
-        'oraivaloper1lwsq3768lunk78wdsj836svlfpfs09m3mre3wk'
-      ]
-    })
-    .option('receiveAddresses', {
-      describe: 'addresses that will receive the rewards',
-      type: 'array',
-      default: process.env.LIST_RECEIVE_ADDRESSES.split(',') || [
-        'orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg'
-      ]
-    })
     .option('mnemonics', {
-      describe: 'mnemonics of addresses that will send the rewards',
+      describe: '',
       type: 'array',
       default: process.env.LIST_SEND_MNEMONIC.split(',') || [
-        'survey maze spatial profit narrow memory drop load assist produce exact leaf unique adult token idea mammal cradle catch salmon blade term rubber else'
+        'orai1k54q0nf5x225wanfwrlrkd2cmzc3pv9yklkxmg'
       ]
-    });
+    })
+    .option('rewardFile', {
+      describe: '',
+      type: 'string',
+      default: 'reward.xlsx'
+    })
+
+  const finalReceiveObject = {};
 
   const cosmos = new Cosmos(argv.url, argv.chainId);
   cosmos.setBech32MainPrefix('orai');
-  const results = await totalRewards(argv);
-  const tempRewards = [
-    3.456,
-    3.456,
-    1.728,
-    22.464,
-    15.552,
-    8.64,
-    10.368,
-    8.64,
-    5.184,
-    3.456,
-    3.456,
-    1.728,
-    1.728,
-    1.728
-  ];
-  const { receiveAddresses, mnemonics } = argv;
+  const { mnemonics, rewardFile } = argv;
+  const book = xlsx.readFile(__dirname + '/' + rewardFile)
 
-  console.log('receive addresses: ', receiveAddresses);
+  console.log("book sheet name: ", book.Props.SheetNames)
+  for (let i = 0; i < book.SheetNames.length; i++) {
+    let sheet = book.Sheets[book.SheetNames[i]];
+    let outputs = [];
+    let total = 0.0;
+    // j = 2 because the first row is reserved for sender address
+    for (let j = 1; sheet['A' + j.toString()] !== undefined; j++) {
+      let amount = parseFloat(sheet['B' + j.toString()].v) / 1000;
+      let output = {
+        address: sheet['A' + j.toString()].v,
+        coins: [{ denom: cosmos.bech32MainPrefix, amount: amount.toString() }]
+      }
+      outputs.push(output);
+      total += sheet['B' + j.toString()].v;
+    }
+    finalReceiveObject[book.SheetNames[i]] = outputs
+  }
+  for (let i = 0; i < book.SheetNames.length; i++) {
+    // the first row is reserved for the sender address
+    const childKey = cosmos.getChildKey(mnemonics[i]);
+    const sender = cosmos.getAddress(childKey);
+    console.log("sender: ", sender);
+    const totalRewards = calculateTotalRewards(book.Sheets[book.SheetNames[i]]);
+    //console.log("total rewards: ", totalRewards)
+    // temp reward to test
+    const inputs = [{
+      address: sender,
+      coins: [{ denom: cosmos.bech32MainPrefix, amount: String(totalRewards) }]
+    }]
 
-  for (let index = 0; index < receiveAddresses.length; index++) {
-    const receiveAddress = receiveAddresses[index];
-    const childKey = cosmos.getChildKey(mnemonics[index]);
+    const outputs = finalReceiveObject[book.SheetNames[i]]
 
-    cosmos.getAddress(childKey);
-
-    const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: cosmos.getAddress(childKey),
-      to_address: receiveAddress,
-      amount: [
-        {
-          denom: cosmos.bech32MainPrefix,
-          amount: String(results[index] || 0.001)
-        }
-      ] // 10
+    const msgMultiSend = new message.cosmos.bank.v1beta1.MsgMultiSend({
+      inputs: inputs,
+      outputs: outputs
     });
 
-    console.log(msgSend);
+    //console.log("msg multisend: ", msgMultiSend)
 
-    const msgSendAny = new message.google.protobuf.Any({
-      type_url: '/cosmos.bank.v1beta1.MsgSend',
-      value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish()
+    const msgMultiSendAny = new message.google.protobuf.Any({
+      type_url: '/cosmos.bank.v1beta1.MsgMultiSend',
+      value: message.cosmos.bank.v1beta1.MsgMultiSend.encode(msgMultiSend).finish()
     });
 
     const txBody = new message.cosmos.tx.v1beta1.TxBody({
-      messages: [msgSendAny],
+      messages: [msgMultiSendAny],
       memo: ''
     });
 
-    //const response = await cosmos.submit(childKey, txBody);
+    // try {
+    //   const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(argv.fees) ? 0 : parseInt(argv.fees));
+    //   console.log(response);
+    // } catch (ex) {
+    //   console.log(ex);
+    // }
   }
 };
+
+// yarn oraicli distr send-rewards --rewardFile reward.xlsx

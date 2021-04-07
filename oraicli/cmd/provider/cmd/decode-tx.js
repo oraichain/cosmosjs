@@ -3,12 +3,6 @@ import fs from 'fs';
 import message from '../../../../src/messages/proto';
 import sha256 from 'js-sha256';
 
-function toHexString(byteArray) {
-    return Array.prototype.map.call(byteArray, function (byte) {
-        return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-    }).join('');
-}
-
 export default async (yargs: Argv) => {
     const { argv } = yargs
         .positional('script', {

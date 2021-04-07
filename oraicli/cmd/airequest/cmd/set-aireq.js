@@ -60,3 +60,5 @@ export default async (yargs: Argv) => {
         console.log(ex);
     }
 };
+
+// yarn oraicli airequest set-aireq cv021_os 1 --chain-id $CHAIN_ID --input '{"hash": "QmR27t4rQ8J46T77za9BmguVMapJTWU4ASbBDXSFwFNmGK"}'

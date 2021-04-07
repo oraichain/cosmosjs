@@ -51,6 +51,7 @@
     "ksuid": "^2.0.0",
     "protobufjs": "^6.10.2",
     "secp256k1": "^3.6.2",
+    "xlsx": "^0.16.9",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
