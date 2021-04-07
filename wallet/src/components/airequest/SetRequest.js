@@ -8,7 +8,7 @@ import constants from '../../constants';
 import { getFileSize } from '../../utils';
 import KSUID from 'ksuid';
 
-import message from '../../cosmos/messages/proto';
+import message from 'cosmosjs/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import Long from 'long';
 import RequestMenu from './RequestMenu';
@@ -38,7 +38,7 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
     }, []);
 
     const clearFile = (e) => {
-        if (e.target.id === "trash-output") {
+        if (e.target.id === 'trash-output') {
             $('#filename').text('Output file');
             $('#output-file').val('');
             setOutputFile('');
@@ -55,7 +55,7 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
     };
 
     const onType = (e) => {
-        if (e.target.id === "input") {
+        if (e.target.id === 'input') {
             let input = $('#input').val();
             // if empty = 0 then show file option
             if (input.length === 0) {
@@ -66,7 +66,7 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             }
         } else {
             let output = $('#expected-output').val();
-            console.log("output: ", output)
+            console.log('output: ', output);
             // if empty = 0 then show file option
             if (output.length === 0) {
                 setShowOutput(true);
@@ -75,8 +75,8 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
                 setOutputFile('');
             }
         }
-        console.log("hello world");
-    }
+        console.log('hello world');
+    };
 
     const processFile = async (file, id) => {
         if (!file) return;
@@ -90,9 +90,9 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
         }
 
         let buffer = Buffer.from(fileBuffer).toString();
-        if (id === "input-file") {
+        if (id === 'input-file') {
             setInputFile(buffer);
-        } else if (id === "output-file") {
+        } else if (id === 'output-file') {
             setOutputFile(buffer);
         }
         $('#filename').html(`<strong>${file.name} (${getFileSize(file.size)})</strong>`);
@@ -102,9 +102,9 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
         const oscriptName = $('#oscript-name').val().trim();
         try {
             const data = await fetch(`${cosmos.url}/provider/oscript/${oscriptName}`).then((res) => res.json());
-            console.log("data: ", data)
+            console.log('data: ', data);
             if (data.code !== undefined) {
-                alert("current name of the script is not found");
+                alert('current name of the script is not found');
                 return;
             }
             let description = $('#des').val().trim();
@@ -114,12 +114,12 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             let input = $('#input').val().trim();
             let expectedOutput = $('#expected-output').val().trim();
             if (pattern.test(oscriptName) || pattern.test(description) || Number.isInteger(parseInt(valCount)) === false || pattern.test(memo)) {
-                alert("inputs has invalid values");
+                alert('inputs has invalid values');
                 return;
             }
             openPinWrap();
         } catch (err) {
-            alert("unexpected error from the server: ", err);
+            alert('unexpected error from the server: ', err);
             return;
         }
     };
@@ -138,14 +138,14 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             input = inputFile;
         }
         if (outputFile.length !== 0) {
-            expectedOutput = outputFile
+            expectedOutput = outputFile;
         }
         const msgSend = new message.oraichain.orai.airequest.MsgSetAIRequest({
             request_id: reqId,
             oracle_script_name: oscriptName,
             creator: accAddress,
             validator_count: new Long(valCount),
-            fees: requestFees == "" ? '0orai' : requestFees.toString(),
+            fees: requestFees,
             input: Buffer.from(input),
             expected_output: Buffer.from(expectedOutput)
         });
@@ -166,16 +166,15 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
             setBlocking(true);
             // will allow return childKey from Pin
             const txBody = getTxBody(childKey);
-            console.log("tx body: ", txBody)
+            console.log('tx body: ', txBody);
             // higher gas limit
             const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK');
-            console.log("response: ", res.tx_response)
             if (res.tx_response.code !== 0) {
                 alert(res.tx_response.raw_log);
                 return;
             }
             const requestId = JSON.parse(res.tx_response.raw_log)[0].events[0].attributes[0].value;
-            $('#tx-json').text(res.tx_response.raw_log + "\n" + "request id: " + requestId);
+            $('#tx-json').text(res.tx_response.raw_log + '\n' + 'request id: ' + requestId);
             // check if the broadcast message is successful or not
             updateRequestId({ requestId });
         } catch (ex) {
@@ -195,9 +194,7 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
                 <div className="keystation-tx-info" id="tx-info">
                     <h3 className="send">Set</h3>
                     <span>{t('creator')}</span>
-                    <p>
-                        {user.address}{' '}
-                    </p>
+                    <p>{user.address} </p>
                     <div className="field">
                         <span>{t('oracleScriptName')}</span>
                         <input id="oscript-name" />
@@ -218,18 +215,22 @@ const CreateAIRequest = ({ user, updateRequestId }) => {
                     <div className="field">
                         <span>{t('input')}</span>
                         <input id="input" onInput={onType} />
-                        {showInput && <label className="file-upload">
-                            <input type="file" id="input-file" onChange={onFileChange} />
-                            <i className="fa fa-cloud-upload" /> <small id="filename">Input file json</small> {inputFile && <i className="fa fa-trash" id="trash-input" onClick={clearFile} />}
-                        </label>}
+                        {showInput && (
+                            <label className="file-upload">
+                                <input type="file" id="input-file" onChange={onFileChange} />
+                                <i className="fa fa-cloud-upload" /> <small id="filename">Input file json</small> {inputFile && <i className="fa fa-trash" id="trash-input" onClick={clearFile} />}
+                            </label>
+                        )}
                     </div>
                     <div className="field">
                         <span>{t('output')}</span>
                         <input id="expected-output" onInput={onType} />
-                        {showOutput && <label className="file-upload">
-                            <input type="file" id="output-file" onChange={onFileChange} />
-                            <i className="fa fa-cloud-upload" /> <small id="filename">Output file json</small> {outputFile && <i className="fa fa-trash" id="trash-output" onClick={clearFile} />}
-                        </label>}
+                        {showOutput && (
+                            <label className="file-upload">
+                                <input type="file" id="output-file" onChange={onFileChange} />
+                                <i className="fa fa-cloud-upload" /> <small id="filename">Output file json</small> {outputFile && <i className="fa fa-trash" id="trash-output" onClick={clearFile} />}
+                            </label>
+                        )}
                     </div>
                     <span>{t('memo')}</span>
                     <textarea id="memo"></textarea>

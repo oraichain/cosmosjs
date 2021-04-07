@@ -21,7 +21,7 @@ import ScriptSet from './components/provider/SetScript';
 import ScriptEdit from './components/provider/EditScript';
 import RequestSet from './components/airequest/SetRequest';
 import RequestGet from './components/airequest/GetRequest';
-import { Cosmos } from './cosmos';
+import { Cosmos } from 'cosmosjs';
 import { networks } from './config';
 import { customStyles } from './utils';
 

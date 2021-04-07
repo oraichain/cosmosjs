@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import 'react-block-ui/style.css';
 import Form from '@rjsf/core';
 
-import message from '../../cosmos/messages/proto';
+import message from 'cosmosjs/messages/proto';
 import ContractMenu from './ContractMenu';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import { getFileSize } from '../../utils';

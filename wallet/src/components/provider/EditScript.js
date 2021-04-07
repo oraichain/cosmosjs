@@ -6,7 +6,7 @@ import 'react-block-ui/style.css';
 import bech32 from 'bech32';
 import constants from '../../constants';
 
-import message from '../../cosmos/messages/proto';
+import message from 'cosmosjs/messages/proto';
 import PinWrap, { openPinWrap } from '../PinWrap';
 import ProviderMenu from './ProviderMenu';
 
