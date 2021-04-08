@@ -18,7 +18,7 @@ function trimBuffer(buf) {
   return buf;
 }
 
-export class Cosmos {
+export default class Cosmos {
   constructor(url, chainId) {
     this.url = url;
     this.chainId = chainId;
@@ -160,3 +160,5 @@ export class Cosmos {
     return res;
   }
 }
+
+Cosmos.message = message;
