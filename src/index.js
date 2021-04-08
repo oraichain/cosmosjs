@@ -114,10 +114,6 @@ export default class Cosmos {
     return txBytes;
   }
 
-  getTxs(txHash) {
-    return fetch(`${this.url}/cosmos/tx/v1beta1/txs/${txHash}`).then((res) => res.json());
-  }
-
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
   broadcast(signedTxBytes, broadCastMode = 'BROADCAST_MODE_SYNC') {
     const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString('base64');
