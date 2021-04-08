@@ -32,5 +32,6 @@ export default async (yargs: Argv) => {
       'Edit an oracle script in the system',
       require('./cmd/edit-oscript').default
     )
-    .command('get-script', 'Get script infomation', require('./cmd/get-script').default);
+    .command('get-script', 'Get script infomation', require('./cmd/get-script').default)
+    .command('decode-tx', 'Decode transaction infomation', require('./cmd/decode-tx').default);
 };
