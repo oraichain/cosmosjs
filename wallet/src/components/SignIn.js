@@ -1,14 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import queryString from 'query-string';
 import { getPassword } from '../utils';
 import { InputWrap } from './common';
 
 import PinWrap from './PinWrap';
 
-const SignIn = () => {
+const SignIn = ({ history }) => {
   const { t, i18n } = useTranslation();
   const $ = window.jQuery;
+  const queryStringParse = queryString.parse(history.location.search) || {};
+  console.log(queryStringParse)
   function showPin() {
     var account = $('.input-account').val();
     var password = getPassword();
@@ -51,7 +54,7 @@ const SignIn = () => {
       &nbsp;&nbsp;|&nbsp;&nbsp;
       <Link to={`/${i18n.language}/import-privatekey`}>{t('importPrivateKey')}</Link>
       <a className="disableChecksum" style={{ position: 'fixed', bottom: 0, left: 0, color: '#fff' }}></a>
-      <PinWrap show={false} pinType="signin" />
+      <PinWrap show={false} pinType="signin" closePopup={queryStringParse.signInFromScan} />
     </div>
   );
 };

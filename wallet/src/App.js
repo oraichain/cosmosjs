@@ -28,9 +28,9 @@ import { customStyles } from './utils';
 import './App.css';
 
 const url = new window.URL(window.location.href);
-const network = url.searchParams.get('payload') || window.localStorage.getItem('wallet.network') || 'Oraichain';
+const network = url.searchParams.get('network') || window.localStorage.getItem('wallet.network') || 'Oraichain';
 const path = url.searchParams.get('path');
-const lcd = url.searchParams.get('lcd') || (networks[network]?.lcd ?? 'http://localhost:1317');
+const lcd = url.searchParams.get('lcd') || (networks[network]?.lcd ?? 'https://lcd.orai.io');
 // init cosmos version
 const cosmos = new Cosmos(lcd, network);
 const symbol = networks[network]?.denom ?? 'orai';

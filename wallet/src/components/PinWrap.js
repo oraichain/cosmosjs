@@ -22,7 +22,7 @@ export const openPinWrap = () => {
   $('.pin-wrap').addClass('open');
 };
 
-const PinWrap = ({ pinType, updateUser, onChildKey }) => {
+const PinWrap = ({ pinType, updateUser, onChildKey, closePopup }) => {
   const history = useHistory();
   const { t, i18n } = useTranslation();
   let input = '',
@@ -163,6 +163,9 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
               updateUser({ name: account, address });
               if (window.stdSignMsgByPayload) {
                 history.push(`/${i18n.language}/transaction`);
+              } else if (closePopup) {
+                window.opener.postMessage({ address, account}, "*");
+                window.close();
               } else {
                 history.push(`/${i18n.language}/`);
               }
@@ -178,9 +181,10 @@ const PinWrap = ({ pinType, updateUser, onChildKey }) => {
               let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
               const childKey = getChildkeyFromDecrypted(decryptedMnemonics);
 
-              // hide UI
-              $('#allowBtn>span').empty();
-              hidePin();
+              if (!closePopup) {
+                $('#allowBtn>span').empty();
+                hidePin();
+              }
 
               if (onChildKey) {
                 onChildKey(childKey);
