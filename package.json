@@ -1,8 +1,8 @@
 {
-  "name": "oraichain-cosmosjs",
+  "name": "@oraichain/cosmosjs",
   "licenses": [],
-  "version": "1.0.12",
-  "description": "A JavasSript Open Source Library for Cosmos Network, IRISnet, Kava, Band Protocol, Starname, Secret Network, Akash, and Certik. It supports for protobuf signing",
+  "version": "0.0.1",
+  "description": "A JavasSript Open Source Library for Oraichain and possibly many other Cosmos network blockchains as well",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "node": ">=12.0.0"
   },
   "keywords": [
+    "oraichain",
     "cosmosjs",
     "cosmos",
     "tendermint",

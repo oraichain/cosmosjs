@@ -1,0 +1,6 @@
+/src/
+/node_modules/
+.*
+.all-contributorsrc
+README.node_modules
+webpack.config.js
