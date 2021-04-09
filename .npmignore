@@ -1,6 +1,7 @@
 /src/
 /node_modules/
 .*
+env.example
 .all-contributorsrc
 README.node_modules
 webpack.config.js
