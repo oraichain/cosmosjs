@@ -145,7 +145,6 @@ const PinWrap = ({ pinType, updateUser, onChildKey, closePopup }) => {
         try {
           let decrypted = CryptoJS.AES.decrypt(encryptedMnemonics, input);
           let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
-          console.log(decryptedMnemonics);
 
           if (decryptedMnemonics === '') {
             // wrong
@@ -181,10 +180,8 @@ const PinWrap = ({ pinType, updateUser, onChildKey, closePopup }) => {
               let decryptedMnemonics = decrypted.toString(CryptoJS.enc.Utf8);
               const childKey = getChildkeyFromDecrypted(decryptedMnemonics);
 
-              if (!closePopup) {
-                $('#allowBtn>span').empty();
-                hidePin();
-              }
+              $('#allowBtn>span').empty();
+              hidePin();
 
               if (onChildKey) {
                 onChildKey(childKey);

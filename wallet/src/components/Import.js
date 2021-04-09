@@ -1,15 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Route, useHistory } from 'react-router-dom';
+import queryString from 'query-string';
+
 import PinWrap from './PinWrap';
 
 import { InputWrap } from './common';
 import { cleanMnemonics, isMnemonicsValid, countWords, getPassword } from '../utils';
 
-const Import = () => {
+const Import = ({ history }) => {
   const { t, i18n } = useTranslation();
-  const history = useHistory();
   const $ = window.jQuery;
+  const queryStringParse = queryString.parse(history.location.search) || {};
+
   const importMnemonics = () => {
     window.pinType = 'import';
 
@@ -77,7 +80,7 @@ const Import = () => {
       return;
     }
 
-    history.push(`/${i18n.language}/session`);
+    history.push(`/${i18n.language}/session${queryStringParse.signInFromScan ? '?signInFromScan=true' : ''}`);
   };
 
   const copyAddress = () => {

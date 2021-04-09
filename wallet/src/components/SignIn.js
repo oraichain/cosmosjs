@@ -11,7 +11,6 @@ const SignIn = ({ history }) => {
   const { t, i18n } = useTranslation();
   const $ = window.jQuery;
   const queryStringParse = queryString.parse(history.location.search) || {};
-  console.log(queryStringParse)
   function showPin() {
     var account = $('.input-account').val();
     var password = getPassword();
@@ -50,9 +49,9 @@ const SignIn = ({ history }) => {
           {t('next')}
         </button>
       </form>
-      <Link to={`/${i18n.language}/import`}>{t('importWallet')}</Link>
+      <Link to={`/${i18n.language}/import${queryStringParse.signInFromScan ? '?signInFromScan=true' : ''}`}>{t('importWallet')}</Link>
       &nbsp;&nbsp;|&nbsp;&nbsp;
-      <Link to={`/${i18n.language}/import-privatekey`}>{t('importPrivateKey')}</Link>
+      <Link to={`/${i18n.language}/import-privatekey${queryStringParse.signInFromScan ? '?signInFromScan=true' : ''}`}>{t('importPrivateKey')}</Link>
       <a className="disableChecksum" style={{ position: 'fixed', bottom: 0, left: 0, color: '#fff' }}></a>
       <PinWrap show={false} pinType="signin" closePopup={queryStringParse.signInFromScan} />
     </div>
