@@ -7,6 +7,7 @@ export class Cosmos {
   path: string;
   bech32MainPrefix: string;
   setBech32MainPrefix(value: string): void;
+  generateMnemonic(strength?: number): string;
   setPath(value: string): void;
   getChildKey(mnemonic: string, checkSum?: boolean): bip32.BIP32Interface;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;

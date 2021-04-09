@@ -31,6 +31,10 @@ export default class Cosmos {
     if (!this.bech32MainPrefix) throw new Error('bech32MainPrefix object was not set or invalid');
   }
 
+  generateMnemonic(strength) {
+    return bip39.generateMnemonic(strength);
+  }
+
   setPath(value) {
     this.path = value;
     if (!this.path) throw new Error('path object was not set or invalid');
