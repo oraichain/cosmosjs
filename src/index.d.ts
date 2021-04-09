@@ -1,3 +1,4 @@
+export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
 declare class Cosmos {
   constructor(url: any, chainId: any);
   url: any;
@@ -15,8 +16,8 @@ declare class Cosmos {
   getAccounts(address: any): Promise<any>;
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): any;
   getTxs(txHash: any): Promise<any>;
-  broadcast(signedTxBytes: any, broadCastMode?: string): Promise<any>;
-  submit(child: any, txBody: any, broadCastMode?: string, fees?: number, gas_limit?: number): Promise<any>;
+  broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
+  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: number, gas_limit?: number): Promise<any>;
 }
 declare namespace Cosmos {
   export { message };
