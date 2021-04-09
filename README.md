@@ -15,7 +15,7 @@ sudo rm -rf $PWD/dist/ && yarn build
 ## 3. Copy typescript files into the bundle
 
 ```bash
-cp -r $PWD/src/messages/ dist/ && cp $PWD/src/index.d.ts dist/ && rm $PWD/dist/messages/proto.js
+cp -r $PWD/src/messages dist/ && cp $PWD/src/index.d.ts dist/ && rm $PWD/dist/messages/proto.js
 ```
 
 ## 4. Login to npm
