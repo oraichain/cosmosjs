@@ -9,7 +9,7 @@ yarn
 ## 2. Build javascript bundle
 
 ```node
-yarn build
+sudo rm -rf dist/ && yarn build
 ```
 
 ## 3. Copy typescript files into the bundle
