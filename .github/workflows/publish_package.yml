@@ -6,7 +6,7 @@ name: publish_package
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ feat/publish_package ]
+    branches: [ feat/publish_package, main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
