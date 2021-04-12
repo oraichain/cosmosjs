@@ -4,11 +4,12 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
-  target: 'web',
+  target: 'node',
   output: {
     path: path.resolve('dist'),
     filename: 'index.js',
-    globalObject: 'this'
+    globalObject: 'this',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: ['.js', '.json']
@@ -33,5 +34,5 @@ module.exports = {
     hints: false,
     maxEntrypointSize: 40480000,
     maxAssetSize: 40480000
-  },
+  }
 };
