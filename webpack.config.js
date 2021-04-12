@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   mode: 'production',
@@ -35,5 +34,4 @@ module.exports = {
     maxEntrypointSize: 40480000,
     maxAssetSize: 40480000
   },
-  plugins: [new BundleAnalyzerPlugin()]
 };
