@@ -118,14 +118,25 @@ export default class Cosmos {
     return txBytes;
   }
 
+  get(path) {
+    return fetch(`${this.url}${path}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }).then((res) => res.json());
+  }
+
+  post(path, data) {
+    return fetch(`${this.url}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then((res) => res.json());
+  }
+
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
   broadcast(signedTxBytes, broadCastMode = 'BROADCAST_MODE_SYNC') {
     const txBytesBase64 = Buffer.from(signedTxBytes, 'binary').toString('base64');
-    return fetch(`${this.url}/cosmos/tx/v1beta1/txs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tx_bytes: txBytesBase64, mode: broadCastMode })
-    }).then((res) => res.json());
+    return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
   async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = 0, gas_limit = 200000) {
