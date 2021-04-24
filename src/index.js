@@ -20,7 +20,8 @@ function trimBuffer(buf) {
 
 export default class Cosmos {
   constructor(url, chainId) {
-    this.url = url;
+    // strip / at end
+    this.url = url.replace(/\/$/,'');
     this.chainId = chainId;
     this.path = "m/44'/118'/0'/0/0";
     this.bech32MainPrefix = 'cosmos';
@@ -90,7 +91,7 @@ export default class Cosmos {
   }
 
   getAccounts(address) {
-    return fetch(`${this.url}/cosmos/auth/v1beta1/accounts/${address}`).then((res) => res.json());
+    return this.get(`/cosmos/auth/v1beta1/accounts/${address}`);
   }
 
   sign(txBody, authInfo, accountNumber, privKey) {
@@ -119,14 +120,11 @@ export default class Cosmos {
   }
 
   get(path) {
-    return fetch(`${this.url}${path}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }).then((res) => res.json());
+    return fetch(`${this.url}${path}`).then((res) => res.json());
   }
 
   post(path, data) {
-    return fetch(`${this.url}/${path}`, {
+    return fetch(`${this.url}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
