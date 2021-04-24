@@ -1,3 +1,5 @@
+import * as bip32 from 'bip32';
+import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
 declare class Cosmos {
   constructor(url: any, chainId: any);
@@ -5,6 +7,8 @@ declare class Cosmos {
   chainId: any;
   path: string;
   bech32MainPrefix: string;
+  get(path: string): Promise<any>;
+  post(path: string, data: object): Promise<any>;
   setBech32MainPrefix(value: any): void;
   setPath(value: any): void;
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
@@ -23,5 +27,3 @@ declare namespace Cosmos {
   export { message };
 }
 export default Cosmos;
-import * as bip32 from 'bip32';
-import message from './messages/proto';
