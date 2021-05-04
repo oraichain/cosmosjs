@@ -1,9 +1,6 @@
-<!-- TOTAL-DOWNLOADS-BADGE:START - Do not remove or modify this section -->
-[![NPM Downloads](https://img.shields.io/npm/dt/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@cosmostation/cosmosjs)
-<!-- TOTAL-DOWNLOADS-BADGE:END -->
-
 <p align="center">
-  <a href="https://www.cosmostation.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://user-images.githubusercontent.com/20435620/55696624-d7df2e00-59f8-11e9-9126-edf9a40b11a8.png" alt="Cosmostation logo"></a>
+  <a href="https://www.cosmostation.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://user-images.githubusercontent.com/20435620/55696624-d7df2e00-59f8-11e9-9126-edf9a40b11a8.png" alt="Cosmostation logo"></a> &nbsp
+  <a href="https://orai.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars.githubusercontent.com/u/69910226?s=200&v=4" alt="Oraichain logo"></a>
 </p>
 <h1 align="center">
     CosmosJS - Cosmos JavaScript Library 
@@ -19,9 +16,7 @@ A JavasSript Open Source Library for [Oraichain](https://orai.io/), [Cosmos Netw
 
 This library supports cosmos address generation and verification. It enables you to create an offline signature functions of different types of transaction messages. It will eventually support all the other blockchains that are based on Tendermint in the future.
 
-[![License]](https://www.npmjs.com/package/@oraichain/cosmosjs)
-[![Latest Stable Version]](https://www.npmjs.com/package/@oraichain/cosmosjs)
-[![NPM Downloads]](https://www.npmjs.com/package/@oraichain/cosmosjs)
+[![License](https://img.shields.io/npm/l/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@oraichain/cosmosjs)
 
 ## Installation
 
