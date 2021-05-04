@@ -3,7 +3,7 @@
   <a href="https://orai.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars.githubusercontent.com/u/69910226?s=200&v=4" alt="Oraichain logo"></a>
 </p>
 <h1 align="center">
-    Oraichain CosmosJS - Cosmos JavaScript Library 
+    CosmosJS - Cosmos JavaScript Library 
 </h1>
 
 *:star: Was developed: [Cosmostation](https://www.cosmostation.io/)*
