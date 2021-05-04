@@ -61,6 +61,8 @@ const lcdUrl = "http://localhost:1317";
 const chainId = "Oraichain";
 const mnemonic = "foo bar";
 const toAddr = "orai1x6xl5kls4xkmkv3rst5tndmxtqt0u8dxhnw7cg";
+const amount = 10;
+const fees = 100;
 
 const message = Cosmos.message;
 const cosmos = new Cosmos(lcdUrl, chainId);
@@ -75,7 +77,7 @@ Transfer ORAI to designated address.
 const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
     from_address: cosmos.getAddress(childKey),
     to_address: toAddr,
-    amount: [{ denom: cosmos.bech32MainPrefix, amount: String(argv.amount) }] // 10
+    amount: [{ denom: cosmos.bech32MainPrefix, amount: String(amount) }]
 });
 
 const msgSendAny = new message.google.protobuf.Any({
@@ -89,7 +91,7 @@ const txBody = new message.cosmos.tx.v1beta1.TxBody({
 });
 
 try {
-    const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(argv.fees) ? 0 : parseInt(argv.fees));
+    const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(fees) ? 0 : parseInt(fees));
     console.log(response);
 } catch (ex) {
     console.log(ex);
