@@ -99,7 +99,8 @@ try {
 ```
 
 ## Supporting Message Types (Updating...)
-- If you need more message types, you can see [/docs/msg_types](https://github.com/cosmostation/cosmosjs/tree/master/docs/msg_types)
+
+- Since we have Typescript, you can easily know which message types the library supports. We will update the list of message types often.
 
 ## Documentation
 
