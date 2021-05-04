@@ -13,7 +13,7 @@
 
 *:star: Is developing: [Oraichain](https://orai.io/)*
 
-*:star: Will develop: The community*
+*:star: Will develop: [Oraichain](https://orai.io/) and the community*
 
 A JavasSript Open Source Library for [Oraichain](https://orai.io/), [Cosmos Network](https://cosmos.network/) and other Cosmos based networks using the latest Cosmos SDK Stargate version upgrade.
 
