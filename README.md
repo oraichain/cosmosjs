@@ -44,7 +44,7 @@ yarn add @oraichain/cosmosjs
 #### NodeJS
 
 ```js
-const Cosmos = require("@oraichain/cosmosjs");
+const Cosmos = require("@oraichain/cosmosjs").default;
 ```
 
 #### ES6 module
@@ -55,7 +55,7 @@ import Cosmos from "@oraichain/cosmosjs";
 ## Usage
 - Cosmos: Generate Cosmos address from mnemonic 
 ```js
-import Cosmos from '@oraichain/cosmosjs';
+const Cosmos = require("@oraichain/cosmosjs").default;
 
 const lcdUrl = "http://localhost:1317";
 const chainId = "Oraichain";
@@ -91,11 +91,18 @@ const txBody = new message.cosmos.tx.v1beta1.TxBody({
 });
 
 try {
-    const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(fees) ? 0 : parseInt(fees));
-    console.log(response);
+    const response = cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(fees) ? 0 : parseInt(fees)).then((response) => { console.log(response) });
 } catch (ex) {
     console.log(ex);
 }
+```
+
+## Run the script
+
+Assume the filename is demo.js. Run:
+
+```bash
+node demo.js
 ```
 
 ## Supporting Message Types (Updating...)
