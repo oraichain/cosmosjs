@@ -27,13 +27,13 @@ This library supports cosmos address generation and verification. It enables you
 
 In order to fully use this library, you need to run a local or remote full node and set up its rest server, which acts as an intermediary between the front-end and the full-node
 
-### NPM (Amino)
+### NPM
 
 ```bash
 npm install @oraichain/cosmosjs
 ```
 
-### Yarn (Amino)
+### Yarn
 
 ```bash
 yarn add @oraichain/cosmosjs
