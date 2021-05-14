@@ -21,7 +21,7 @@ function trimBuffer(buf) {
 export default class Cosmos {
   constructor(url, chainId) {
     // strip / at end
-    this.url = url.replace(/\/$/,'');
+    this.url = url.replace(/\/$/, '');
     this.chainId = chainId;
     this.path = "m/44'/118'/0'/0/0";
     this.bech32MainPrefix = 'cosmos';
@@ -107,7 +107,7 @@ export default class Cosmos {
     const signMessage = trimBuffer(message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
 
     const hash = Buffer.from(sha256.digest(signMessage));
-    const sig = secp256k1.sign(hash, Buffer.from(privKey));
+    const sig = secp256k1.ecdsaSign(hash, Buffer.from(privKey));
 
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes,
