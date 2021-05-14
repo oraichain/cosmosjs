@@ -14,8 +14,8 @@ declare class Cosmos {
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
-  getECPairPriv(childOrMnemonic: any, checkSum?: boolean): any;
-  getPubKey(privKey: any): any;
+  getECPairPriv(childOrMnemonic: any, checkSum?: boolean): Buffer;
+  getPubKey(privKey: any): Buffer;
   getPubKeyAny(privKey: any): any;
   getAccounts(address: any): Promise<any>;
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): any;
