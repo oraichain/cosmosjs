@@ -20,7 +20,7 @@ This library supports cosmos address generation and verification. It enables you
 
 ## Installation
 
-In order to fully use this library, you need to run a local or remote full node and set up its rest server, which acts as an intermediary between the front-end and the full-node
+In order to fully use this library, you need to run a local or remote network with at least a validator node and set up its rest server, which acts as an intermediary between the front-end and the node
 
 ### NPM
 
@@ -116,7 +116,7 @@ When opening a PR with a minor fix, make sure to add #trivial to the title/descr
 
 ## Cosmostation's Services and Community
 
-- [Official Website](https://orai.io)
+- [Official Website](https://www.cosmostation.io)
 - [Mintscan Explorer](https://www.mintscan.io)
 - [Web Wallet](https://wallet.cosmostation.io)
 - [Android Wallet](https://bit.ly/2BWex9D)
@@ -126,7 +126,7 @@ When opening a PR with a minor fix, make sure to add #trivial to the title/descr
 
 ## Oraichain's Services and Community
 
-- [Official Website](https://www.cosmostation.io)
+- [Official Website](https://www.orai.io)
 - [Mintscan Explorer](https://scan.orai.io)
 - [Web Wallet](https://oraiwallet.web.app)
 - [Telegram - International](https://t.me/oraichain)
