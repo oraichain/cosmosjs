@@ -18,7 +18,8 @@ declare class Cosmos {
   getPubKey(privKey: any): Buffer;
   getPubKeyAny(privKey: any): any;
   getAccounts(address: any): Promise<any>;
-  sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): any;
+  signRaw(message: Buffer): Uint8Array;
+  sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): Uint8Array;
   getTxs(txHash: any): Promise<any>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
   submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: number, gas_limit?: number): Promise<any>;
