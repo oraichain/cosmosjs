@@ -14,6 +14,7 @@ declare class Cosmos {
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
+  getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): any;
   getECPairPriv(childOrMnemonic: any, checkSum?: boolean): any;
   getPubKey(privKey: any): any;
   getPubKeyAny(privKey: any): any;

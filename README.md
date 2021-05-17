@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- TOTAL-DOWNLOADS-BADGE:START - Do not remove or modify this section -->
 [![NPM Downloads](https://img.shields.io/npm/dt/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@cosmostation/cosmosjs)
 <!-- TOTAL-DOWNLOADS-BADGE:END -->
@@ -14,10 +15,26 @@
 *:star: Is developing: [Oraichain](https://orai.io/)*
 
 *;star: Will develop: The community*
+=======
+<p align="center">
+  <a href="https://www.cosmostation.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://user-images.githubusercontent.com/20435620/55696624-d7df2e00-59f8-11e9-9126-edf9a40b11a8.png" alt="Cosmostation logo"></a> &nbsp
+  <a href="https://orai.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars.githubusercontent.com/u/69910226?s=200&v=4" alt="Oraichain logo"></a>
+</p>
+<h1 align="center">
+    CosmosJS - Cosmos JavaScript Library 
+</h1>
+
+*:star: Was developed: [Cosmostation](https://www.cosmostation.io/)*
+
+*:star: Is developing: [Oraichain](https://orai.io/)*
+
+*:star: Will develop: [Oraichain](https://orai.io/) and the community*
+>>>>>>> ec3121eee1c970637c652db6afd3d88ef597e92d
 
 A JavasSript Open Source Library for [Oraichain](https://orai.io/), [Cosmos Network](https://cosmos.network/) and other Cosmos based networks using the latest Cosmos SDK Stargate version upgrade.
 
 This library supports cosmos address generation and verification. It enables you to create an offline signature functions of different types of transaction messages. It will eventually support all the other blockchains that are based on Tendermint in the future.
+<<<<<<< HEAD
 
 [![License]](https://www.npmjs.com/package/@oraichain/cosmosjs)
 [![Latest Stable Version]](https://www.npmjs.com/package/@oraichain/cosmosjs)
@@ -28,11 +45,22 @@ This library supports cosmos address generation and verification. It enables you
 In order to fully use this library, you need to run a local or remote full node and set up its rest server, which acts as an intermediary between the front-end and the full-node
 
 ### NPM (Amino)
+=======
+
+[![License](https://img.shields.io/npm/l/@cosmostation/cosmosjs.svg)](https://www.npmjs.com/package/@oraichain/cosmosjs)
+
+## Installation
+
+In order to fully use this library, you need to run a local or remote network with at least a validator node and set up its rest server, which acts as an intermediary between the front-end and the node
+
+### NPM
+>>>>>>> ec3121eee1c970637c652db6afd3d88ef597e92d
 
 ```bash
 npm install @oraichain/cosmosjs
 ```
 
+<<<<<<< HEAD
 ### Yarn (Amino)
 
 ```bash
@@ -98,6 +126,83 @@ try {
 
 ## Supporting Message Types (Updating...)
 - If you need more message types, you can see [/docs/msg_types](https://github.com/cosmostation/cosmosjs/tree/master/docs/msg_types)
+=======
+### Yarn
+
+```bash
+yarn add @oraichain/cosmosjs
+```
+
+## Import 
+
+#### NodeJS
+
+```js
+const Cosmos = require("@oraichain/cosmosjs").default;
+```
+
+#### ES6 module
+```js
+import Cosmos from "@oraichain/cosmosjs";
+```
+
+## Usage
+- Cosmos: Generate Cosmos address from mnemonic 
+```js
+const Cosmos = require("@oraichain/cosmosjs").default;
+
+const lcdUrl = "http://localhost:1317";
+const chainId = "Oraichain";
+const mnemonic = "foo bar";
+const toAddr = "orai1x6xl5kls4xkmkv3rst5tndmxtqt0u8dxhnw7cg";
+const amount = 10;
+const fees = 100;
+
+const message = Cosmos.message;
+const cosmos = new Cosmos(lcdUrl, chainId);
+
+cosmos.setBech32MainPrefix('orai');
+const childKey = cosmos.getChildKey(mnemonic);
+const address = cosmos.getAddress(mnemonic);
+```
+
+Transfer ORAI to designated address.
+```js
+const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
+    from_address: cosmos.getAddress(childKey),
+    to_address: toAddr,
+    amount: [{ denom: cosmos.bech32MainPrefix, amount: String(amount) }]
+});
+
+const msgSendAny = new message.google.protobuf.Any({
+    type_url: '/cosmos.bank.v1beta1.MsgSend',
+    value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish()
+});
+
+const txBody = new message.cosmos.tx.v1beta1.TxBody({
+    messages: [msgSendAny],
+    memo: ''
+});
+
+try {
+    const response = cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(fees) ? 0 : parseInt(fees)).then((response) => { console.log(response) });
+} catch (ex) {
+    console.log(ex);
+}
+```
+
+## Run the script
+
+Assume the filename is demo.js. Run:
+
+```bash
+node demo.js
+```
+
+## Supporting Message Types (Updating...)
+
+- Since we have Typescript, you can easily know which message types the library supports. We will update the list of message types often.
+>>>>>>> ec3121eee1c970637c652db6afd3d88ef597e92d
 
 ## Documentation
 
@@ -111,7 +216,11 @@ When opening a PR with a minor fix, make sure to add #trivial to the title/descr
 
 ## Cosmostation's Services and Community
 
+<<<<<<< HEAD
 - [Official Website](https://orai.io)
+=======
+- [Official Website](https://www.cosmostation.io)
+>>>>>>> ec3121eee1c970637c652db6afd3d88ef597e92d
 - [Mintscan Explorer](https://www.mintscan.io)
 - [Web Wallet](https://wallet.cosmostation.io)
 - [Android Wallet](https://bit.ly/2BWex9D)
@@ -121,7 +230,11 @@ When opening a PR with a minor fix, make sure to add #trivial to the title/descr
 
 ## Oraichain's Services and Community
 
+<<<<<<< HEAD
 - [Official Website](https://www.cosmostation.io)
+=======
+- [Official Website](https://www.orai.io)
+>>>>>>> ec3121eee1c970637c652db6afd3d88ef597e92d
 - [Mintscan Explorer](https://scan.orai.io)
 - [Web Wallet](https://oraiwallet.web.app)
 - [Telegram - International](https://t.me/oraichain)

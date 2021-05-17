@@ -21,7 +21,7 @@ function trimBuffer(buf) {
 export default class Cosmos {
   constructor(url, chainId) {
     // strip / at end
-    this.url = url.replace(/\/$/,'');
+    this.url = url.replace(/\/$/, '');
     this.chainId = chainId;
     this.path = "m/44'/118'/0'/0/0";
     this.bech32MainPrefix = 'cosmos';
@@ -62,6 +62,16 @@ export default class Cosmos {
     const words = bech32.toWords(childOrMnemonic.identifier);
 
     return bech32.encode(this.bech32MainPrefix, words);
+  }
+
+  getValidatorAddress(childOrMnemonic, checkSum = true) {
+    // compartible
+    if (typeof childOrMnemonic === 'string') {
+      return this.getValidatorAddress(this.getChildKey(childOrMnemonic, checkSum));
+    }
+    const words = bech32.toWords(childOrMnemonic.identifier);
+
+    return bech32.encode(this.bech32MainPrefix + 'valoper', words);
   }
 
   getECPairPriv(childOrMnemonic, checkSum = true) {
