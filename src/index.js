@@ -104,6 +104,10 @@ export default class Cosmos {
     return this.get(`/cosmos/auth/v1beta1/accounts/${address}`);
   }
 
+  signRaw(message, privKey) {
+    return secp256k1.ecdsaSign(message, privKey).signature;
+  }
+
   sign(txBody, authInfo, accountNumber, privKey) {
     const bodyBytes = trimBuffer(message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish());
     const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
@@ -117,7 +121,7 @@ export default class Cosmos {
     const signMessage = trimBuffer(message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
 
     const hash = Buffer.from(sha256.digest(signMessage));
-    const sig = secp256k1.sign(hash, Buffer.from(privKey));
+    const sig = secp256k1.ecdsaSign(hash, privKey);
 
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes,

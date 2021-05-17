@@ -1,7 +1,7 @@
 {
   "name": "@oraichain/cosmosjs",
   "licenses": [],
-  "version": "0.0.57",
+  "version": "0.0.62",
   "description": "A JavasSript Open Source Library for Oraichain and possibly many other Cosmos network blockchains as well",
   "main": "dist/index.js",
   "repository": {
@@ -49,7 +49,7 @@
     "isomorphic-fetch": "^3.0.0",
     "js-sha256": "^0.9.0",
     "protobufjs": "^6.10.2",
-    "secp256k1": "^3.6.2"
+    "secp256k1": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",

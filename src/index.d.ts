@@ -15,11 +15,12 @@ declare class Cosmos {
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
   getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): any;
-  getECPairPriv(childOrMnemonic: any, checkSum?: boolean): any;
-  getPubKey(privKey: any): any;
-  getPubKeyAny(privKey: any): any;
+  getECPairPriv(childOrMnemonic: any, checkSum?: boolean): Buffer;
+  getPubKey(privKey: Uint8Array): Uint8Array;
+  getPubKeyAny(privKey: Uint8Array): any;
   getAccounts(address: any): Promise<any>;
-  sign(txBody: any, authInfo: any, accountNumber: any, privKey: any): any;
+  signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
+  sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
   getTxs(txHash: any): Promise<any>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
   submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: number, gas_limit?: number): Promise<any>;
