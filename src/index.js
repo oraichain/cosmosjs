@@ -162,8 +162,8 @@ export default class Cosmos {
     const pubKeyAny = this.getPubKeyAny(privKey);
     const data = await this.getAccounts(address);
     if (data.code) {
-      if (data.code === 2) throw { status: CONSTANTS.CODE_STATUS.NOT_FOUND, message: `The wallet address ${address} does not exist` };
-      else throw { status: CONSTANTS.CODE_STATUS.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
+      if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
+      else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
     }
     console.log("passed get accounts check catch error");
 
@@ -190,7 +190,7 @@ export default class Cosmos {
 
     const res = await this.broadcast(signedTxBytes, broadCastMode);
     if (res.tx_response.code !== 0) {
-      throw { status: CONSTANTS.CODE_STATUS.GENERIC_ERROR, message: `Unexpected error from the network: ${res.tx_response.raw_log}` };
+      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: `Unexpected error from the network: ${res.tx_response.raw_log}` };
     }
     return res;
   }
