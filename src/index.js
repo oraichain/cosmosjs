@@ -75,8 +75,8 @@ export default class Cosmos {
     return bech32.encode(this.bech32MainPrefix + 'valoper', words);
   }
 
-  getStatusCode() {
-    return CONSTANTS.CODE_STATUS;
+  get statusCode() {
+    return CONSTANTS.STATUS_CODE;
   }
 
   getECPairPriv(childOrMnemonic, checkSum = true) {

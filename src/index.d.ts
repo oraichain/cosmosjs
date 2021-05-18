@@ -15,7 +15,7 @@ declare class Cosmos {
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
   getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): any;
-  getStatusCode(): any;
+  get statusCode(): any;
   getECPairPriv(childOrMnemonic: any, checkSum?: boolean): Buffer;
   getPubKey(privKey: Uint8Array): Uint8Array;
   getPubKeyAny(privKey: Uint8Array): any;
