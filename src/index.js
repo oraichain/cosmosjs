@@ -9,6 +9,7 @@ import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
 import { sha256 } from 'js-sha256';
 import message from './messages/proto';
+import CONSTANTS from './constants';
 
 function trimBuffer(buf) {
   // remove 32,0 (space + null)
@@ -72,6 +73,10 @@ export default class Cosmos {
     const words = bech32.toWords(childOrMnemonic.identifier);
 
     return bech32.encode(this.bech32MainPrefix + 'valoper', words);
+  }
+
+  getStatusCode() {
+    return CONSTANTS.CODE_STATUS;
   }
 
   getECPairPriv(childOrMnemonic, checkSum = true) {
@@ -155,8 +160,12 @@ export default class Cosmos {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
-
     const data = await this.getAccounts(address);
+    if (data.code) {
+      if (data.code === 2) throw { status: CONSTANTS.CODE_STATUS.NOT_FOUND, message: `The wallet address ${address} does not exist` };
+      else throw { status: CONSTANTS.CODE_STATUS.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
+    }
+    console.log("passed get accounts check catch error");
 
     // --------------------------------- (2)authInfo ---------------------------------
     const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
@@ -180,6 +189,9 @@ export default class Cosmos {
     const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
 
     const res = await this.broadcast(signedTxBytes, broadCastMode);
+    if (res.tx_response.code !== 0) {
+      throw { status: CONSTANTS.CODE_STATUS.GENERIC_ERROR, message: `Unexpected error from the network: ${res.tx_response.raw_log}` };
+    }
     return res;
   }
 }
