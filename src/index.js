@@ -188,12 +188,13 @@ export default class Cosmos {
 
     const res = await this.broadcast(signedTxBytes, broadCastMode);
     if (!res.tx_response) {
-      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: `Unexpected error from the network: ${JSON.stringify(res)}` };
-    }
-    if (res.tx_response.code !== 0) {
-      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: `Unexpected error from the network: ${res.tx_response.raw_log}` };
-    }
-    return res;
+      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: JSON.stringify(res) }
+    };
+  }
+  if(res.tx_response.code !== 0) {
+  throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: res.tx_response.raw_log };
+}
+return res;
   }
 }
 
