@@ -65,6 +65,13 @@ export default class Cosmos {
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
+  getAddressStr(operatorAddr) {
+    const fullWords = bech32.decode(operatorAddr);
+    if (fullWords.words) {
+      return bech32.encode(this.bech32MainPrefix, fullWords.words);
+    }
+  }
+
   getValidatorAddress(childOrMnemonic, checkSum = true) {
     // compartible
     if (typeof childOrMnemonic === 'string') {
@@ -73,6 +80,13 @@ export default class Cosmos {
     const words = bech32.toWords(childOrMnemonic.identifier);
 
     return bech32.encode(this.bech32MainPrefix + 'valoper', words);
+  }
+
+  getOperatorAddressStr(addr) {
+    const fullWords = bech32.decode(addr);
+    if (fullWords.words) {
+      return bech32.encode(this.bech32MainPrefix + 'valoper', fullWords.words);
+    }
   }
 
   get statusCode() {
