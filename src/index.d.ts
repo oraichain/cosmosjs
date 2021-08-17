@@ -21,6 +21,9 @@ declare class Cosmos {
   getECPairPriv(childOrMnemonic: any, checkSum?: boolean): Buffer;
   getPubKey(privKey: Uint8Array): Uint8Array;
   getPubKeyAny(privKey: Uint8Array): any;
+  constructBodyBytes(msgAny: any, memo: String): Uint8Array;
+  constructAuthInfoBytes(pubKeyAny: any, gas: number, fees: number, sequence: number)
+  getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): any;
   getAccounts(address: any): Promise<any>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;

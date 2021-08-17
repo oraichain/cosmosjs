@@ -119,6 +119,47 @@ export default class Cosmos {
     return pubKeyAny;
   }
 
+  getPubKeyAnyWithPub(pubKeyBytes) {
+    var buf1 = new Buffer.from([10]);
+    var buf2 = new Buffer.from([pubKeyBytes.length]);
+    var buf3 = new Buffer.from(pubKeyBytes);
+    const pubKey = Buffer.concat([buf1, buf2, buf3]);
+    const pubKeyAny = new message.google.protobuf.Any({
+      type_url: '/cosmos.crypto.secp256k1.PubKey',
+      value: pubKey
+    });
+    return pubKeyAny;
+  }
+
+  constructAuthInfoBytes(pubKeyAny, gas = 200000, fees = 0, sequence) {
+    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+      public_key: pubKeyAny,
+      mode_info: {
+        single: {
+          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
+        }
+      },
+      sequence
+    });
+
+    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+      signer_infos: [signerInfo],
+      fee: new message.cosmos.tx.v1beta1.Fee({
+        amount: [{ denom: this.bech32MainPrefix, amount: isNaN(fees) ? "0" : String(fees) }],
+        gas_limit: gas
+      })
+    });
+    return message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
+  }
+
+  constructBodyBytes(msgAny, memo) {
+    const txBody = new message.cosmos.tx.v1beta1.TxBody({
+      messages: [msgAny],
+      memo,
+    });
+    return message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+  }
+
   getAccounts(address) {
     return this.get(`/cosmos/auth/v1beta1/accounts/${address}`);
   }
