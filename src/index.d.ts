@@ -23,6 +23,7 @@ declare class Cosmos {
   getPubKeyAny(privKey: Uint8Array): any;
   constructBodyBytes(msgAny: any, memo: String): Uint8Array;
   constructAuthInfoBytes(pubKeyAny: any, gas: number, fees: number, sequence: number)
+  constructTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
   getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): any;
   getAccounts(address: any): Promise<any>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;

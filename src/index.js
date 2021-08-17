@@ -160,6 +160,16 @@ export default class Cosmos {
     return message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
   }
 
+  constructTxBytes(bodyBytes, authInfoBytes, signatures) {
+    const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
+      body_bytes: bodyBytes, // has to collect body bytes & auth info bytes since Keplr overrides data when signing
+      auth_info_bytes: authInfoBytes,
+      signatures,
+    });
+    const txBytes = message.cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
+    return txBytes;
+  }
+
   getAccounts(address) {
     return this.get(`/cosmos/auth/v1beta1/accounts/${address}`);
   }
