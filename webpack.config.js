@@ -1,7 +1,26 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = {
+const commonConfig = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: { compact: false }
+      }
+    ]
+  },
+  // maximum 20 MB
+  performance: {
+    hints: false,
+    maxEntrypointSize: 40480000,
+    maxAssetSize: 40480000
+  }
+}
+
+const nodeConfig = {
   mode: 'production',
   entry: './src/index.js',
   target: 'node',
@@ -19,20 +38,24 @@ module.exports = {
   externals: {
     'node-fetch': 'commonjs2 node-fetch'
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: { compact: false }
-      }
-    ]
-  },
-  // maximum 20 MB
-  performance: {
-    hints: false,
-    maxEntrypointSize: 40480000,
-    maxAssetSize: 40480000
-  }
+  ...commonConfig,
 };
+
+const webConfig = {
+  mode: 'production',
+  entry: './src/index.js',
+  target: 'web',
+  output: {
+    path: path.resolve('dist'),
+    filename: 'index.web.js',
+    globalObject: 'this',
+    libraryTarget: 'umd'
+  },
+  resolve: {
+    extensions: ['.js', '.json']
+    //fallback: { "buffer": false }
+  },
+  ...commonConfig,
+};
+
+module.exports = [nodeConfig, webConfig];
