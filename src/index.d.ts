@@ -12,6 +12,7 @@ declare class Cosmos {
   setBech32MainPrefix(value: any): void;
   setPath(value: any): void;
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
+  static getChildKeyStatic(mnemonic: any, checkSum?: boolean, path: string): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
   getAddressStr(operatorAddr: string): string;
