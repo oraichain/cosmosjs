@@ -55,6 +55,19 @@ export default class Cosmos {
     return node.derivePath(this.path);
   }
 
+  static getChildKeyStatic(mnemonic, checkSum = true, path) {
+    if (typeof mnemonic !== 'string') {
+      throw new Error('mnemonic expects a string');
+    }
+
+    if (checkSum) {
+      if (!bip39.validateMnemonic(mnemonic)) throw new Error('mnemonic phrases have invalid checksums');
+    }
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const node = bip32.fromSeed(seed);
+    return node.derivePath(path);
+  }
+
   getAddress(childOrMnemonic, checkSum = true) {
     // compartible
     if (typeof childOrMnemonic === 'string') {
