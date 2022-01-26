@@ -234,7 +234,7 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000) {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, { timeoutHeight = 0, timeoutIntervalCheck = 10 }) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
@@ -264,7 +264,22 @@ export default class Cosmos {
 
     const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
 
-    const res = await this.broadcast(signedTxBytes, broadCastMode);
+    if (timeoutHeight === 0) {
+      const res = await this.broadcast(signedTxBytes, broadCastMode);
+      return this.handleTxResult(res);
+    } else {
+      // use broadcast mode async to collect tx hash
+      const res = await this.broadcast(signedTxBytes, 'BROADCAST_MODE_ASYNC');
+      const txHash = res.tx_response.txhash;
+      const txResult = await this.handleTxTimeout(txHash, timeoutHeight, timeoutIntervalCheck);
+      return this.handleTxResult(txResult);
+    }
+  }
+
+  handleTxResult(res) {
+    if (res.txhash) {
+      throw { status: CONSTANTS.STATUS_CODE.TX_DISCARDED, message: res.message, txhash: res.txhash };
+    }
     if (!res.tx_response) {
       throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: JSON.stringify(res) };
     }
@@ -272,6 +287,25 @@ export default class Cosmos {
       throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: res.tx_response.raw_log, txhash: res.tx_response.txhash };
     }
     return res;
+  }
+
+  async handleTxTimeout(txhash, timeoutHeight, timeoutIntervalCheck) {
+    while (true) {
+      const blockData = await this.get(`/blocks/${timeoutHeight}`);
+      // query tx hash. The tx can probably be included before the timeout check => check tx data before check timeout height
+      let txData = await this.get(`/cosmos/tx/v1beta1/txs/${txhash}`);
+      // happy case, has transaction then we return back to normal
+      if (!txData.code) return txData;
+      else {
+        // cannot find tx case, check timeout height
+        // if this block exists, it means the the network has reached the timeout height => tx has been flushed. return error
+        if (!blockData.error) {
+          return { txhash, message: "The transaction has been discarded due to low transaction fees. Please increase the gas price re-submit your transaction." }
+        }
+        // has not reached timeout height. sleep for timeout interval then repeat
+        await new Promise(r => setTimeout(r, timeoutIntervalCheck));
+      }
+    }
   }
 }
 
