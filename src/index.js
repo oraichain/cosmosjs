@@ -234,7 +234,7 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, { timeoutHeight = 0, timeoutIntervalCheck = 10 }) {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
@@ -264,7 +264,7 @@ export default class Cosmos {
 
     const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
 
-    if (timeoutHeight === 0) {
+    if (!timeoutHeight || timeoutHeight === 0) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);
       return this.handleTxResult(res);
     } else {
