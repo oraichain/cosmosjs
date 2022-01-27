@@ -269,7 +269,9 @@ export default class Cosmos {
       return this.handleTxResult(res);
     } else {
       // use broadcast mode async to collect tx hash
-      const res = await this.broadcast(signedTxBytes, 'BROADCAST_MODE_ASYNC');
+      const res = await this.broadcast(signedTxBytes, 'BROADCAST_MODE_SYNC');
+      // error that is not related to gas fees
+      if (res.tx_response.code !== 0) return this.handleTxResult(res);
       const txHash = res.tx_response.txhash;
       const txResult = await this.handleTxTimeout(txHash, timeoutHeight, timeoutIntervalCheck);
       return this.handleTxResult(txResult);
