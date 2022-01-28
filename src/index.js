@@ -10,6 +10,7 @@ import secp256k1 from 'secp256k1';
 import { sha256 } from 'js-sha256';
 import message from './messages/proto';
 import CONSTANTS from './constants';
+import { createHash } from 'crypto';
 
 function trimBuffer(buf) {
   // remove 32,0 (space + null)
@@ -19,13 +20,22 @@ function trimBuffer(buf) {
   return buf;
 }
 
+const hash160 = (buffer) => {
+  const sha256Hash = createHash('sha256').update(buffer).digest();
+  try {
+    return createHash('rmd160').update(sha256Hash).digest();
+  } catch (err) {
+    return createHash('ripemd160').update(sha256Hash).digest();
+  }
+};
+
 export default class Cosmos {
-  constructor(url, chainId) {
+  constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
     this.url = url.replace(/\/$/, '');
     this.chainId = chainId;
-    this.path = "m/44'/118'/0'/0/0";
-    this.bech32MainPrefix = 'cosmos';
+    this.path = hdPath;
+    this.bech32MainPrefix = bech32MainPrefix;
   }
 
   setBech32MainPrefix(value) {
@@ -77,6 +87,12 @@ export default class Cosmos {
 
     return bech32.encode(this.bech32MainPrefix, words);
   }
+
+  getAddressFromPub(pubkey) {
+    const words = bech32.toWords(hash160(pubkey));
+    const address = bech32.encode(this.bech32MainPrefix, words);
+    return address;
+  };
 
   getAddressStr(operatorAddr) {
     const fullWords = bech32.decode(operatorAddr);
@@ -234,7 +250,7 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
+  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, gasMultiplier = 1.3, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
     const address = this.getAddress(child);
     const privKey = this.getECPairPriv(child);
     const pubKeyAny = this.getPubKeyAny(privKey);
@@ -243,6 +259,27 @@ export default class Cosmos {
       if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
       else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
     }
+
+    // auto collect gas used if gas limit is auto
+    // if (gas_limit === 'auto') {
+    //   try {
+    //     let txBodySimulate = JSON.parse(JSON.stringify(txBody)); // use this to have deep copy of object
+    //     // use object destruction to not mutate the txBody struct when simulating
+    //     let result = await this.simulate(child.publicKey, txBodySimulate);
+    //     // if simulate returns ok => set new gas limit to gas used
+    //     if (result && result.gas_info && result.gas_info.gas_used) gas_limit = Math.round(parseInt(result.gas_info.gas_used) * gasMultiplier);
+    //     // error cases when simulating, need to throw error
+    //     else if (result && result.code && result.code !== 0) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: result.message };
+    //   } catch (error) {
+    //     throw error;
+    //   }
+    // }
+    // // remove value_raw from txBody to save data when POST to node
+    // txBody.messages = txBody.messages.map(msg => ({ ...msg, value_raw: null }));
+
+    // handle fees. If fee is number then it is gas price, calculate the actual fees. Amount should be int in string
+    if (!isNaN(fees) && !isNaN(gas_limit)) fees = [{ denom: this.bech32MainPrefix, amount: (fees * gas_limit).toFixed(0).toString() }];
+
     // --------------------------------- (2)authInfo ---------------------------------
     const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
       public_key: pubKeyAny,
@@ -308,6 +345,111 @@ export default class Cosmos {
         await new Promise(r => setTimeout(r, timeoutIntervalCheck));
       }
     }
+  }
+
+  //////////////////////////////////////////////////////////// simulate related methods
+  getPubkeyAnySimulate(pubKeyBytes) {
+    var buf1 = new Buffer.from([10]);
+    var buf2 = new Buffer.from([pubKeyBytes.length]);
+    var buf3 = new Buffer.from(pubKeyBytes);
+    const pubKey = Buffer.concat([buf1, buf2, buf3]);
+    return {
+      "@type": '/cosmos.crypto.secp256k1.PubKey',
+      "key": pubKey.toString('base64')
+    };
+  }
+
+  // rename key type_url to @type. Also flatten the value_raw
+  renameKeys(obj) {
+    const keyValues = Object.entries(obj).map(([key, value]) => {
+      let newKey = null
+      // clean all value obj when simulation
+      if (key === "value") {
+        obj[key] = null;
+      }
+      if (key === "type_url") {
+        newKey = "@type"
+      } else {
+        // we skip this key, and move on to the next recursively to flatten it out
+        if (key === "value_raw") {
+          return this.renameKeys(value);
+        }
+        newKey = key
+      }
+      if (typeof value === 'object' && value !== null && !(value instanceof Array)) {
+        obj[key] = this.renameKeys(value);
+      }
+      else if (value instanceof Array) {
+        obj[key] = value.map(obj => this.renameKeys(obj));
+      }
+      return {
+        [newKey]: obj[key]
+      };
+    });
+    return Object.assign({}, ...keyValues);
+  }
+
+  async simulate(publicKey, txBody) {
+    const pubKeyAny = this.getPubkeyAnySimulate(publicKey);
+    const address = this.getAddressFromPub(publicKey);
+    const data = await this.getAccounts(address);
+    if (data.code) {
+      if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
+      else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
+    }
+    // --------------------------------- (2)authInfo ---------------------------------
+
+    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+      public_key: pubKeyAny,
+      mode_info: {
+        single: {
+          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_UNSPECIFIED
+        }
+      },
+      sequence: data.account.sequence
+    });
+
+    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+      signer_infos: [signerInfo],
+      fee: {
+        amount: [],
+        gas_limit: 0
+      }
+    });
+
+    // try converting msgs to simulate form
+    let newMessages = [];
+    for (let msg of txBody.messages) {
+      if (!msg.value_raw) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: "No raw message to simulate the transaction. Please add a value_raw field in message Any. Its value should be an object, not bytes" };
+      // with simulate, the endpoint requires @type key, not type_url
+      let newMessage = this.renameKeys(msg);
+
+      // const typeUrl = msg.type_url.substring(1);
+      // const urlArr = typeUrl.split(".");
+      // let msgType = message;
+      // for (let i = 0; i < urlArr.length; i++) {
+      //   msgType = msgType[urlArr[i]]
+      // }
+      // const value = msgType.decode(msg.value)
+      // // flatten the value object one time only, preserve the remaining nested object inside message value.
+      newMessage = { ...newMessage, value: null, ...msg.value_raw }
+      newMessages.push(newMessage)
+    }
+    txBody.messages = newMessages;
+
+    const simulateTx = {
+      tx: {
+        body: txBody,
+        authInfo,
+        signatures: [Buffer.from("").toString('base64')],
+      }
+    }
+
+    return fetch(`${this.url}/cosmos/tx/v1beta1/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(simulateTx)
+    }).then((res) => res.json());
   }
 }
 

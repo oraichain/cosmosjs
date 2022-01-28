@@ -31,7 +31,8 @@ declare class Cosmos {
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
   getTxs(txHash: any): Promise<any>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number | string, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  simulate(publicKey: Buffer, txBody: any): Promise<any>;
 }
 declare namespace Cosmos {
   export { message };
