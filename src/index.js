@@ -64,7 +64,7 @@ export default class Cosmos {
     return node.derivePath(this.path);
   }
 
-  static getChildKeyStatic(mnemonic, checkSum = true, path) {
+  static getChildKeyStatic(mnemonic, path, checkSum = true) {
     if (typeof mnemonic !== 'string') {
       throw new Error('mnemonic expects a string');
     }
