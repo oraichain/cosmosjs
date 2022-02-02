@@ -7,8 +7,14 @@ const commonConfig = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: { compact: false }
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-transform-runtime'],
+            compact: false
+          }
+        }
       }
     ]
   },
@@ -18,7 +24,7 @@ const commonConfig = {
     maxEntrypointSize: 40480000,
     maxAssetSize: 40480000
   }
-}
+};
 
 const nodeConfig = {
   mode: 'production',
@@ -38,7 +44,7 @@ const nodeConfig = {
   externals: {
     'node-fetch': 'commonjs2 node-fetch'
   },
-  ...commonConfig,
+  ...commonConfig
 };
 
 const webConfig = {
@@ -55,7 +61,7 @@ const webConfig = {
     extensions: ['.js', '.json']
     //fallback: { "buffer": false }
   },
-  ...commonConfig,
+  ...commonConfig
 };
 
 module.exports = [nodeConfig, webConfig];
