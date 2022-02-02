@@ -7,7 +7,6 @@ import * as bip32 from 'bip32';
 import * as bip39 from 'bip39';
 import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
-import { sha256 } from 'js-sha256';
 import message from './messages/proto';
 import CONSTANTS from './constants';
 import { createHash } from 'crypto';
@@ -219,7 +218,7 @@ export default class Cosmos {
     });
     const signMessage = trimBuffer(message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
 
-    const hash = Buffer.from(sha256.digest(signMessage));
+    const hash = createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.ecdsaSign(hash, privKey);
 
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
