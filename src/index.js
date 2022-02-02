@@ -417,25 +417,25 @@ export default class Cosmos {
       }
     });
 
-    // try converting msgs to simulate form
-    let newMessages = [];
-    for (let msg of txBody.messages) {
-      if (!msg.value_raw) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: "No raw message to simulate the transaction. Please add a value_raw field in message Any. Its value should be an object, not bytes" };
-      // with simulate, the endpoint requires @type key, not type_url
-      let newMessage = this.renameKeys(msg);
+    // // try converting msgs to simulate form
+    // let newMessages = [];
+    // for (let msg of txBody.messages) {
+    //   if (!msg.value_raw) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: "No raw message to simulate the transaction. Please add a value_raw field in message Any. Its value should be an object, not bytes" };
+    //   // with simulate, the endpoint requires @type key, not type_url
+    //   let newMessage = this.renameKeys(msg);
 
-      // const typeUrl = msg.type_url.substring(1);
-      // const urlArr = typeUrl.split(".");
-      // let msgType = message;
-      // for (let i = 0; i < urlArr.length; i++) {
-      //   msgType = msgType[urlArr[i]]
-      // }
-      // const value = msgType.decode(msg.value)
-      // // flatten the value object one time only, preserve the remaining nested object inside message value.
-      newMessage = { ...newMessage, value: null, ...msg.value_raw }
-      newMessages.push(newMessage)
-    }
-    txBody.messages = newMessages;
+    //   // const typeUrl = msg.type_url.substring(1);
+    //   // const urlArr = typeUrl.split(".");
+    //   // let msgType = message;
+    //   // for (let i = 0; i < urlArr.length; i++) {
+    //   //   msgType = msgType[urlArr[i]]
+    //   // }
+    //   // const value = msgType.decode(msg.value)
+    //   // // flatten the value object one time only, preserve the remaining nested object inside message value.
+    //   newMessage = { ...newMessage, value: null, ...msg.value_raw }
+    //   newMessages.push(newMessage)
+    // }
+    // txBody.messages = newMessages;
 
     const simulateTx = {
       tx: {

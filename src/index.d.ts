@@ -12,7 +12,7 @@ declare class Cosmos {
   setBech32MainPrefix(value: any): void;
   setPath(value: any): void;
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
-  static getChildKeyStatic(mnemonic: any, checkSum?: boolean, path: string): bip32.BIP32Interface;
+  static getChildKeyStatic(mnemonic: any, path: string, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): any;
   getAddressStr(operatorAddr: string): string;
@@ -31,7 +31,7 @@ declare class Cosmos {
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
   getTxs(txHash: any): Promise<any>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number | string, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
   simulate(publicKey: Buffer, txBody: any): Promise<any>;
 }
 declare namespace Cosmos {

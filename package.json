@@ -1,7 +1,7 @@
 {
   "name": "@oraichain/cosmosjs",
   "licenses": [],
-  "version": "0.0.80",
+  "version": "0.0.81",
   "description": "A JavasSript Open Source Library for Oraichain and possibly many other Cosmos network blockchains as well",
   "main": "dist/index.js",
   "repository": {
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
-    "@babel/plugin-transform-runtime": "^7.13.8",
+    "@babel/plugin-transform-runtime": "^7.16.10",
     "@babel/preset-env": "^7.13.8",
     "@babel/register": "^7.13.8",
     "babel-loader": "^8.1.0",
