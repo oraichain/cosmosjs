@@ -231,8 +231,18 @@ export default class Cosmos {
     return txBytes;
   }
 
+  handleFetchResponse = async (response) => {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return response.json();
+    } else {
+      let responseText = await response.text();
+      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: responseText }
+    }
+  }
+
   get(path) {
-    return fetch(`${this.url}${path}`).then((res) => res.json());
+    return fetch(`${this.url}${path}`).then((res) => this.handleFetchResponse(res));
   }
 
   post(path, data) {
@@ -240,7 +250,7 @@ export default class Cosmos {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
-    }).then((res) => res.json());
+    }).then((res) => this.handleFetchResponse(res));
   }
 
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
@@ -448,7 +458,7 @@ export default class Cosmos {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(simulateTx)
-    }).then((res) => res.json());
+    }).then((res) => this.handleFetchResponse(res));
   }
 }
 
