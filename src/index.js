@@ -159,7 +159,7 @@ export default class Cosmos {
     return pubKeyAny;
   }
 
-  constructAuthInfoBytes(pubKeyAny, gas = 200000, fees = 0, sequence) {
+  constructAuthInfoBytes(pubKeyAny, gas_limit = 200000, fees = [{ denom: 'orai', amount: String(0) }], sequence) {
     const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
       public_key: pubKeyAny,
       mode_info: {
@@ -173,8 +173,8 @@ export default class Cosmos {
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
       fee: new message.cosmos.tx.v1beta1.Fee({
-        amount: [{ denom: this.bech32MainPrefix, amount: isNaN(fees) ? "0" : String(fees) }],
-        gas_limit: gas
+        amount: isNaN(fees) ? fees : [{ denom: "orai", amount: String(fees) }],
+        gas_limit
       })
     });
     return message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
@@ -188,7 +188,7 @@ export default class Cosmos {
     return message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
   }
 
-  constructTxBytes(bodyBytes, authInfoBytes, signatures) {
+  constructSignedTxBytes(bodyBytes, authInfoBytes, signatures) {
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes, // has to collect body bytes & auth info bytes since Keplr overrides data when signing
       auth_info_bytes: authInfoBytes,
@@ -206,12 +206,10 @@ export default class Cosmos {
     return secp256k1.ecdsaSign(message, privKey).signature;
   }
 
-  sign(txBody, authInfo, accountNumber, privKey) {
-    const bodyBytes = trimBuffer(message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish());
-    const authInfoBytes = message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
-
+  sign(bodyBytes, authInfoBytes, accountNumber, privKey) {
+    const bodyBytesRaw = trimBuffer(bodyBytes);
     const signDoc = new message.cosmos.tx.v1beta1.SignDoc({
-      body_bytes: bodyBytes,
+      body_bytes: bodyBytesRaw,
       auth_info_bytes: authInfoBytes,
       chain_id: this.chainId,
       account_number: Number(accountNumber)
@@ -221,14 +219,18 @@ export default class Cosmos {
     const hash = createHash('sha256').update(signMessage).digest();
     const sig = secp256k1.ecdsaSign(hash, privKey);
 
-    const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
-      body_bytes: bodyBytes,
-      auth_info_bytes: authInfoBytes,
-      signatures: [sig.signature]
-    });
-    const txBytes = message.cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
+    return this.constructSignedTxBytes(bodyBytes, authInfoBytes, [sig.signature]);
+  }
 
-    return txBytes;
+  async signExtension(signer, sender, bodyBytes, authInfoBytes, accountNumber) {
+    const response = await signer.signDirect(sender, {
+      bodyBytes,
+      authInfoBytes,
+      chainId: this.chainId,
+      accountNumber,
+    });
+    const signature = Buffer.from(response.signature.signature, "base64");
+    return this.constructSignedTxBytes(response.signed.bodyBytes, response.signed.authInfoBytes, [signature]);
   }
 
   handleFetchResponse = async (response) => {
@@ -259,56 +261,26 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async submit(child, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, gasMultiplier = 1.3, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
-    const address = this.getAddress(child);
-    const privKey = this.getECPairPriv(child);
-    const pubKeyAny = this.getPubKeyAny(privKey);
+  async walletFactory(signerOrChild) {
+    // child key case for cli & mobile
+    if (signerOrChild.privateKey) return { address: this.getAddress(signerOrChild), pubkey: signerOrChild.publicKey, isChildKey: true };
+    // offline signer case for extension on browser. TODO: how to handle the case where users don't use the first account?
+    const [firstAccount] = await signerOrChild.getAccounts();
+    return { address: firstAccount.address, pubkey: firstAccount.pubkey, isChildKey: false };
+  }
+
+  async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, gasMultiplier = 1.3, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
+    const { address, pubkey, isChildKey } = await this.walletFactory(signerOrChild);
+    const pubKeyAny = this.getPubKeyAnyWithPub(pubkey);
     const data = await this.getAccounts(address);
     if (data.code) {
       if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
       else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
     }
 
-    // auto collect gas used if gas limit is auto
-    // if (gas_limit === 'auto') {
-    //   try {
-    //     let txBodySimulate = JSON.parse(JSON.stringify(txBody)); // use this to have deep copy of object
-    //     // use object destruction to not mutate the txBody struct when simulating
-    //     let result = await this.simulate(child.publicKey, txBodySimulate);
-    //     // if simulate returns ok => set new gas limit to gas used
-    //     if (result && result.gas_info && result.gas_info.gas_used) gas_limit = Math.round(parseInt(result.gas_info.gas_used) * gasMultiplier);
-    //     // error cases when simulating, need to throw error
-    //     else if (result && result.code && result.code !== 0) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: result.message };
-    //   } catch (error) {
-    //     throw error;
-    //   }
-    // }
-    // // remove value_raw from txBody to save data when POST to node
-    // txBody.messages = txBody.messages.map(msg => ({ ...msg, value_raw: null }));
-
-    // handle fees. If fee is number then it is gas price, calculate the actual fees. Amount should be int in string
-    if (!isNaN(fees) && !isNaN(gas_limit)) fees = [{ denom: this.bech32MainPrefix, amount: (fees * gas_limit).toFixed(0).toString() }];
-
-    // --------------------------------- (2)authInfo ---------------------------------
-    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
-      public_key: pubKeyAny,
-      mode_info: {
-        single: {
-          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
-        }
-      },
-      sequence: data.account.sequence
-    });
-
-    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
-      signer_infos: [signerInfo],
-      fee: new message.cosmos.tx.v1beta1.Fee({
-        amount: fees,
-        gas_limit
-      })
-    });
-
-    const signedTxBytes = this.sign(txBody, authInfo, data.account.account_number, privKey);
+    const authInfoBytes = this.constructAuthInfoBytes(pubKeyAny, gas_limit, fees, data.account.sequence);
+    const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+    const signedTxBytes = isChildKey ? this.sign(bodyBytes, authInfoBytes, data.account.account_number, signerOrChild.privateKey) : await this.signExtension(signerOrChild, address, bodyBytes, authInfoBytes, data.account.account_number);
 
     if (!timeoutHeight || timeoutHeight === 0) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);
@@ -368,36 +340,6 @@ export default class Cosmos {
     };
   }
 
-  // rename key type_url to @type. Also flatten the value_raw
-  renameKeys(obj) {
-    const keyValues = Object.entries(obj).map(([key, value]) => {
-      let newKey = null
-      // clean all value obj when simulation
-      if (key === "value") {
-        obj[key] = null;
-      }
-      if (key === "type_url") {
-        newKey = "@type"
-      } else {
-        // we skip this key, and move on to the next recursively to flatten it out
-        if (key === "value_raw") {
-          return this.renameKeys(value);
-        }
-        newKey = key
-      }
-      if (typeof value === 'object' && value !== null && !(value instanceof Array)) {
-        obj[key] = this.renameKeys(value);
-      }
-      else if (value instanceof Array) {
-        obj[key] = value.map(obj => this.renameKeys(obj));
-      }
-      return {
-        [newKey]: obj[key]
-      };
-    });
-    return Object.assign({}, ...keyValues);
-  }
-
   async simulate(publicKey, txBody) {
     const pubKeyAny = this.getPubkeyAnySimulate(publicKey);
     const address = this.getAddressFromPub(publicKey);
@@ -425,26 +367,6 @@ export default class Cosmos {
         gas_limit: 0
       }
     });
-
-    // // try converting msgs to simulate form
-    // let newMessages = [];
-    // for (let msg of txBody.messages) {
-    //   if (!msg.value_raw) throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: "No raw message to simulate the transaction. Please add a value_raw field in message Any. Its value should be an object, not bytes" };
-    //   // with simulate, the endpoint requires @type key, not type_url
-    //   let newMessage = this.renameKeys(msg);
-
-    //   // const typeUrl = msg.type_url.substring(1);
-    //   // const urlArr = typeUrl.split(".");
-    //   // let msgType = message;
-    //   // for (let i = 0; i < urlArr.length; i++) {
-    //   //   msgType = msgType[urlArr[i]]
-    //   // }
-    //   // const value = msgType.decode(msg.value)
-    //   // // flatten the value object one time only, preserve the remaining nested object inside message value.
-    //   newMessage = { ...newMessage, value: null, ...msg.value_raw }
-    //   newMessages.push(newMessage)
-    // }
-    // txBody.messages = newMessages;
 
     const simulateTx = {
       tx: {

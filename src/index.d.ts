@@ -1,6 +1,13 @@
 import * as bip32 from 'bip32';
 import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
+
+export type ExtensionData = {
+  txBody: any,
+  gas?: number,
+  fees?: any[],
+  broadCastMode?: BroadCastMode,
+}
 declare class Cosmos {
   constructor(url: any, chainId: any);
   url: any;
@@ -31,7 +38,7 @@ declare class Cosmos {
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
   getTxs(txHash: any): Promise<any>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(child: any, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
   simulate(publicKey: Buffer, txBody: any): Promise<any>;
 }
 declare namespace Cosmos {
