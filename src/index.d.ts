@@ -1,3 +1,4 @@
+import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 import * as bip32 from 'bip32';
 import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
