@@ -10,6 +10,7 @@ import secp256k1 from 'secp256k1';
 import message from './messages/proto';
 import CONSTANTS from './constants';
 import { createHash } from 'crypto';
+import { isOfflineDirectSigner } from '@cosmjs/proto-signing';
 
 function trimBuffer(buf) {
   // remove 32,0 (space + null)
@@ -262,8 +263,10 @@ export default class Cosmos {
   }
 
   async walletFactory(signerOrChild) {
+    // simple null check
+    if (!signerOrChild) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The signerOrChild object is empty" }
     // child key case for cli & mobile
-    if (signerOrChild.privateKey) return { address: this.getAddress(signerOrChild), pubkey: signerOrChild.publicKey, isChildKey: true };
+    if (!isOfflineDirectSigner(signerOrChild)) return { address: this.getAddress(signerOrChild), pubkey: signerOrChild.publicKey, isChildKey: true };
     // offline signer case for extension on browser. TODO: how to handle the case where users don't use the first account?
     const [firstAccount] = await signerOrChild.getAccounts();
     return { address: firstAccount.address, pubkey: firstAccount.pubkey, isChildKey: false };
@@ -271,6 +274,8 @@ export default class Cosmos {
 
   async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, gasMultiplier = 1.3, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
     const { address, pubkey, isChildKey } = await this.walletFactory(signerOrChild);
+    // simple tx body filter
+    if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody object is empty" };
     const pubKeyAny = this.getPubKeyAnyWithPub(pubkey);
     const data = await this.getAccounts(address);
     if (data.code) {

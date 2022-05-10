@@ -35,6 +35,7 @@ declare class Cosmos {
   constructTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
   getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): any;
   getAccounts(address: any): Promise<any>;
+  walletFactory(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array, isChildKey: boolean }>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
   sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
   getTxs(txHash: any): Promise<any>;
