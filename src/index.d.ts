@@ -40,7 +40,7 @@ declare class Cosmos {
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
   sign(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: any, privKey: Uint8Array): Uint8Array;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number): Promise<any>;
   simulate(publicKey: Buffer, txBody: message.cosmos.tx.v1beta1.TxBody): Promise<any>;
 }
 declare namespace Cosmos {

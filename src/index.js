@@ -280,7 +280,7 @@ export default class Cosmos {
     return { address: firstAccount.address, pubkey: firstAccount.pubkey, isChildKey: false };
   }
 
-  async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, gasMultiplier = 1.3, timeoutHeight = 0, timeoutIntervalCheck = 5000) {
+  async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutIntervalCheck = 5000) {
     const { address, pubkey, isChildKey } = await this.walletFactory(signerOrChild);
     // simple tx body filter
     if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody object is empty" };
@@ -295,18 +295,17 @@ export default class Cosmos {
     const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
     const signedTxBytes = isChildKey ? this.sign(bodyBytes, authInfoBytes, data.account.account_number, signerOrChild.privateKey) : await this.signExtension(signerOrChild, address, bodyBytes, authInfoBytes, data.account.account_number);
 
-    if (!timeoutHeight || timeoutHeight === 0) {
+    if (!txBody.timeout_height) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);
       return this.handleTxResult(res);
-    } else {
-      // use broadcast mode async to collect tx hash
-      const res = await this.broadcast(signedTxBytes, 'BROADCAST_MODE_SYNC');
-      // error that is not related to gas fees
-      if (res.tx_response.code !== 0) return this.handleTxResult(res);
-      const txHash = res.tx_response.txhash;
-      const txResult = await this.handleTxTimeout(txHash, timeoutHeight, timeoutIntervalCheck);
-      return this.handleTxResult(txResult);
     }
+    // use broadcast mode async to collect tx hash
+    const res = await this.broadcast(signedTxBytes, 'BROADCAST_MODE_SYNC');
+    // error that is not related to gas fees
+    if (res.tx_response.code !== 0) return this.handleTxResult(res);
+    const txHash = res.tx_response.txhash;
+    const txResult = await this.handleTxTimeout(txHash, txBody.timeout_height, timeoutIntervalCheck);
+    return this.handleTxResult(txResult);
   }
 
   handleTxResult(res) {
