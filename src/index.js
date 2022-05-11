@@ -189,6 +189,14 @@ export default class Cosmos {
     return message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
   }
 
+  constructTxBody({ messages, memo, timeout_height }) {
+    return new message.cosmos.tx.v1beta1.TxBody({
+      messages,
+      memo,
+      timeout_height
+    });
+  }
+
   constructSignedTxBytes(bodyBytes, authInfoBytes, signatures) {
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes, // has to collect body bytes & auth info bytes since Keplr overrides data when signing
