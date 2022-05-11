@@ -1,47 +1,47 @@
-import { OfflineDirectSigner } from '@cosmjs/proto-signing';
+import { OfflineDirectSigner, Coin } from '@cosmjs/proto-signing';
 import * as bip32 from 'bip32';
 import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
 
 export type ExtensionData = {
-  txBody: any,
+  txBody: message.cosmos.tx.v1beta1.TxBody,
   gas?: number,
-  fees?: any[],
+  fees?: Coin[],
   broadCastMode?: BroadCastMode,
 }
 declare class Cosmos {
-  constructor(url: any, chainId: any);
-  url: any;
-  chainId: any;
+  constructor(url: string, chainId: string);
+  url: string;
+  chainId: string;
   path: string;
   bech32MainPrefix: string;
   get(path: string): Promise<any>;
   post(path: string, data: object): Promise<any>;
-  setBech32MainPrefix(value: any): void;
+  setBech32MainPrefix(value: string): void;
   setPath(value: any): void;
   getChildKey(mnemonic: any, checkSum?: boolean): bip32.BIP32Interface;
   static getChildKeyStatic(mnemonic: any, path: string, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
-  getAddress(childOrMnemonic: any, checkSum?: boolean): any;
+  getAddress(childOrMnemonic: any, checkSum?: boolean): string;
   getAddressStr(operatorAddr: string): string;
-  getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): any;
+  getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): string;
   getOperatorAddressStr(addr: string): string;
-  get statusCode(): any;
+  get statusCode(): number;
   getECPairPriv(childOrMnemonic: any, checkSum?: boolean): Buffer;
   getPubKey(privKey: Uint8Array): Uint8Array;
-  getPubKeyAny(privKey: Uint8Array): any;
+  getPubKeyAny(privKey: Uint8Array): message.google.protobuf.Any;
   constructBodyBytes(msgAny: any, memo: String): Uint8Array;
-  constructAuthInfoBytes(pubKeyAny: any, gas: number, fees: number, sequence: number)
+  constructTxBody(body: { messages: any[], memo?: string, timeout_height?: number }): message.cosmos.tx.v1beta1.TxBody;
+  constructAuthInfoBytes(pubKeyAny: message.google.protobuf.Any, gas: number, fees: number, sequence: number): Uint8Array
   constructTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
-  getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): any;
-  getAccounts(address: any): Promise<any>;
+  getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): message.google.protobuf.Any;
+  getAccounts(address: string): Promise<any>;
   walletFactory(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array, isChildKey: boolean }>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
-  sign(txBody: any, authInfo: any, accountNumber: any, privKey: Uint8Array): Uint8Array;
-  getTxs(txHash: any): Promise<any>;
+  sign(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: any, privKey: Uint8Array): Uint8Array;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: any, broadCastMode?: BroadCastMode, fees?: any[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
-  simulate(publicKey: Buffer, txBody: any): Promise<any>;
+  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, gasMultiplier?: number, timeoutHeight?: number, timeoutIntervalCheck?: number): Promise<any>;
+  simulate(publicKey: Buffer, txBody: message.cosmos.tx.v1beta1.TxBody): Promise<any>;
 }
 declare namespace Cosmos {
   export { message };
