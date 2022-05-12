@@ -9,26 +9,9 @@ import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
 import message from './messages/proto';
 import CONSTANTS from './constants';
-import { createHash } from 'crypto';
 import { isOfflineDirectSigner } from '@cosmjs/proto-signing';
-
-function trimBuffer(buf) {
-  // remove 32,0 (space + null)
-  if (buf.length > 2 && buf[buf.length - 2] === 32 && buf[buf.length - 1] === 0) {
-    return buf.slice(0, buf.length - 2);
-  }
-  return buf;
-}
-
-const hash160 = (buffer) => {
-  const sha256Hash = createHash('sha256').update(buffer).digest();
-  try {
-    return createHash('rmd160').update(sha256Hash).digest();
-  } catch (err) {
-    return createHash('ripemd160').update(sha256Hash).digest();
-  }
-};
-
+import { trimBuffer, hash160 } from './utils';
+import WalletFactory from './wallet/walletFactory';
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
@@ -215,33 +198,6 @@ export default class Cosmos {
     return secp256k1.ecdsaSign(message, privKey).signature;
   }
 
-  sign(bodyBytes, authInfoBytes, accountNumber, privKey) {
-    const bodyBytesRaw = trimBuffer(bodyBytes);
-    const signDoc = new message.cosmos.tx.v1beta1.SignDoc({
-      body_bytes: bodyBytesRaw,
-      auth_info_bytes: authInfoBytes,
-      chain_id: this.chainId,
-      account_number: Number(accountNumber)
-    });
-    const signMessage = trimBuffer(message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
-
-    const hash = createHash('sha256').update(signMessage).digest();
-    const sig = secp256k1.ecdsaSign(hash, privKey);
-
-    return this.constructSignedTxBytes(bodyBytes, authInfoBytes, [sig.signature]);
-  }
-
-  async signExtension(signer, sender, bodyBytes, authInfoBytes, accountNumber) {
-    const response = await signer.signDirect(sender, {
-      bodyBytes,
-      authInfoBytes,
-      chainId: this.chainId,
-      accountNumber,
-    });
-    const signature = Buffer.from(response.signature.signature, "base64");
-    return this.constructSignedTxBytes(response.signed.bodyBytes, response.signed.authInfoBytes, [signature]);
-  }
-
   handleFetchResponse = async (response) => {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -270,18 +226,21 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async walletFactory(signerOrChild) {
-    // simple null check
-    if (!signerOrChild) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The signerOrChild object is empty" }
-    // child key case for cli & mobile
-    if (!isOfflineDirectSigner(signerOrChild)) return { address: this.getAddress(signerOrChild), pubkey: signerOrChild.publicKey, isChildKey: true };
-    // offline signer case for extension on browser. TODO: how to handle the case where users don't use the first account?
-    const [firstAccount] = await signerOrChild.getAccounts();
-    return { address: firstAccount.address, pubkey: firstAccount.pubkey, isChildKey: false };
+  async getWalletInfoFromSignerOrChild(signerOrChild) {
+    const wallet = new WalletFactory(signerOrChild, this).wallet;
+    return wallet.getWalletInfo();
+  }
+
+  async sign(signerOrChild, bodyBytes, authInfoBytes, accountNumber, sender) {
+    const wallet = new WalletFactory(signerOrChild, this).wallet;
+    return wallet.sign(bodyBytes, authInfoBytes, accountNumber, sender);
   }
 
   async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutIntervalCheck = 5000) {
-    const { address, pubkey, isChildKey } = await this.walletFactory(signerOrChild);
+
+    const { wallet } = new WalletFactory(signerOrChild, this);
+
+    const { address, pubkey } = await wallet.getWalletInfo();
     // simple tx body filter
     if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody object is empty" };
     const pubKeyAny = this.getPubKeyAnyWithPub(pubkey);
@@ -293,7 +252,7 @@ export default class Cosmos {
 
     const authInfoBytes = this.constructAuthInfoBytes(pubKeyAny, gas_limit, fees, data.account.sequence);
     const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-    const signedTxBytes = isChildKey ? this.sign(bodyBytes, authInfoBytes, data.account.account_number, signerOrChild.privateKey) : await this.signExtension(signerOrChild, address, bodyBytes, authInfoBytes, data.account.account_number);
+    const signedTxBytes = await wallet.sign(bodyBytes, authInfoBytes, data.account.account_number, address);
 
     if (!txBody.timeout_height) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);

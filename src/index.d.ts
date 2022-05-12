@@ -36,9 +36,10 @@ declare class Cosmos {
   constructTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
   getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): message.google.protobuf.Any;
   getAccounts(address: string): Promise<any>;
-  walletFactory(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array, isChildKey: boolean }>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
-  sign(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: any, privKey: Uint8Array): Uint8Array;
+  // sign(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: any, privKey: Uint8Array): Uint8Array;
+  getWalletInfoFromSignerOrChild(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array }>;
+  sign(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: number, address: string): Promise<Uint8Array>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
   submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number): Promise<any>;
   simulate(publicKey: Buffer, txBody: message.cosmos.tx.v1beta1.TxBody): Promise<any>;
