@@ -14,7 +14,7 @@ export default class WalletSigner extends Wallet {
   }
 
   async sign(bodyBytes, authInfoBytes, accountNumber, sender) {
-    const response = await data.signer.signDirect(sender, {
+    const response = await this.signerOrChild.signDirect(sender, {
       bodyBytes,
       authInfoBytes,
       chainId: this.cosmos.chainId,
