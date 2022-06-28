@@ -18,7 +18,7 @@ export default class WalletSigner extends Wallet {
       bodyBytes,
       authInfoBytes,
       chainId: this.cosmos.chainId,
-      accountNumber: Number(accountNumber),
+      accountNumber: Number(0),
     });
     const signature = Buffer.from(response.signature.signature, "base64");
     return this.cosmos.constructSignedTxBytes(response.signed.bodyBytes, response.signed.authInfoBytes, [signature]);

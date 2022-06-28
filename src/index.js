@@ -84,6 +84,13 @@ export default class Cosmos {
     }
   }
 
+  getAddressStrFromAnotherAddr(addr, prefix) {
+    const fullWords = bech32.decode(addr);
+    if (fullWords.words) {
+      return bech32.encode(prefix, fullWords.words);
+    }
+  }
+
   getValidatorAddress(childOrMnemonic, checkSum = true) {
     // compartible
     if (typeof childOrMnemonic === 'string') {
@@ -151,7 +158,7 @@ export default class Cosmos {
           mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
         }
       },
-      sequence
+      sequence: 0
     });
 
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
@@ -252,6 +259,8 @@ export default class Cosmos {
 
     const authInfoBytes = this.constructAuthInfoBytes(pubKeyAny, gas_limit, fees, data.account.sequence);
     const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+    // console.log("auth info bytes: ", Uint8Array.from(authInfoBytes));
+    // console.log("body bytes: ", Uint8Array.from(bodyBytes))
     const signedTxBytes = await wallet.sign(bodyBytes, authInfoBytes, data.account.account_number, address);
 
     if (!txBody.timeout_height) {

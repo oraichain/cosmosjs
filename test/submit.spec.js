@@ -15,9 +15,9 @@ describe('submit', () => {
     console.log('from: ', address);
 
     const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: cosmos.getAddress(childKey),
-      to_address: 'orai123rm6nkcuwgnsr7grdg0cpkpvchx9xsa8l7x7d',
-      amount: [{ denom: cosmos.bech32MainPrefix, amount: '10' }] // 10
+      from_address: 'foobar',
+      to_address: 'foobar',
+      amount: [{ denom: 'foobar', amount: '0' }] // 10
     });
 
     const msgSendAny = new message.google.protobuf.Any({
