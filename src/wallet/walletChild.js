@@ -23,7 +23,7 @@ export default class WalletChild extends Wallet {
 
     console.log("sign docs: ", signDoc)
 
-    const signMessage = trimBuffer(this.message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish());
+    const signMessage = this.message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish();
 
     const hash = createHash('sha256').update(signMessage).digest();
     console.log("hash: ", hash);
