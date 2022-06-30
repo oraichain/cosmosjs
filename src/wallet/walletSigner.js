@@ -1,6 +1,5 @@
 import { BIP32Interface } from "bip32";
 import Cosmos from "..";
-import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 import Wallet from "./wallet";
 
 export default class WalletSigner extends Wallet {
