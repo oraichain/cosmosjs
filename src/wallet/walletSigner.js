@@ -13,7 +13,7 @@ export default class WalletSigner extends Wallet {
     return { address: firstAccount.address, pubkey: firstAccount.pubkey };
   }
 
-  async sign(bodyBytes, authInfoBytes, accountNumber, sender) {
+  async signDirect(bodyBytes, authInfoBytes, accountNumber, sender) {
     const response = await this.signerOrChild.signDirect(sender, {
       bodyBytes,
       authInfoBytes,
@@ -22,5 +22,9 @@ export default class WalletSigner extends Wallet {
     });
     const signature = Buffer.from(response.signature.signature, "base64");
     return this.cosmos.constructSignedTxBytes(response.signed.bodyBytes, response.signed.authInfoBytes, [signature]);
+  }
+
+  async signAmino(msgs, accountNumber, sender) {
+
   }
 }
