@@ -13,6 +13,8 @@ import { trimBuffer, hash160 } from './utils';
 import WalletFactory from './wallet/walletFactory';
 import WalletSigner from './wallet/walletSigner';
 import AminoTypes from './messages/amino';
+
+console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc")
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
@@ -199,7 +201,7 @@ export default class Cosmos {
     return secp256k1.ecdsaSign(message, privKey).signature;
   }
 
-  handleFetchResponse = async (response) => {
+  async handleFetchResponse(response) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return response.json();
@@ -278,7 +280,7 @@ export default class Cosmos {
     if (isAmino || signerOrChild === typeof WalletSigner) {
       const aminoType = new AminoTypes();
       const aminoMsgs = txBody.messages.map(msg => aminoType.toAmino(msg));
-      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo);
+      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, address);
     }
     else {
       signedTxBytes = await wallet.signDirect(bodyBytes, authInfoBytes, data.account.account_number, address);

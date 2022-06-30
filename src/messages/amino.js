@@ -12,11 +12,14 @@ function createDefaultTypes(prefix) {
                     to_address: msgSend.to_address,
                 }
             },
-            fromAmino: ({ from_address, to_address, amount }) => ({
-                fromAddress: from_address,
-                toAddress: to_address,
-                amount: [...amount],
-            }),
+            fromAmino: ({ from_address, to_address, amount }) => {
+                const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
+                    from_address,
+                    to_address,
+                    amount
+                });
+                return message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish();
+            },
         },
         // "/cosmos.bank.v1beta1.MsgMultiSend": {
         //     aminoType: "cosmos-sdk/MsgMultiSend",

@@ -17,8 +17,19 @@ export default class Wallet {
   async signDirect(bodyBytes, authInfoBytes, accountNumber, sender) {
     throw new Error("Method 'sign_direct()' must be implemented.");
   }
-  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sender) {
+  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, sender) {
     throw new Error("Method 'sign_amino()' must be implemented.");
+  }
+
+  makeSignDoc(msgs, accountNumber, sequence, fee, memo) {
+    return {
+      account_number: accountNumber.toString(),
+      chain_id: this.cosmos.chainId,
+      fee,
+      memo: memo || "",
+      msgs,
+      sequence
+    }
   }
 
   getAminoAuthInfoBytes(authInfoBytes) {
