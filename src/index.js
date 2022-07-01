@@ -14,7 +14,6 @@ import WalletFactory from './wallet/walletFactory';
 import WalletSigner from './wallet/walletSigner';
 import AminoTypes from './messages/amino';
 
-console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc")
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
@@ -277,7 +276,7 @@ export default class Cosmos {
     var signedTxBytes;
 
     // filter signer type
-    if (isAmino || signerOrChild === typeof WalletSigner) {
+    if (isAmino || (wallet instanceof WalletSigner && !signerOrChild.signDirect)) {
       const aminoType = new AminoTypes();
       const aminoMsgs = txBody.messages.map(msg => aminoType.toAmino(msg));
       signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, address);

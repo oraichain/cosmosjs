@@ -1,4 +1,5 @@
-import { OfflineDirectSigner, OfflineSigner, Coin } from '@cosmjs/proto-signing';
+import { OfflineDirectSigner, Coin } from '@cosmjs/proto-signing';
+import { OfflineAminoSigner } from '@cosmjs/amino';
 import * as bip32 from 'bip32';
 import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
@@ -41,7 +42,7 @@ declare class Cosmos {
   getWalletInfoFromSignerOrChild(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array }>;
   sign(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: number, address: string): Promise<Uint8Array>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner | OfflineSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number, isAmino?: boolean): Promise<any>;
+  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner | OfflineAminoSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number, isAmino?: boolean): Promise<any>;
   simulate(publicKey: Buffer, txBody: message.cosmos.tx.v1beta1.TxBody): Promise<any>;
 }
 declare namespace Cosmos {

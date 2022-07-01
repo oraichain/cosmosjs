@@ -21,29 +21,23 @@ function createDefaultTypes(prefix) {
                 return message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish();
             },
         },
-        // "/cosmos.bank.v1beta1.MsgMultiSend": {
-        //     aminoType: "cosmos-sdk/MsgMultiSend",
-        //     toAmino: ({ inputs, outputs }) => ({
-        //         inputs: inputs.map((input) => ({
-        //             address: input.address,
-        //             coins: [...input.coins],
-        //         })),
-        //         outputs: outputs.map((output) => ({
-        //             address: output.address,
-        //             coins: [...output.coins],
-        //         })),
-        //     }),
-        //     fromAmino: ({ inputs, outputs }) => ({
-        //         inputs: inputs.map((input) => ({
-        //             address: input.address,
-        //             coins: [...input.coins],
-        //         })),
-        //         outputs: outputs.map((output) => ({
-        //             address: output.address,
-        //             coins: [...output.coins],
-        //         })),
-        //     }),
-        // },
+        "/cosmos.bank.v1beta1.MsgMultiSend": {
+            aminoType: "cosmos-sdk/MsgMultiSend",
+            toAmino: (msgMultisendAny) => {
+                const { inputs, outputs } = message.cosmos.bank.v1beta1.MsgMultiSend.decode(msgMultisendAny);
+                return {
+                    inputs,
+                    outputs,
+                }
+            },
+            fromAmino: ({ inputs, outputs }) => {
+                const msgMultiSend = new message.cosmos.bank.v1beta1.MsgMultiSend({
+                    inputs,
+                    outputs
+                });
+                return message.cosmos.bank.v1beta1.MsgMultiSend.encode(msgMultiSend).finish();
+            },
+        },
         // "/cosmos.distribution.v1beta1.MsgFundCommunityPool": {
         //     aminoType: "cosmos-sdk/MsgFundCommunityPool",
         //     toAmino: ({ amount, depositor }) => ({
@@ -66,76 +60,67 @@ function createDefaultTypes(prefix) {
         //         withdrawAddress: withdraw_address,
         //     }),
         // },
-        // "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
-        //     aminoType: "cosmos-sdk/MsgWithdrawDelegationReward",
-        //     toAmino: ({ delegatorAddress, validatorAddress, }) => ({
-        //         delegator_address: delegatorAddress,
-        //         validator_address: validatorAddress,
-        //     }),
-        //     fromAmino: ({ delegator_address, validator_address, }) => ({
-        //         delegatorAddress: delegator_address,
-        //         validatorAddress: validator_address,
-        //     }),
-        // },
-        // "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission": {
-        //     aminoType: "cosmos-sdk/MsgWithdrawValidatorCommission",
-        //     toAmino: ({ validatorAddress, }) => ({
-        //         validator_address: validatorAddress,
-        //     }),
-        //     fromAmino: ({ validator_address, }) => ({
-        //         validatorAddress: validator_address,
-        //     }),
-        // },
-        // "/cosmos.staking.v1beta1.MsgBeginRedelegate": {
-        //     aminoType: "cosmos-sdk/MsgBeginRedelegate",
-        //     toAmino: ({ delegatorAddress, validatorSrcAddress, validatorDstAddress, amount, }) => {
-        //         utils_1.assertDefinedAndNotNull(amount, "missing amount");
-        //         return {
-        //             delegator_address: delegatorAddress,
-        //             validator_src_address: validatorSrcAddress,
-        //             validator_dst_address: validatorDstAddress,
-        //             amount: amount,
-        //         };
-        //     },
-        //     fromAmino: ({ delegator_address, validator_src_address, validator_dst_address, amount, }) => ({
-        //         delegatorAddress: delegator_address,
-        //         validatorSrcAddress: validator_src_address,
-        //         validatorDstAddress: validator_dst_address,
-        //         amount: amount,
-        //     }),
-        // },
-        // "/cosmos.staking.v1beta1.MsgDelegate": {
-        //     aminoType: "cosmos-sdk/MsgDelegate",
-        //     toAmino: ({ delegatorAddress, validatorAddress, amount }) => {
-        //         utils_1.assertDefinedAndNotNull(amount, "missing amount");
-        //         return {
-        //             delegator_address: delegatorAddress,
-        //             validator_address: validatorAddress,
-        //             amount: amount,
-        //         };
-        //     },
-        //     fromAmino: ({ delegator_address, validator_address, amount, }) => ({
-        //         delegatorAddress: delegator_address,
-        //         validatorAddress: validator_address,
-        //         amount: amount,
-        //     }),
-        // },
-        // "/cosmos.staking.v1beta1.MsgUndelegate": {
-        //     aminoType: "cosmos-sdk/MsgUndelegate",
-        //     toAmino: ({ delegatorAddress, validatorAddress, amount, }) => {
-        //         utils_1.assertDefinedAndNotNull(amount, "missing amount");
-        //         return {
-        //             delegator_address: delegatorAddress,
-        //             validator_address: validatorAddress,
-        //             amount: amount,
-        //         };
-        //     },
-        //     fromAmino: ({ delegator_address, validator_address, amount, }) => ({
-        //         delegatorAddress: delegator_address,
-        //         validatorAddress: validator_address,
-        //         amount: amount,
-        //     }),
-        // },
+        "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
+            aminoType: "cosmos-sdk/MsgWithdrawDelegationReward",
+            toAmino: (msgWithdrawDelegationRewardAny) => {
+                const { delegator_address, validator_address } = message.cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.decode(msgWithdrawDelegationRewardAny);
+                return {
+                    delegator_address,
+                    validator_address,
+                }
+            },
+            fromAmino: ({ delegator_address, validator_address, }) => {
+                const msgWithdraw = new message.cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward({ delegator_address, validator_address });
+                return message.cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(msgWithdraw).finish();
+
+            },
+        },
+        "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission": {
+            aminoType: "cosmos-sdk/MsgWithdrawValidatorCommission",
+            toAmino: (msgWithdrawValidatorCommission) => {
+                const { validator_address } = message.cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission.decode(msgWithdrawValidatorCommission);
+                return {
+                    validator_address,
+                }
+            },
+            fromAmino: ({ validator_address, }) => {
+                const msgWithdraw = new message.cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission({ validator_address });
+                return message.cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission.encode(msgWithdraw).finish();
+            },
+        },
+        "/cosmos.staking.v1beta1.MsgBeginRedelegate": {
+            aminoType: "cosmos-sdk/MsgBeginRedelegate",
+            toAmino: (msgRedelegateAny) => {
+                const msgRedelegate = message.cosmos.staking.v1beta1.MsgBeginRedelegate.decode(msgRedelegateAny);
+                return { ...msgRedelegate };
+            },
+            fromAmino: (data) => {
+                const msgRedelegate = new message.cosmos.staking.v1beta1.MsgBeginRedelegate(data);
+                return message.cosmos.staking.v1beta1.MsgBeginRedelegate.encode(msgRedelegate).finish();
+            },
+        },
+        "/cosmos.staking.v1beta1.MsgDelegate": {
+            aminoType: "cosmos-sdk/MsgDelegate",
+            toAmino: (msgDelegateAny) => {
+                const msgDelegate = message.cosmos.staking.v1beta1.MsgDelegate.decode(msgDelegateAny);
+                return { ...msgDelegate };
+            },
+            fromAmino: (data) => {
+                const msgDelegate = new message.cosmos.staking.v1beta1.MsgDelegate(data);
+                return message.cosmos.staking.v1beta1.MsgDelegate.encode(msgDelegate).finish();
+            },
+        },
+        "/cosmos.staking.v1beta1.MsgUndelegate": {
+            aminoType: "cosmos-sdk/MsgUndelegate",
+            toAmino: (msgUndelegateAny) => {
+                const msgUndelegate = message.cosmos.staking.v1beta1.MsgUndelegate.decode(msgUndelegateAny);
+                return { ...msgUndelegate };
+            },
+            fromAmino: (data) => {
+                const msgUndelegate = new message.cosmos.staking.v1beta1.MsgUndelegate(data);
+                return message.cosmos.staking.v1beta1.MsgUndelegate.encode(msgUndelegate).finish();
+            },
+        },
         // "/ibc.applications.transfer.v1.MsgTransfer": {
         //     aminoType: "cosmos-sdk/MsgTransfer",
         //     toAmino: ({ sourcePort, sourceChannel, token, sender, receiver, timeoutHeight, timeoutTimestamp, }) => {
