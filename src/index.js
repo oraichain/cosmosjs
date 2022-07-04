@@ -73,9 +73,9 @@ export default class Cosmos {
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getAddressFromPub(pubkey) {
+  getAddressFromPub(pubkey, prefix) {
     const words = bech32.toWords(hash160(pubkey));
-    const address = bech32.encode(this.bech32MainPrefix, words);
+    const address = bech32.encode(prefix ? prefix : this.bech32MainPrefix, words);
     return address;
   };
 
@@ -120,19 +120,6 @@ export default class Cosmos {
     return pubKeyByte;
   }
 
-  getPubKeyAny(privKey) {
-    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
-    var buf1 = new Buffer.from([10]);
-    var buf2 = new Buffer.from([pubKeyByte.length]);
-    var buf3 = new Buffer.from(pubKeyByte);
-    const pubKey = Buffer.concat([buf1, buf2, buf3]);
-    const pubKeyAny = new message.google.protobuf.Any({
-      type_url: '/cosmos.crypto.secp256k1.PubKey',
-      value: pubKey
-    });
-    return pubKeyAny;
-  }
-
   getPubKeyAnyWithPub(pubKeyBytes) {
     var buf1 = new Buffer.from([10]);
     var buf2 = new Buffer.from([pubKeyBytes.length]);
@@ -143,6 +130,11 @@ export default class Cosmos {
       value: pubKey
     });
     return pubKeyAny;
+  }
+
+  getPubKeyAny(privKey) {
+    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
+    return this.getPubKeyAnyWithPub(pubKeyByte);
   }
 
   constructAuthInfoBytes(pubKeyAny, gas_limit = 200000, fees = [{ denom: 'orai', amount: String(0) }], sequence, signMode = 1) {

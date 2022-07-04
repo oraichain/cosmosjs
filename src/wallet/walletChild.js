@@ -49,7 +49,6 @@ export default class WalletChild extends Wallet {
     const signDocBytes = Buffer.from(JSON.stringify(sortObject(signDoc)));
     const hash = createHash('sha256').update(signDocBytes).digest();
     const sig = secp256k1.ecdsaSign(hash, this.signerOrChild.privateKey);
-
     // create new auth info with sign mode as legacy amino
     const newAuthInfoBytes = this.getAminoAuthInfoBytes(authInfoBytes);
 
