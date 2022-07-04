@@ -1,62 +1,55 @@
 import dotenv from 'dotenv';
-import { Secp256k1HdWallet, g, makeSignDoc } from "@cosmjs/amino";
+import { Secp256k1HdWallet, makeSignDoc } from "@cosmjs/amino";
 import { assertIsBroadcastTxSuccess, GasPrice, SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import Cosmos from '../src';
+import Long from 'long';
+import AminoTypes from '../src/messages/amino';
 
 dotenv.config();
 
-const cosmos = new Cosmos('https://testnet.lcd.orai.io', 'Oraichain-testnet');
+const cosmos = new Cosmos('https://lcd.orai.io', 'Oraichain');
 cosmos.setBech32MainPrefix('orai');
 
-describe('cosmjs-send', () => {
+describe('cosmjs-ibc', () => {
   it('should broadcast successfully', async () => {
     const message = Cosmos.message;
     const mnemonic = process.env.SEND_MNEMONIC;
     const wallet = await Secp256k1HdWallet.fromMnemonic(mnemonic, { prefix: 'orai' });
     const [firstAccount] = await wallet.getAccounts();
 
-    const rpcEndpoint = "https://testnet-rpc.orai.io";
+    const rpcEndpoint = "https://rpc.orai.io";
     const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, { prefix: 'orai', gasPrice: GasPrice.fromString("0orai") });
 
-    const recipient = "orai123rm6nkcuwgnsr7grdg0cpkpvchx9xsa8l7x7d";
+    const receiver = "cosmos14n3tx8s5ftzhlxvq0w5962v60vd82h30sythlz";
 
     const msgSend = {
-      type: 'cosmos-sdk/MsgSend',
+      type: 'cosmos-sdk/MsgTransfer',
       value: {
-        from_address: firstAccount.address,
-        to_address: recipient,
-        amount: [{
-          denom: "orai",
-          amount: "10",
-        }],
-      }
+        receiver,
+        sender: firstAccount.address,
+        source_channel: 'channel-15',
+        source_port: 'transfer',
+        timeout_timestamp: "1756918167000000000",
+        token: { denom: 'ibc/A2E2EEC9057A4A1C2C0A6A4C78B0239118DF5F278830F50B4A6BDD7A66506B78', amount: '1' },
+      },
     }
-    const memo = 'submit';
+    const memo = '';
 
-    const msg = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: firstAccount.address,
-      to_address: recipient,
-      amount: msgSend.value.amount // 10
-    });
-
-    const msgSendAny = new message.google.protobuf.Any({
-      type_url: '/cosmos.bank.v1beta1.MsgSend',
-      value: message.cosmos.bank.v1beta1.MsgSend.encode(msg).finish(),
-    });
+    const types = new AminoTypes();
 
     const senderData = await cosmos.getAccounts(firstAccount.address);
 
-    const signDoc = makeSignDoc([msgSend], { amount: [{ "denom": "orai", "amount": "0" }], gas: "200000" }, "Oraichain-testnet", memo, senderData.account.account_number, senderData.account.sequence);
+    const signDoc = makeSignDoc([msgSend], { amount: [{ "denom": "orai", "amount": "0" }], gas: "200000" }, cosmos.chainId, memo, senderData.account.account_number, senderData.account.sequence);
 
     const result = await wallet.signAmino(firstAccount.address, signDoc);
-    console.log("result: ", result)
-
-    const bodyBytes = cosmos.constructBodyBytes(msgSendAny, memo);
+    console.log("signature cosmjs ibc: ", result.signature.signature);
+    const msgIbc = types.fromAmino(result.signed.msgs[0]);
+    const bodyBytes = cosmos.constructBodyBytes(msgIbc, result.signed.memo);
     const pubKeyAny = cosmos.getPubKeyAnyWithPub(firstAccount.pubkey);
     const authInfoBytes = cosmos.constructAuthInfoBytes(pubKeyAny, 200000, [{ "denom": "orai", "amount": "0" }], senderData.account.sequence, 127);
     const tx = cosmos.constructSignedTxBytes(bodyBytes, authInfoBytes, [Buffer.from(result.signature.signature, 'base64')])
-    const txResult = await client.broadcastTx(tx);
-    console.log("result: ", result);
+    // const txResult = await client.broadcastTx(tx);
+    // console.log("result: ", result);
 
     // const result = await client.signAndBroadcast(firstAccount.address, [msgSend], 0, "submit");
     // assertIsBroadcastTxSuccess(result);

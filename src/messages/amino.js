@@ -1,4 +1,5 @@
 import message from './proto';
+import Long from 'long'
 
 function createDefaultTypes(prefix) {
     return {
@@ -121,40 +122,45 @@ function createDefaultTypes(prefix) {
                 return message.cosmos.staking.v1beta1.MsgUndelegate.encode(msgUndelegate).finish();
             },
         },
-        // "/ibc.applications.transfer.v1.MsgTransfer": {
-        //     aminoType: "cosmos-sdk/MsgTransfer",
-        //     toAmino: ({ sourcePort, sourceChannel, token, sender, receiver, timeoutHeight, timeoutTimestamp, }) => {
-        //         var _a, _b, _c;
-        //         return ({
-        //             source_port: sourcePort,
-        //             source_channel: sourceChannel,
-        //             token: token,
-        //             sender: sender,
-        //             receiver: receiver,
-        //             timeout_height: timeoutHeight
-        //                 ? {
-        //                     revision_height: (_a = omitDefault(timeoutHeight.revisionHeight)) === null || _a === void 0 ? void 0 : _a.toString(),
-        //                     revision_number: (_b = omitDefault(timeoutHeight.revisionNumber)) === null || _b === void 0 ? void 0 : _b.toString(),
-        //                 }
-        //                 : {},
-        //             timeout_timestamp: (_c = omitDefault(timeoutTimestamp)) === null || _c === void 0 ? void 0 : _c.toString(),
-        //         });
-        //     },
-        //     fromAmino: ({ source_port, source_channel, token, sender, receiver, timeout_height, timeout_timestamp, }) => ({
-        //         sourcePort: source_port,
-        //         sourceChannel: source_channel,
-        //         token: token,
-        //         sender: sender,
-        //         receiver: receiver,
-        //         timeoutHeight: timeout_height
-        //             ? {
-        //                 revisionHeight: long_1.default.fromString(timeout_height.revision_height || "0", true),
-        //                 revisionNumber: long_1.default.fromString(timeout_height.revision_number || "0", true),
-        //             }
-        //             : undefined,
-        //         timeoutTimestamp: long_1.default.fromString(timeout_timestamp || "0", true),
-        //     }),
-        // },
+        "/ibc.applications.transfer.v1.MsgTransfer": {
+            aminoType: "cosmos-sdk/MsgTransfer",
+            toAmino: (msgTransferAny) => {
+                const msgTransfer = message.ibc.applications.transfer.v1.MsgTransfer.decode(msgTransferAny);
+                return {
+                    ...msgTransfer,
+                    timeout_height: msgTransfer.timeout_height ? {
+                        revision_height: msgTransfer.timeout_height.revision_height.toString() || "0",
+                        revision_number: msgTransfer.timeout_height.revision_number.toString() || "0",
+                    } : {},
+                    timeout_timestamp: msgTransfer.timeout_timestamp.toString() || "0",
+                };
+            },
+            fromAmino: (data) => {
+                const msgTransfer = new message.ibc.applications.transfer.v1.MsgTransfer({
+                    ...data, timeout_height: data.timeout_height ?
+                        {
+                            revision_height: Long.fromString(data.timeout_height.revision_height || "0", true),
+                            revision_number: Long.fromString(data.timeout_height.revision_number || "0", true),
+                        } : {},
+                    timeout_timestamp: Long.fromString(data.timeout_timestamp || "0", true)
+                });
+                return message.ibc.applications.transfer.v1.MsgTransfer.encode(msgTransfer).finish();
+            },
+        },
+        "/cosmwasm.wasm.v1beta1.MsgExecuteContract": {
+            aminoType: "wasm/MsgExecuteContract",
+            toAmino: (msgExecuteContractAny) => {
+                const msgExecuteContract = message.cosmwasm.wasm.v1beta1.MsgExecuteContract.decode(msgExecuteContractAny);
+                return { ...msgExecuteContract, msg: JSON.parse(Buffer.from(msgExecuteContract.msg).toString('ascii')) };
+            },
+            fromAmino: (data) => {
+                const msgExecuteContract = new message.cosmwasm.wasm.v1beta1.MsgExecuteContract({
+                    ...data,
+                    msg: Buffer.from(JSON.stringify(data.msg))
+                });
+                return message.cosmwasm.wasm.v1beta1.MsgExecuteContract.encode(msgExecuteContract).finish();
+            },
+        }
     };
 }
 
@@ -168,7 +174,6 @@ export default class AminoTypes {
     }
     toAmino({ type_url, value }) {
         const converter = this.register[type_url];
-        console.log("converter: ", converter)
         if (!converter) {
             throw new Error("Type URL does not exist in the Amino message type register. " +
                 "If you need support for this message type, you can pass in additional entries to the AminoTypes constructor. " +

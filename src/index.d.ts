@@ -24,6 +24,7 @@ declare class Cosmos {
   static getChildKeyStatic(mnemonic: any, path: string, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): string;
+  getAddressFromPub(publicKey: Buffer, prefix?: string): string;
   getAddressStr(operatorAddr: string): string;
   getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): string;
   getOperatorAddressStr(addr: string): string;
@@ -33,7 +34,7 @@ declare class Cosmos {
   getPubKeyAny(privKey: Uint8Array): message.google.protobuf.Any;
   constructBodyBytes(msgAny: any, memo: String): Uint8Array;
   constructTxBody(body: { messages: any[], memo?: string, timeout_height?: number }): message.cosmos.tx.v1beta1.TxBody;
-  constructAuthInfoBytes(pubKeyAny: message.google.protobuf.Any, gas: number, fees: number, sequence: number): Uint8Array
+  constructAuthInfoBytes(pubKeyAny: message.google.protobuf.Any, gas: number, fees: number, sequence: number, signMode?: number): Uint8Array
   constructSignedTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
   getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): message.google.protobuf.Any;
   getAccounts(address: string): Promise<any>;
