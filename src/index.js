@@ -9,9 +9,11 @@ import bech32 from 'bech32';
 import secp256k1 from 'secp256k1';
 import message from './messages/proto';
 import CONSTANTS from './constants';
-import { isOfflineDirectSigner } from '@cosmjs/proto-signing';
 import { trimBuffer, hash160 } from './utils';
 import WalletFactory from './wallet/walletFactory';
+import WalletSigner from './wallet/walletSigner';
+import AminoTypes from './messages/amino';
+
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
@@ -71,9 +73,9 @@ export default class Cosmos {
     return bech32.encode(this.bech32MainPrefix, words);
   }
 
-  getAddressFromPub(pubkey) {
+  getAddressFromPub(pubkey, prefix) {
     const words = bech32.toWords(hash160(pubkey));
-    const address = bech32.encode(this.bech32MainPrefix, words);
+    const address = bech32.encode(prefix ? prefix : this.bech32MainPrefix, words);
     return address;
   };
 
@@ -125,19 +127,6 @@ export default class Cosmos {
     return pubKeyByte;
   }
 
-  getPubKeyAny(privKey) {
-    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
-    var buf1 = new Buffer.from([10]);
-    var buf2 = new Buffer.from([pubKeyByte.length]);
-    var buf3 = new Buffer.from(pubKeyByte);
-    const pubKey = Buffer.concat([buf1, buf2, buf3]);
-    const pubKeyAny = new message.google.protobuf.Any({
-      type_url: '/cosmos.crypto.secp256k1.PubKey',
-      value: pubKey
-    });
-    return pubKeyAny;
-  }
-
   getPubKeyAnyWithPub(pubKeyBytes) {
     var buf1 = new Buffer.from([10]);
     var buf2 = new Buffer.from([pubKeyBytes.length]);
@@ -150,12 +139,17 @@ export default class Cosmos {
     return pubKeyAny;
   }
 
-  constructAuthInfoBytes(pubKeyAny, gas_limit = 200000, fees = [{ denom: 'orai', amount: String(0) }], sequence) {
+  getPubKeyAny(privKey) {
+    const pubKeyByte = secp256k1.publicKeyCreate(privKey);
+    return this.getPubKeyAnyWithPub(pubKeyByte);
+  }
+
+  constructAuthInfoBytes(pubKeyAny, gas_limit = 200000, fees = [{ denom: 'orai', amount: String(0) }], sequence, signMode = 1) {
     const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
       public_key: pubKeyAny,
       mode_info: {
         single: {
-          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT
+          mode: signMode
         }
       },
       sequence: 0
@@ -205,7 +199,7 @@ export default class Cosmos {
     return secp256k1.ecdsaSign(message, privKey).signature;
   }
 
-  handleFetchResponse = async (response) => {
+  async handleFetchResponse(response) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return response.json();
@@ -233,37 +227,8 @@ export default class Cosmos {
     return this.post('/cosmos/tx/v1beta1/txs', { tx_bytes: txBytesBase64, mode: broadCastMode });
   }
 
-  async getWalletInfoFromSignerOrChild(signerOrChild) {
-    const wallet = new WalletFactory(signerOrChild, this).wallet;
-    return wallet.getWalletInfo();
-  }
-
-  async sign(signerOrChild, bodyBytes, authInfoBytes, accountNumber, sender) {
-    const wallet = new WalletFactory(signerOrChild, this).wallet;
-    return wallet.sign(bodyBytes, authInfoBytes, accountNumber, sender);
-  }
-
-  async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutIntervalCheck = 5000) {
-
-    const { wallet } = new WalletFactory(signerOrChild, this);
-
-    const { address, pubkey } = await wallet.getWalletInfo();
-    // simple tx body filter
-    if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody object is empty" };
-    const pubKeyAny = this.getPubKeyAnyWithPub(pubkey);
-    const data = await this.getAccounts(address);
-    if (data.code) {
-      if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
-      else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
-    }
-
-    const authInfoBytes = this.constructAuthInfoBytes(pubKeyAny, gas_limit, fees, data.account.sequence);
-    const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-    // console.log("auth info bytes: ", Uint8Array.from(authInfoBytes));
-    // console.log("body bytes: ", Uint8Array.from(bodyBytes))
-    const signedTxBytes = await wallet.sign(bodyBytes, authInfoBytes, data.account.account_number, address);
-
-    if (!txBody.timeout_height) {
+  async handleBroadcast(signedTxBytes, broadCastMode, timeoutHeight, timeoutIntervalCheck) {
+    if (!timeoutHeight) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);
       return this.handleTxResult(res);
     }
@@ -272,8 +237,54 @@ export default class Cosmos {
     // error that is not related to gas fees
     if (res.tx_response.code !== 0) return this.handleTxResult(res);
     const txHash = res.tx_response.txhash;
-    const txResult = await this.handleTxTimeout(txHash, txBody.timeout_height, timeoutIntervalCheck);
+    const txResult = await this.handleTxTimeout(txHash, timeoutHeight, timeoutIntervalCheck);
     return this.handleTxResult(txResult);
+  }
+
+  async getWalletInfoFromSignerOrChild(signerOrChild) {
+    const wallet = new WalletFactory(signerOrChild, this).wallet;
+    return wallet.getWalletInfo();
+  }
+
+  async getSignerData(address) {
+    const data = await this.getAccounts(address);
+    if (data.code) {
+      if (data.code === 2) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: `The wallet address ${address} does not exist` };
+      else throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: data.message ? data.message : `Unexpected error from the network: ${data}` };
+    }
+    return data;
+  }
+
+  async sign(signerOrChild, bodyBytes, authInfoBytes, accountNumber, sender) {
+    const { wallet } = new WalletFactory(signerOrChild, this);
+    return wallet.sign(bodyBytes, authInfoBytes, accountNumber, sender);
+  }
+
+  async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutIntervalCheck = 0, isAmino = false) {
+    if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody are empty" };
+
+    // collect wallet & signer data
+    const { wallet } = new WalletFactory(signerOrChild, this);
+    const { address, pubkey } = await wallet.getWalletInfo();
+    const data = await this.getSignerData(address);
+    const pubKeyAny = this.getPubKeyAnyWithPub(pubkey);
+
+    // generate body & auth bytes to prepare broadcasting
+    const authInfoBytes = this.constructAuthInfoBytes(pubKeyAny, gas_limit, fees, data.account.sequence);
+    const bodyBytes = message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+    var signedTxBytes;
+
+    // filter signer type
+    if (isAmino || (wallet instanceof WalletSigner && !signerOrChild.signDirect)) {
+      const aminoType = new AminoTypes();
+      const aminoMsgs = txBody.messages.map(msg => aminoType.toAmino(msg));
+      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, address);
+    }
+    else {
+      signedTxBytes = await wallet.signDirect(bodyBytes, authInfoBytes, data.account.account_number, address);
+    }
+
+    return this.handleBroadcast(signedTxBytes, broadCastMode, txBody.timeout_height, timeoutIntervalCheck);
   }
 
   handleTxResult(res) {

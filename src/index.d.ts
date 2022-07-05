@@ -1,4 +1,5 @@
 import { OfflineDirectSigner, Coin } from '@cosmjs/proto-signing';
+import { OfflineAminoSigner } from '@cosmjs/amino';
 import * as bip32 from 'bip32';
 import message from './messages/proto';
 export type BroadCastMode = 'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
@@ -23,6 +24,7 @@ declare class Cosmos {
   static getChildKeyStatic(mnemonic: any, path: string, checkSum?: boolean): bip32.BIP32Interface;
   generateMnemonic(strength?: number): string;
   getAddress(childOrMnemonic: any, checkSum?: boolean): string;
+  getAddressFromPub(publicKey: Buffer, prefix?: string): string;
   getAddressStr(operatorAddr: string): string;
   getValidatorAddress(childOrMnemonic: any, checkSum?: boolean): string;
   getOperatorAddressStr(addr: string): string;
@@ -32,8 +34,8 @@ declare class Cosmos {
   getPubKeyAny(privKey: Uint8Array): message.google.protobuf.Any;
   constructBodyBytes(msgAny: any, memo: String): Uint8Array;
   constructTxBody(body: { messages: any[], memo?: string, timeout_height?: number }): message.cosmos.tx.v1beta1.TxBody;
-  constructAuthInfoBytes(pubKeyAny: message.google.protobuf.Any, gas: number, fees: number, sequence: number): Uint8Array
-  constructTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
+  constructAuthInfoBytes(pubKeyAny: message.google.protobuf.Any, gas: number, fees: number, sequence: number, signMode?: number): Uint8Array
+  constructSignedTxBytes(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, signatures: Uint8Array[]): Uint8Array
   getPubKeyAnyWithPub(pubKeyBytes: Uint8Array): message.google.protobuf.Any;
   getAccounts(address: string): Promise<any>;
   signRaw(message: Buffer, privKey: Uint8Array): Uint8Array;
@@ -41,7 +43,7 @@ declare class Cosmos {
   getWalletInfoFromSignerOrChild(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner): Promise<{ address: string, pubkey: Uint8Array }>;
   sign(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, bodyBytes: Uint8Array, authInfoBytes: Uint8Array, accountNumber: number, address: string): Promise<Uint8Array>;
   broadcast(signedTxBytes: any, broadCastMode?: BroadCastMode): Promise<any>;
-  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number): Promise<any>;
+  submit(signerOrChild: bip32.BIP32Interface | OfflineDirectSigner | OfflineAminoSigner, txBody: message.cosmos.tx.v1beta1.TxBody, broadCastMode?: BroadCastMode, fees?: Coin[], gas_limit?: number, timeoutIntervalCheck?: number, isAmino?: boolean): Promise<any>;
   simulate(publicKey: Buffer, txBody: message.cosmos.tx.v1beta1.TxBody): Promise<any>;
 }
 declare namespace Cosmos {
