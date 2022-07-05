@@ -11,9 +11,13 @@ import message from './messages/proto';
 import CONSTANTS from './constants';
 import { trimBuffer, hash160 } from './utils';
 import WalletFactory from './wallet/walletFactory';
+<<<<<<< HEAD
 import WalletSigner from './wallet/walletSigner';
 import AminoTypes from './messages/amino';
 
+=======
+import Long from 'long'
+>>>>>>> f550ffe2a0eca069481586b07eadffb2c3f2c0ed
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
@@ -152,16 +156,22 @@ export default class Cosmos {
           mode: signMode
         }
       },
-      sequence: 0
+      // sequence: 0
     });
 
+    // console.log("pubkey any: ", Buffer.from(pubKeyAny.value).toString('base64'))
+    const keplrAuthInfo = message.cosmos.tx.v1beta1.AuthInfo.decode(Buffer.from('Ck4KRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECXDNCp0Y42ECFMLRFVVmmnmyrfIn6amSr2/Fwyf2cdToSBAoCCAESDwoJCgRvcmFpEgEwEMCaDA==', 'base64'))
+    console.log("auth info: ", JSON.stringify(keplrAuthInfo))
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
       fee: new message.cosmos.tx.v1beta1.Fee({
         amount: isNaN(fees) ? fees : [{ denom: "orai", amount: String(fees) }],
-        gas_limit
+        gas_limit: new Long(gas_limit, undefined, true)
       })
     });
+
+    console.log("auth info: ", JSON.stringify(authInfo))
+
     return message.cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
   }
 
