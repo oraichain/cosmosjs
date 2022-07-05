@@ -44,14 +44,14 @@ export default class WalletChild extends Wallet {
     return this.cosmos.constructSignedTxBytes(bodyBytes, authInfoBytes, [sig.signature]);
   }
 
-  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, sender) {
-    const signDoc = this.makeSignDoc(msgs, accountNumber, sequence, fee, memo);
+  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, timeoutHeight, sender) {
+    const signDoc = this.makeSignDoc(msgs, accountNumber, sequence, fee, memo, timeoutHeight);
+    console.log("sign doc: ", signDoc)
     const signDocBytes = Buffer.from(JSON.stringify(sortObject(signDoc)));
     const hash = createHash('sha256').update(signDocBytes).digest();
     const sig = secp256k1.ecdsaSign(hash, this.signerOrChild.privateKey);
     // create new auth info with sign mode as legacy amino
     const newAuthInfoBytes = this.getAminoAuthInfoBytes(authInfoBytes);
-
     return this.cosmos.constructSignedTxBytes(bodyBytes, newAuthInfoBytes, [sig.signature]);
   }
 }

@@ -1,5 +1,6 @@
 import Cosmos from "..";
 import CONSTANTS from "../constants";
+import Long from 'long'
 
 export default class Wallet {
 
@@ -17,18 +18,20 @@ export default class Wallet {
   async signDirect(bodyBytes, authInfoBytes, accountNumber, sender) {
     throw new Error("Method 'sign_direct()' must be implemented.");
   }
-  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, sender) {
+  async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, timeout_height, sender) {
     throw new Error("Method 'sign_amino()' must be implemented.");
   }
 
-  makeSignDoc(msgs, accountNumber, sequence, fee, memo) {
+  makeSignDoc(msgs, accountNumber, sequence, fee, memo, timeout_height) {
+    console.log(timeout_height instanceof Long && timeout_height.equals(0))
     return {
       account_number: accountNumber.toString(),
       chain_id: this.cosmos.chainId,
-      fee,
+      fee: { ...fee, amount: Array.isArray(fee.amount) ? fee.amount : [{ denom: 'orai', amount: String(0) }] },
       memo: memo || "",
       msgs,
-      sequence
+      sequence: sequence.toString(),
+      timeout_height: (timeout_height instanceof Long && timeout_height.equals(0)) ? undefined : timeout_height.toString(), // corner case: when timeout height is not passed => protobuf object will auto parse to Long(0), which will lead to signature verification failed => need to update to undefined
     }
   }
 

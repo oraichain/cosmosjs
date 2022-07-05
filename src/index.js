@@ -151,7 +151,7 @@ export default class Cosmos {
     const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [signerInfo],
       fee: new message.cosmos.tx.v1beta1.Fee({
-        amount: isNaN(fees) ? fees : [{ denom: "orai", amount: String(fees) }],
+        amount: Array.isArray(fees) ? fees : [{ denom: 'orai', amount: String(0) }],
         gas_limit
       })
     });
@@ -271,7 +271,7 @@ export default class Cosmos {
     if (isAmino || (wallet instanceof WalletSigner && !signerOrChild.signDirect)) {
       const aminoType = new AminoTypes();
       const aminoMsgs = txBody.messages.map(msg => aminoType.toAmino(msg));
-      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, address);
+      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, txBody.timeout_height, address);
     }
     else {
       signedTxBytes = await wallet.signDirect(bodyBytes, authInfoBytes, data.account.account_number, address);

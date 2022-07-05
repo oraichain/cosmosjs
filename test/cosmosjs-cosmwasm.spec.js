@@ -29,7 +29,7 @@ describe('cosmosjs-cosmwasm', () => {
     });
 
     const txBody = new message.cosmos.tx.v1beta1.TxBody({
-      messages: [msgSendAny]
+      messages: [msgSendAny],
     });
 
     try {
