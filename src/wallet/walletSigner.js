@@ -42,7 +42,7 @@ export default class WalletSigner extends Wallet {
 
   async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, sender) {
     const signDoc = this.makeSignDoc(msgs, accountNumber, sequence, fee, memo);
-    const response = await this.signerOrChild.signAmino(sender, signDoc);
+    const response = await this.signerOrChild.signAmino(signDoc.chain_id, sender, signDoc);
     const signature = Buffer.from(response.signature.signature, "base64");
     const newAuthInfoBytes = this.handleNewAuthInfoBytes(this.getAminoAuthInfoBytes(authInfoBytes), response.signed.fee);
     return this.cosmos.constructSignedTxBytes(this.handleNewBodyBytes(bodyBytes, response.signed.msgs, response.signed.memo), newAuthInfoBytes, [signature]);
