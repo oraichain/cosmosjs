@@ -11,7 +11,7 @@ export type ExtensionData = {
   broadCastMode?: BroadCastMode,
 }
 declare class Cosmos {
-  constructor(url: string, chainId: string);
+  constructor(url: string, chainId: string, bech32MainPrefix?: string, hdPath?: string);
   url: string;
   chainId: string;
   path: string;
