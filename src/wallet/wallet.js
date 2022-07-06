@@ -23,7 +23,6 @@ export default class Wallet {
   }
 
   makeSignDoc(msgs, accountNumber, sequence, fee, memo, timeout_height) {
-    console.log(timeout_height instanceof Long && timeout_height.equals(0))
     return {
       account_number: accountNumber.toString(),
       chain_id: this.cosmos.chainId,
@@ -31,7 +30,7 @@ export default class Wallet {
       memo: memo || "",
       msgs,
       sequence: sequence.toString(),
-      timeout_height: (timeout_height instanceof Long && timeout_height.equals(0)) ? undefined : timeout_height.toString(), // corner case: when timeout height is not passed => protobuf object will auto parse to Long(0), which will lead to signature verification failed => need to update to undefined
+      timeout_height: ((timeout_height instanceof Long && timeout_height.equals(0)) || timeout_height === 0) ? undefined : timeout_height.toString(), // corner case: when timeout height is not passed => protobuf object will auto parse to Long(0), which will lead to signature verification failed => need to update to undefined
     }
   }
 

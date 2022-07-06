@@ -46,7 +46,6 @@ export default class WalletChild extends Wallet {
 
   async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, timeoutHeight, sender) {
     const signDoc = this.makeSignDoc(msgs, accountNumber, sequence, fee, memo, timeoutHeight);
-    console.log("sign doc: ", signDoc)
     const signDocBytes = Buffer.from(JSON.stringify(sortObject(signDoc)));
     const hash = createHash('sha256').update(signDocBytes).digest();
     const sig = secp256k1.ecdsaSign(hash, this.signerOrChild.privateKey);
