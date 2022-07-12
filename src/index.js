@@ -1,8 +1,3 @@
-/*
-    Developed / Developing by Cosmostation
-    [WARNING] CosmosJS is under ACTIVE DEVELOPMENT and should be treated as alpha version. We will remove this warning when we have a release that is stable, secure, and propoerly tested.
-*/
-import 'isomorphic-fetch';
 import * as bip32 from 'bip32';
 import * as bip39 from 'bip39';
 import bech32 from 'bech32';
@@ -13,6 +8,9 @@ import { trimBuffer, hash160 } from './utils';
 import WalletFactory from './wallet/walletFactory';
 import WalletSigner from './wallet/walletSigner';
 import AminoTypes from './messages/amino';
+import Axios from 'axios';
+
+const TIMEOUT = 30000;
 
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
@@ -21,6 +19,13 @@ export default class Cosmos {
     this.chainId = chainId;
     this.path = hdPath;
     this.bech32MainPrefix = bech32MainPrefix;
+    this.axios = Axios.create({
+      baseURL: this.url,
+      headers: {
+        Accept: 'application/json',
+      },
+      timeout: TIMEOUT,
+    });
   }
 
   setBech32MainPrefix(value) {
@@ -192,26 +197,12 @@ export default class Cosmos {
     return secp256k1.ecdsaSign(message, privKey).signature;
   }
 
-  async handleFetchResponse(response) {
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      return response.json();
-    } else {
-      let responseText = await response.text();
-      throw { status: CONSTANTS.STATUS_CODE.GENERIC_ERROR, message: responseText }
-    }
-  }
-
   get(path) {
-    return fetch(`${this.url}${path}`).then((res) => this.handleFetchResponse(res));
+    return this.axios.get(path).then((res) => res.data).catch(err => err.response.data);
   }
 
   post(path, data) {
-    return fetch(`${this.url}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then((res) => this.handleFetchResponse(res));
+    return this.axios.post(path, data).then((res) => res.data).catch(err => err.response.data);
   }
 
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
@@ -360,11 +351,7 @@ export default class Cosmos {
       }
     }
 
-    return fetch(`${this.url}/cosmos/tx/v1beta1/simulate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(simulateTx)
-    }).then((res) => this.handleFetchResponse(res));
+    return this.axios.post(`/cosmos/tx/v1beta1/simulate`, simulateTx).then((res) => res.data);
   }
 }
 
