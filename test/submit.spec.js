@@ -4,7 +4,7 @@ import Cosmos from '../src';
 
 dotenv.config();
 
-const cosmos = new Cosmos('https://testnet.lcd.orai.io', 'Oraichain-testnet');
+const cosmos = new Cosmos('https://testnet.lcd.orai.io', 'Oraichain');
 cosmos.setBech32MainPrefix('orai');
 
 describe('submit', () => {
@@ -31,7 +31,7 @@ describe('submit', () => {
     });
 
     try {
-      const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', undefined, undefined, undefined, true);
+      const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', undefined, undefined, undefined);
       console.log(response);
     } catch (ex) {
       console.log(ex);

@@ -11,13 +11,10 @@ import message from './messages/proto';
 import CONSTANTS from './constants';
 import { trimBuffer, hash160 } from './utils';
 import WalletFactory from './wallet/walletFactory';
-<<<<<<< HEAD
 import WalletSigner from './wallet/walletSigner';
 import AminoTypes from './messages/amino';
 
-=======
 import Long from 'long'
->>>>>>> f550ffe2a0eca069481586b07eadffb2c3f2c0ed
 export default class Cosmos {
   constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
