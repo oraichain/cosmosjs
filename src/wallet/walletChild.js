@@ -51,7 +51,7 @@ export default class WalletChild extends Wallet {
         12
       ],
       chain_id: this.cosmos.chainId,
-      account_number: Number(0)
+      account_number: Number(1657772047564)
     });
     const signMessage = this.message.cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish();
     console.log("sign message: ", Buffer.from(signMessage).toString('base64'))
@@ -73,10 +73,18 @@ export default class WalletChild extends Wallet {
   }
 
   async signAmino(msgs, bodyBytes, authInfoBytes, accountNumber, sequence, fee, memo, timeoutHeight, sender) {
-    const signDoc = this.makeSignDoc(msgs, accountNumber, sequence, fee, memo, timeoutHeight);
+    const signDoc = {
+      account_number: "0",
+      chain_id: this.cosmos.chainId,
+      fee: { gas: "200000", amount: [{ amount: "0", denom: "orai" }] },
+      memo: "submit",
+      msgs,
+      sequence: "0"
+    };
     const signDocBytes = Buffer.from(JSON.stringify(sortObject(signDoc)));
     const hash = createHash('sha256').update(signDocBytes).digest();
     const sig = secp256k1.ecdsaSign(hash, this.signerOrChild.privateKey);
+    console.log("signature: ", Buffer.from(sig.signature).toString('base64'))
     // create new auth info with sign mode as legacy amino
     const newAuthInfoBytes = this.getAminoAuthInfoBytes(authInfoBytes);
     return this.cosmos.constructSignedTxBytes(bodyBytes, newAuthInfoBytes, [sig.signature]);
