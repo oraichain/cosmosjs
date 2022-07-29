@@ -122,6 +122,17 @@ function createDefaultTypes(prefix) {
                 return message.cosmos.staking.v1beta1.MsgUndelegate.encode(msgUndelegate).finish();
             },
         },
+        "/cosmos.gov.v1beta1.MsgVote": {
+            aminoType: "cosmos-sdk/MsgVote",
+            toAmino: (msgVoteAny) => {
+                const msgVote = message.cosmos.gov.v1beta1.MsgVote.decode(msgVoteAny);
+                return { ...msgVote, proposal_id: msgVote.proposal_id.toString() };
+            },
+            fromAmino: (data) => {
+                const msgVote = new message.cosmos.gov.v1beta1.MsgVote(data);
+                return message.cosmos.gov.v1beta1.MsgVote.encode(msgVote).finish();
+            },
+        },
         "/ibc.applications.transfer.v1.MsgTransfer": {
             aminoType: "cosmos-sdk/MsgTransfer",
             toAmino: (msgTransferAny) => {
@@ -177,7 +188,7 @@ export default class AminoTypes {
         if (!converter) {
             throw new Error("Type URL does not exist in the Amino message type register. " +
                 "If you need support for this message type, you can pass in additional entries to the AminoTypes constructor. " +
-                "If you think this message type should be included by default, please open an issue at https://github.com/cosmos/cosmjs/issues.");
+                "If you think this message type should be included by default, please open an issue at https://github.com/oraichain/cosmosjs/issues.");
         }
         return {
             type: converter.aminoType,
@@ -189,7 +200,7 @@ export default class AminoTypes {
         if (!result) {
             throw new Error("Type does not exist in the Amino message type register. " +
                 "If you need support for this message type, you can pass in additional entries to the AminoTypes constructor. " +
-                "If you think this message type should be included by default, please open an issue at https://github.com/cosmos/cosmjs/issues.");
+                "If you think this message type should be included by default, please open an issue at https://github.com/oraichain/cosmosjs/issues.");
         }
         const [type_url, converter] = result;
         return {
