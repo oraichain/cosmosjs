@@ -133,6 +133,17 @@ function createDefaultTypes(prefix) {
                 return message.cosmos.gov.v1beta1.MsgVote.encode(msgVote).finish();
             },
         },
+        "/cosmos.gov.v1beta1.MsgDeposit": {
+            aminoType: "cosmos-sdk/MsgDeposit",
+            toAmino: (msgDepositAny) => {
+                const msgDeposit = message.cosmos.gov.v1beta1.MsgDeposit.decode(msgDepositAny);
+                return { ...msgDeposit, proposal_id: msgDeposit.proposal_id.toString() };
+            },
+            fromAmino: (data) => {
+                const msgDeposit = new message.cosmos.gov.v1beta1.MsgDeposit(data);
+                return message.cosmos.gov.v1beta1.MsgDeposit.encode(msgDeposit).finish();
+            },
+        },
         "/ibc.applications.transfer.v1.MsgTransfer": {
             aminoType: "cosmos-sdk/MsgTransfer",
             toAmino: (msgTransferAny) => {
