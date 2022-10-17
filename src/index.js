@@ -212,7 +212,7 @@ export default class Cosmos {
   }
 
   async handleBroadcast(signedTxBytes, broadCastMode, timeoutHeight, timeoutIntervalCheck) {
-    if (!timeoutHeight) {
+    if (parseInt(timeoutHeight) <= 0) {
       const res = await this.broadcast(signedTxBytes, broadCastMode);
       return this.handleTxResult(res);
     }
