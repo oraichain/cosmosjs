@@ -3,8 +3,8 @@ import assert from 'assert';
 import Cosmos from '../src';
 import Long from 'long';
 import AminoTypes from '../src/messages/amino';
-import { Secp256k1HdWallet, makeSignDoc } from "@cosmjs/amino";
-import { assertIsBroadcastTxSuccess, GasPrice, SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { Secp256k1HdWallet, makeSignDoc } from '@cosmjs/amino';
+import { assertIsBroadcastTxSuccess, GasPrice, SigningStargateClient, StargateClient } from '@cosmjs/stargate';
 
 dotenv.config();
 
@@ -19,11 +19,11 @@ describe('cosmjs-cosmwasm', () => {
     const [firstAccount] = await wallet.getAccounts();
     const amount = null;
 
-    const rpcEndpoint = "https://rpc.orai.io";
-    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, { prefix: 'orai', gasPrice: GasPrice.fromString("0orai") });
+    const rpcEndpoint = 'https://rpc.orai.io';
+    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, { prefix: 'orai', gasPrice: GasPrice.fromString('0orai') });
 
     const sent_funds = amount ? [{ denom: cosmos.bech32MainPrefix, amount }] : [];
-    console.log("sent funds: ", sent_funds)
+    console.log('sent funds: ', sent_funds);
 
     const msgExecuteContract = {
       type: 'wasm/MsgExecuteContract',
@@ -32,25 +32,32 @@ describe('cosmjs-cosmwasm', () => {
         msg: { transfer: { amount: '1', recipient: 'orai14n3tx8s5ftzhlxvq0w5962v60vd82h30rha573' } },
         sender: 'orai14n3tx8s5ftzhlxvq0w5962v60vd82h30rha573',
         sent_funds
-      },
-    }
+      }
+    };
     const memo = '';
 
     const types = new AminoTypes();
 
     const senderData = await cosmos.getAccounts(firstAccount.address);
 
-    const signDoc = makeSignDoc([msgExecuteContract], { amount: [{ "denom": "orai", "amount": "0" }], gas: "200000" }, cosmos.chainId, memo, senderData.account.account_number, senderData.account.sequence);
+    const signDoc = makeSignDoc(
+      [msgExecuteContract],
+      { amount: [{ denom: 'orai', amount: '0' }], gas: '200000' },
+      cosmos.chainId,
+      memo,
+      senderData.account.account_number,
+      senderData.account.sequence
+    );
 
     const result = await wallet.signAmino(firstAccount.address, signDoc);
-    console.log("signature msg execute contract: ", result.signature.signature);
+    console.log('signature msg execute contract: ', result.signature.signature);
     const msgExecuteProto = types.fromAmino(result.signed.msgs[0]);
-    console.log("msg execute contract: ", message.cosmwasm.wasm.v1beta1.MsgExecuteContract.decode(msgExecuteProto.value))
+    console.log('msg execute contract: ', message.cosmwasm.wasm.v1.MsgExecuteContract.decode(msgExecuteProto.value));
     const bodyBytes = cosmos.constructBodyBytes(msgExecuteProto, result.signed.memo);
     const pubKeyAny = cosmos.getPubKeyAnyWithPub(firstAccount.pubkey);
-    const authInfoBytes = cosmos.constructAuthInfoBytes(pubKeyAny, 200000, [{ "denom": "orai", "amount": "0" }], senderData.account.sequence, 127);
-    const tx = cosmos.constructSignedTxBytes(bodyBytes, authInfoBytes, [Buffer.from(result.signature.signature, 'base64')])
+    const authInfoBytes = cosmos.constructAuthInfoBytes(pubKeyAny, 200000, [{ denom: 'orai', amount: '0' }], senderData.account.sequence, 127);
+    const tx = cosmos.constructSignedTxBytes(bodyBytes, authInfoBytes, [Buffer.from(result.signature.signature, 'base64')]);
     const txResult = await client.broadcastTx(tx);
-    console.log("result: ", result);
+    console.log('result: ', result);
   });
 });
