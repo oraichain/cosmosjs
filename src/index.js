@@ -13,7 +13,7 @@ import Axios from 'axios';
 const TIMEOUT = 30000;
 
 export default class Cosmos {
-  constructor(url, chainId, bech32MainPrefix = "orai", hdPath = "m/44'/118'/0'/0/0") {
+  constructor(url, chainId, bech32MainPrefix = 'orai', hdPath = "m/44'/118'/0'/0/0") {
     // strip / at end
     this.url = url.replace(/\/$/, '');
     this.chainId = chainId;
@@ -22,9 +22,9 @@ export default class Cosmos {
     this.axios = Axios.create({
       baseURL: this.url,
       headers: {
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      timeout: TIMEOUT,
+      timeout: TIMEOUT
     });
   }
 
@@ -82,7 +82,7 @@ export default class Cosmos {
     const words = bech32.toWords(hash160(pubkey));
     const address = bech32.encode(prefix ? prefix : this.bech32MainPrefix, words);
     return address;
-  };
+  }
 
   getAddressStr(operatorAddr) {
     const fullWords = bech32.decode(operatorAddr);
@@ -166,7 +166,7 @@ export default class Cosmos {
   constructBodyBytes(msgAny, memo) {
     const txBody = new message.cosmos.tx.v1beta1.TxBody({
       messages: [msgAny],
-      memo,
+      memo
     });
     return message.cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
   }
@@ -183,7 +183,7 @@ export default class Cosmos {
     const txRaw = new message.cosmos.tx.v1beta1.TxRaw({
       body_bytes: bodyBytes, // has to collect body bytes & auth info bytes since Keplr overrides data when signing
       auth_info_bytes: authInfoBytes,
-      signatures,
+      signatures
     });
     const txBytes = message.cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
     return txBytes;
@@ -198,11 +198,11 @@ export default class Cosmos {
   }
 
   get(path) {
-    return this.axios.get(path).then((res) => res.data).catch(err => err.response.data);
+    return this.axios.get(path).then((res) => res.data);
   }
 
   post(path, data) {
-    return this.axios.post(path, data).then((res) => res.data).catch(err => err.response.data);
+    return this.axios.post(path, data).then((res) => res.data);
   }
 
   // "BROADCAST_MODE_UNSPECIFIED", "BROADCAST_MODE_BLOCK", "BROADCAST_MODE_SYNC", "BROADCAST_MODE_ASYNC"
@@ -245,7 +245,7 @@ export default class Cosmos {
   }
 
   async submit(signerOrChild, txBody, broadCastMode = 'BROADCAST_MODE_SYNC', fees = [{ denom: 'orai', amount: String(0) }], gas_limit = 200000, timeoutIntervalCheck = 0, isAmino = false) {
-    if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: "The txBody are empty" };
+    if (!txBody) throw { status: CONSTANTS.STATUS_CODE.NOT_FOUND, message: 'The txBody are empty' };
 
     // collect wallet & signer data
     const { wallet } = new WalletFactory(signerOrChild, this);
@@ -261,10 +261,19 @@ export default class Cosmos {
     // filter signer type
     if (isAmino || (wallet instanceof WalletSigner && !signerOrChild.signDirect)) {
       const aminoType = new AminoTypes();
-      const aminoMsgs = txBody.messages.map(msg => aminoType.toAmino(msg));
-      signedTxBytes = await wallet.signAmino(aminoMsgs, bodyBytes, authInfoBytes, data.account.account_number, data.account.sequence, { amount: fees, gas: gas_limit.toString() }, txBody.memo, txBody.timeout_height, address);
-    }
-    else {
+      const aminoMsgs = txBody.messages.map((msg) => aminoType.toAmino(msg));
+      signedTxBytes = await wallet.signAmino(
+        aminoMsgs,
+        bodyBytes,
+        authInfoBytes,
+        data.account.account_number,
+        data.account.sequence,
+        { amount: fees, gas: gas_limit.toString() },
+        txBody.memo,
+        txBody.timeout_height,
+        address
+      );
+    } else {
       signedTxBytes = await wallet.signDirect(bodyBytes, authInfoBytes, data.account.account_number, address);
     }
 
@@ -295,10 +304,10 @@ export default class Cosmos {
         // cannot find tx case, check timeout height
         // if this block exists, it means the the network has reached the timeout height => tx has been flushed. return error
         if (!blockData.error) {
-          return { txhash, message: "The transaction has been discarded due to low transaction fees. Please increase the gas price re-submit your transaction." }
+          return { txhash, message: 'The transaction has been discarded due to low transaction fees. Please increase the gas price re-submit your transaction.' };
         }
         // has not reached timeout height. sleep for timeout interval then repeat
-        await new Promise(r => setTimeout(r, timeoutIntervalCheck));
+        await new Promise((r) => setTimeout(r, timeoutIntervalCheck));
       }
     }
   }
@@ -310,8 +319,8 @@ export default class Cosmos {
     var buf3 = new Buffer.from(pubKeyBytes);
     const pubKey = Buffer.concat([buf1, buf2, buf3]);
     return {
-      "@type": '/cosmos.crypto.secp256k1.PubKey',
-      "key": pubKey.toString('base64')
+      '@type': '/cosmos.crypto.secp256k1.PubKey',
+      key: pubKey.toString('base64')
     };
   }
 
@@ -347,9 +356,9 @@ export default class Cosmos {
       tx: {
         body: txBody,
         authInfo,
-        signatures: [Buffer.from("").toString('base64')],
+        signatures: [Buffer.from('').toString('base64')]
       }
-    }
+    };
 
     return this.axios.post(`/cosmos/tx/v1beta1/simulate`, simulateTx).then((res) => res.data);
   }
