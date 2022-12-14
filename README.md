@@ -3,14 +3,12 @@
   <a href="https://orai.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars.githubusercontent.com/u/69910226?s=200&v=4" alt="Oraichain logo"></a>
 </p>
 <h1 align="center">
-    CosmosJS - Cosmos JavaScript Library 
+    CosmosJS - Cosmos JavaScript Library (Deprecated)
 </h1>
 
-*:star: Was developed: [Cosmostation](https://www.cosmostation.io/)*
+*:star: Was developed: [Oraichain]([https://orai.io/])*
 
-*:star: Is developing: [Oraichain](https://orai.io/)*
-
-*:star: Will develop: [Oraichain](https://orai.io/) and the community*
+*:warning: This repository is now archived because Cosmjs developed by Cosmos is more widely used. This repo offers no different use cases, and shall be referenced as a studying tool for Web3.*
 
 A JavasSript Open Source Library for [Oraichain](https://orai.io/), [Cosmos Network](https://cosmos.network/) and other Cosmos based networks using the latest Cosmos SDK Stargate version upgrade.
 
